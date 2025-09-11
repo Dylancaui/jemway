@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Jemway — Study & Life Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1724;
+  --panel:#0b1220;
+  --muted:#98a1b3;
+  --accent:#6b63ff;
+  --accent-2:#2aa7c2;
+  --card:#0f1724;
+  --glass: rgba(255,255,255,0.04);
+  --success:#10b981;
+  --danger:#ef4444;
+  --radius:14px;
+  --fw-regular:400;
+  --fw-medium:600;
+  --max-width:1200px;
+  --glass-2: rgba(255,255,255,0.03);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+  background:linear-gradient(180deg,#09101a 0%, #07101a 40%);
+  color:#e6eef8;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  padding:28px 20px;
+  display:flex;
+  justify-content:center;
+}
+.app{
+  width:100%;
+  max-width:var(--max-width);
+  display:grid;
+  grid-template-columns: 1fr 360px;
+  gap:28px;
+  align-items:start;
+}
+.header{
+  grid-column:1 / -1;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:6px;
+}
+.brand{
+  display:flex;
+  gap:14px;
+  align-items:center;
+}
+.logo{
+  width:56px;height:56px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  box-shadow:0 8px 30px rgba(43,35,120,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
+  color:white;font-weight:700;font-size:20px;
+}
+.title{line-height:1}
+.title h1{margin:0;font-size:18px;letter-spacing:0.2px}
+.title p{margin:0;color:var(--muted);font-size:13px}
+.controls{display:flex;gap:12px;align-items:center}
+.btn{
+  background:transparent;border:1px solid rgba(255,255,255,0.06);
+  padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer;font-weight:600;
+  transition:all .18s ease;
+}
+.btn:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(43,35,120,0.12)}
+.btn.pri{
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  color:white;border:0;padding:9px 14px;
+}
+.mode-toggle{padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);cursor:pointer;color:var(--muted)}
+.left{display:grid;gap:20px;grid-auto-rows:min-content}
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+  border:1px solid rgba(255,255,255,0.03);
+}
+.card h2{margin:0 0 8px 0;font-size:16px}
+.small{font-size:13px;color:var(--muted);line-height:1.45}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:1100px){.app{grid-template-columns:1fr}.header{flex-direction:column;align-items:flex-start;gap:12px}.controls{width:100%;justify-content:flex-start}.grid-2{grid-template-columns:1fr}}
+.tool{display:flex;flex-direction:column;gap:10px}
+.input, textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px}
+.row{display:flex;gap:10px}.row .input{flex:1}
+.result{background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-weight:600}
+.pomodoro{display:flex;flex-direction:column;align-items:center;gap:12px}
+.timer{width:160px;height:160px;border-radius:90px;display:flex;align-items:center;justify-content:center;font-size:32px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+.pomo-controls{display:flex;gap:8px}
+.habits{display:flex;flex-direction:column;gap:8px}
+.habit-item{display:flex;align-items:center;gap:8px}
+.habit-item input[type="checkbox"]{width:18px;height:18px}
+.flash{display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.card-face{min-height:90px;border-radius:10px;padding:12px;border:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.01);text-align:center}
+.fc-controls{display:flex;gap:8px;justify-content:center}
+.right{display:flex;flex-direction:column;gap:18px}
+.sidebar-quote{padding:18px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;text-align:center}
+.link-list{display:flex;flex-direction:column;gap:8px}
+.link-list a{color:var(--muted);font-weight:600;background:transparent;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+.towers{display:flex;gap:12px;justify-content:center;align-items:flex-end}
+.tower{width:34px;border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,0.35);transition:all .25s ease}
+.tower-label{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+.footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="header">
+    <div class="brand">
+      <div class="logo" aria-hidden>JW</div>
+      <div class="title">
+        <h1>Jemway</h1>
+        <p class="small">Free tools for students — quick, private, and useful</p>
+      </div>
+    </div>
+    <div class="controls" role="toolbar" aria-label="Main controls">
+      <button class="btn" id="resetStorage" title="Clear saved data">Reset saved</button>
+      <button class="btn pri" id="shareBtn">Share</button>
+      <button class="btn mode-toggle" id="colorMode">Toggle Mode</button>
+    </div>
+  </div>
+
+  <div class="left">
+    <div class="grid-2">
+      <section class="card">
+        <h2>Daily Motivation</h2>
+        <p class="small">Short, study-friendly prompts to keep you focused.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+          <div id="quote" class="result">Loading...</div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn" id="newQuote">New quote</button>
+            <button class="btn" id="saveQuote">Save</button>
+          </div>
+          <div id="savedQuotes" style="margin-top:8px;color:var(--muted);font-size:13px"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Pomodoro Timer</h2>
+        <p class="small">Work in focused sprints (25/5). Runs in your browser — no account.</p>
+        <div class="pomodoro">
+          <div class="timer" id="timer">25:00</div>
+          <div class="pomo-controls">
+            <button class="btn" id="startPomo">Start</button>
+            <button class="btn" id="pausePomo">Pause</button>
+            <button class="btn" id="resetPomo">Reset</button>
+          </div>
+          <div class="small" style="text-align:center">Sessions completed: <span id="pomoCount">0</span></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Calculators</h2>
+      <div class="grid-2" style="margin-top:12px">
+        <div class="tool">
+          <h3 style="margin:0;font-size:14px">GPA Calculator (0–5.0 scale)</h3>
+          <div class="small">Enter grades 0–100, comma separated</div>
+          <input id="gpaGrades" class="input" placeholder="e.g. 95,87,78,100">
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" id="calcGPA">Calculate</button>
+            <div class="result" id="gpaResult">—</div>
+          </div>
+        </div>
+
+        <div class="tool">
+          <h3 style="margin:0;font-size:14px">BMI Calculator</h3>
+          <div class="small">Metric or Imperial</div>
+          <div class="row">
+            <input id="weight" class="input" placeholder="Weight (kg) or lbs">
+            <input id="height" class="input" placeholder="Height (cm) or in">
+          </div>
+          <select id="bmiUnit" class="input" style="margin-top:8px">
+            <option value="metric">Metric (kg, cm)</option>
+            <option value="imperial">Imperial (lbs, in)</option>
+          </select>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" id="calcBMI">Calculate</button>
+            <div class="result" id="bmiResult">—</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Flashcards</h2>
+      <div class="flash">
+        <div id="flashFace" class="card-face">No flashcards yet — sample loaded.</div>
+        <div style="display:flex;gap:8px;justify-content:space-between;align-items:center">
+          <div style="display:flex;gap:8px">
+            <input id="fcQuestion" class="input" placeholder="Question">
+            <input id="fcAnswer" class="input" placeholder="Answer">
+            <button class="btn" id="addFlash">Add</button>
+          </div>
+          <div class="fc-controls">
+            <button class="btn" id="flipFlash">Flip</button>
+            <button class="btn" id="markKnown">Mark Known</button>
+            <button class="btn" id="clearFlash">Clear all</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Daily Habits</h2>
+      <p class="small">Track small habits quickly — persists in your browser.</p>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <input id="habitInput" class="input" placeholder="Add habit (e.g. Read 20 mins)">
+        <button class="btn" id="addHabit">Add</button>
+      </div>
+      <div class="habits" id="habitList" style="margin-top:10px"></div>
+    </section>
+  </div>
+
+  <aside class="right">
+    <div class="card sidebar-quote">
+      <div style="font-size:14px;font-weight:700">You matter.</div>
+      <div style="font-size:12px;margin-top:8px;opacity:0.95">Small steps every day — that’s progress.</div>
+    </div>
+
+    <div class="card" aria-labelledby="remembranceTitle">
+      <h3 id="remembranceTitle">9/11 Remembrance</h3>
+      <p class="small">We honor the lives lost on Sept 11, 2001, and the courage of first responders.</p>
+      <div class="towers" style="margin-top:12px">
+        <div id="tower1" class="tower" style="height:110px;background:#6b63ff"></div>
+        <div id="tower2" class="tower" style="height:110px;background:#2aa7c2"></div>
+      </div>
+      <div class="tower-label">We will never forget</div>
+      <ul style="margin-top:12px;line-height:1.6;color:var(--muted);font-size:13px">
+        <li><strong>Date:</strong> September 11, 2001</li>
+        <li><strong>Lives lost:</strong> Nearly 3,000 people</li>
+        <li><strong>Locations:</strong> World Trade Center, Pentagon, Flight 93</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Quick Links</h3>
+      <div class="link-list" style="margin-top:8px">
+        <a href="https://www.khanacademy.org" target="_blank">Khan Academy — free learning</a>
+        <a href="https://www.coursera.org" target="_blank">Coursera — free courses</a>
+        <a href="https://en.wikipedia.org/wiki/Pomodoro_Technique" target="_blank">Study tips — Pomodoro guide</a>
+        <a href="mailto:adzenturabusiness@gmail.com">Contact (email)</a>
+      </div>
+    </div>
+  </aside>
+
+  <div class="footer small">Built with ❤️ — Jemway · All data stays in your browser unless you export it.</div>
+</div>
+
+<script>
+// ===== Quotes =====
+const storage={get(k,f){try{const v=localStorage.getItem('jem_'+k);return v?JSON.parse(v):f}catch(e){return f}},set(k,v){try{localStorage.setItem('jem_'+k,JSON.stringify(v))}catch(e){}},clear(){Object.keys(localStorage).filter(k=>k.startsWith('jem_')).forEach(k=>localStorage.removeItem(k));location.reload()}};
+const QUOTES=["Small progress is still progress. Focus on the next small step.","Study with purpose: 25 minutes of focused work > 3 hours of distracted effort.","Active recall beats passive reading. Quiz yourself.","Consistency compounds. Show up today.","Break big tasks into tiny wins — then stack them."];
+const quoteEl=document.getElementById('quote'); const savedQuotesEl=document.getElementById('savedQuotes');
+function randomQuote(){return QUOTES[Math.floor(Math.random()*QUOTES.length)]}
+function renderQuote(){quoteEl.textContent=storage.get('currentQuote',randomQuote())}
+function newQuote(){const q=randomQuote(); storage.set('currentQuote',q); renderQuote()}
+function saveQuote(){const cur=storage.get('currentQuote','').trim(); if(!cur)return; const arr=storage.get('savedQuotes',[]); arr.unshift({text:cur,at:Date.now()}); storage.set('savedQuotes',arr.slice(0,10)); renderSaved()}
+function renderSaved(){const arr=storage.get('savedQuotes',[]); if(!arr.length){savedQuotesEl.textContent='';return;} savedQuotesEl.innerHTML=arr.map(s=>'• '+s.text).join('<br>')}
+document.getElementById('newQuote').onclick=newQuote
+document.getElementById('saveQuote').onclick=saveQuote
+renderQuote(); renderSaved();
+
+// ===== GPA Calculator 0–5.0 =====
+function gradeToGPA5(n){
+  if(n>=95) return 5.0;
+  if(n>=90) return 4.7;
+  if(n>=85) return 4.3;
+  if(n>=80) return 4.0;
+  if(n>=75) return 3.7;
+  if(n>=70) return 3.3;
+  if(n>=65) return 3.0;
+  if(n>=60) return 2.7;
+  if(n>=55) return 2.3;
+  if(n>=50) return 2.0;
+  return 0;
+}
+document.getElementById('calcGPA').onclick=function(){
+  const val=document.getElementById('gpaGrades').value;
+  if(!val.trim()){document.getElementById('gpaResult').textContent='—';return;}
+  const nums=val.split(',').map(x=>parseFloat(x.trim())).filter(x=>!isNaN(x)&&x>=0&&x<=100);
+  if(!nums.length){document.getElementById('gpaResult').textContent='Invalid';return;}
+  const avg=(nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1);
+  const gpa=nums.map(gradeToGPA5).reduce((a,b)=>a+b,0)/nums.length;
+  document.getElementById('gpaResult').textContent=`GPA: ${gpa.toFixed(2)} /5.0 (Avg score: ${avg})`;
+}
+
+// ===== BMI Calculator =====
+document.getElementById('calcBMI').onclick=function(){
+  const w=parseFloat(document.getElementById('weight').value);
+  const h=parseFloat(document.getElementById('height').value);
+  const unit=document.getElementById('bmiUnit').value;
+  if(isNaN(w)||isNaN(h)||w<=0||h<=0){document.getElementById('bmiResult').textContent='Invalid';return;}
+  let bmi=0;
+  if(unit==='metric'){bmi=w/((h/100)**2)}
+  else{bmi=703*w/(h*h)}
+  let cat='';
+  if(bmi<18.5) cat='Underweight';
+  else if(bmi<25) cat='Normal';
+  else if(bmi<30) cat='Overweight';
+  else cat='Obese';
+  document.getElementById('bmiResult').textContent=`BMI: ${bmi.toFixed(1)} (${cat})`;
+}
+
+// ===== Flashcards =====
+let flashcards=storage.get('flashcards',[{q:"Sample Q?",a:"Sample A"}]);
+let fcIndex=0; let showAnswer=false;
+const flashFace=document.getElementById('flashFace');
+function renderFlash(){if(!flashcards.length){flashFace.textContent='No flashcards.'; return;} flashFace.textContent=showAnswer?flashcards[fcIndex].a:flashcards[fcIndex].q}
+document.getElementById('flipFlash').onclick=function(){showAnswer=!showAnswer; renderFlash()}
+document.getElementById('addFlash').onclick=function(){
+  const q=document.getElementById('fcQuestion').value.trim();
+  const a=document.getElementById('fcAnswer').value.trim();
+  if(!q||!a)return;
+  flashcards.push({q,a}); storage.set('flashcards',flashcards);
+  document.getElementById('fcQuestion').value=''; document.getElementById('fcAnswer').value=''; fcIndex=flashcards.length-1; showAnswer=false; renderFlash()
+}
+document.getElementById('markKnown').onclick=function(){flashcards.splice(fcIndex,1); storage.set('flashcards',flashcards); fcIndex=Math.max(0,fcIndex-1); showAnswer=false; renderFlash()}
+document.getElementById('clearFlash').onclick=function(){flashcards=[]; storage.set('flashcards',flashcards); renderFlash()}
+renderFlash();
+
+// ===== Habits =====
+let habits=storage.get('habits',[]);
+const habitList=document.getElementById('habitList');
+function renderHabits(){habitList.innerHTML='';habits.forEach((h,i)=>{const div=document.createElement('div');div.className='habit-item';div.innerHTML=`<input type="checkbox" ${h.done?'checked':''} data-id="${i}"> ${h.name}`;habitList.appendChild(div)})}
+habitList.addEventListener('change',e=>{if(e.target.dataset.id!==undefined){const i=parseInt(e.target.dataset.id);habits[i].done=e.target.checked;storage.set('habits',habits)}})
+document.getElementById('addHabit').onclick=function(){const val=document.getElementById('habitInput').value.trim();if(!val)return; habits.push({name:val,done:false});storage.set('habits',habits);document.getElementById('habitInput').value='';renderHabits()}
+renderHabits();
+
+// ===== Pomodoro =====
+let pomoInterval=null,pomoSeconds=1500,pomoCount=0;
+const timerEl=document.getElementById('timer'); const countEl=document.getElementById('pomoCount');
+function renderTimer(){const m=Math.floor(pomoSeconds/60).toString().padStart(2,'0');const s=(pomoSeconds%60).toString().padStart(2,'0');timerEl.textContent=`${m}:${s}`}
+function startPomo(){if(pomoInterval)return; pomoInterval=setInterval(()=>{pomoSeconds--; if(pomoSeconds<=0){pomoCount++;pomoSeconds=1500; clearInterval(pomoInterval); pomoInterval=null} renderTimer(); countEl.textContent=pomoCount},1000)}
+function pausePomo(){clearInterval(pomoInterval);pomoInterval=null}
+function resetPomo(){pomoSeconds=1500;renderTimer()}
+document.getElementById('startPomo').onclick=startPomo
+document.getElementById('pausePomo').onclick=pausePomo
+document.getElementById('resetPomo').onclick=resetPomo
+renderTimer(); countEl.textContent=pomoCount;
+
+// ===== Color mode toggle =====
+const modeBtn=document.getElementById('colorMode'); let dark=true;
+modeBtn.onclick=function(){document.body.style.background=dark?'#fff':'#0f1724';document.body.style.color=dark?'#0f1724':'#e6eef8';dark=!dark}
+
+// ===== Reset =====
+document.getElementById('resetStorage').onclick=()=>storage.clear()
+</script>
+</body>
+</html>
