@@ -3,358 +3,1279 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Jemway — Study & Life Tools</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>Jemway — Culinary Companion (Created by Dylan Castro)</title>
+<meta name="description" content="Jemway — Culinary Companion: pantry-first recipes, substitutions, measurement conversions, timers and quick kitchen lessons. Local-first, private. Created by Dylan Castro.">
 <style>
+/* =========================================================================
+   JEMWAY — CULINARY COMPANION (Logo + 50+ Breakfasts + Full Hub)
+   Single-file polished web app (HTML / CSS / JS)
+   Creator: Dylan Castro
+   ========================================================================== */
+
+/* Root variables */
 :root{
-  --bg:#0f1724;
-  --panel:#0b1220;
-  --muted:#98a1b3;
-  --accent:#6b63ff;
-  --accent-2:#2aa7c2;
-  --card:#0f1724;
-  --glass: rgba(255,255,255,0.04);
-  --success:#10b981;
-  --danger:#ef4444;
-  --radius:14px;
-  --fw-regular:400;
-  --fw-medium:600;
-  --max-width:1200px;
-  --glass-2: rgba(255,255,255,0.03);
+  --bg-0: #07101a;
+  --bg-1: #0c1622;
+  --panel: #0f1c26;
+  --card: #0f2430;
+  --muted: #9db0c6;
+  --text: #eaf4ff;
+  --accent: #ff6b6b;
+  --accent-2: #ffb86b;
+  --accent-3: #6bd1ff;
+  --success: #10b981;
+  --danger: #ff6b6b;
+  --glass: rgba(255,255,255,0.02);
+  --radius: 14px;
+  --shadow: 0 12px 40px rgba(2,6,23,0.6);
+  --maxW: 1260px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono";
+  --ease: cubic-bezier(.2,.9,.2,1);
+  --ui-size: 15px;
 }
+
+/* Light theme overrides */
+body.light{
+  --bg-0: #fbfdff;
+  --bg-1: #f5f8fb;
+  --panel: #ffffff;
+  --card: #ffffff;
+  --muted: #556277;
+  --text: #07101a;
+  --glass: rgba(0,0,0,0.04);
+  --shadow: 0 10px 30px rgba(12,18,38,0.06);
+}
+
+/* Global reset */
 *{box-sizing:border-box}
-html,body{height:100%}
+html,body{height:100%;margin:0;padding:0}
 body{
-  margin:0;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
-  background:linear-gradient(180deg,#09101a 0%, #07101a 40%);
-  color:#e6eef8;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(180deg,var(--bg-0),var(--bg-1) 85%);
+  color:var(--text);
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  padding:28px 20px;
   display:flex;
   justify-content:center;
+  padding:26px;
+  transition: background .25s var(--ease), color .25s var(--ease);
+  font-size:var(--ui-size);
+  line-height:1.45;
 }
+
+/* App container */
 .app{
   width:100%;
-  max-width:var(--max-width);
+  max-width:var(--maxW);
   display:grid;
-  grid-template-columns: 1fr 360px;
-  gap:28px;
+  grid-template-columns: 1fr 380px;
+  gap:22px;
   align-items:start;
 }
-.header{
+@media(max-width:1100px){
+  .app{grid-template-columns:1fr; padding:0 12px}
+}
+
+/* Topbar */
+.topbar{
   grid-column:1 / -1;
   display:flex;
+  align-items:center;
   justify-content:space-between;
-  align-items:center;
-  gap:16px;
-  margin-bottom:6px;
+  gap:12px;
+  padding:16px;
+  border-radius:12px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.03);
+  box-shadow:var(--shadow);
 }
-.brand{
-  display:flex;
-  gap:14px;
-  align-items:center;
-}
+.brand{display:flex;gap:12px;align-items:center}
+.logo-wrap{display:flex;align-items:center;gap:12px}
 .logo{
-  width:56px;height:56px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
+  width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  box-shadow:0 8px 30px rgba(43,35,120,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
-  color:white;font-weight:700;font-size:20px;
+  box-shadow:0 8px 30px rgba(255,107,107,0.08);
+  color:white;font-weight:800;font-size:20px;
+  transition: transform .12s var(--ease);
 }
-.title{line-height:1}
-.title h1{margin:0;font-size:18px;letter-spacing:0.2px}
+.logo:hover{transform: rotate(-6deg) scale(1.02)}
+.title h1{margin:0;font-size:18px}
 .title p{margin:0;color:var(--muted);font-size:13px}
-.controls{display:flex;gap:12px;align-items:center}
+
+/* Buttons */
 .btn{
-  background:transparent;border:1px solid rgba(255,255,255,0.06);
-  padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer;font-weight:600;
-  transition:all .18s ease;
+  padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);
+  background:transparent;color:var(--text);font-weight:700;cursor:pointer;
+  transition:transform .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease);
 }
-.btn:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(43,35,120,0.12)}
-.btn.pri{
-  background:linear-gradient(90deg,var(--accent),var(--accent-2));
-  color:white;border:0;padding:9px 14px;
-}
-.mode-toggle{padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);cursor:pointer;color:var(--muted)}
-.left{display:grid;gap:20px;grid-auto-rows:min-content}
+.btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,0.16)}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:0;color:white}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04)}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;padding:8px;border-radius:10px}
+
+/* Cards */
 .card{
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius:var(--radius);
+  padding:16px;
+  box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,0.03);
+  transition:transform .14s var(--ease);
+}
+.card:hover{transform:translateY(-6px)}
+
+/* Layout */
+.left{display:flex;flex-direction:column;gap:18px}
+.right{display:flex;flex-direction:column;gap:18px}
+
+/* Hero */
+.hero{
+  display:flex;
+  gap:18px;
+  align-items:stretch;
   padding:18px;
-  box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+  border-radius:12px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border:1px solid rgba(255,255,255,0.03);
 }
-.card h2{margin:0 0 8px 0;font-size:16px}
-.small{font-size:13px;color:var(--muted);line-height:1.45}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media (max-width:1100px){.app{grid-template-columns:1fr}.header{flex-direction:column;align-items:flex-start;gap:12px}.controls{width:100%;justify-content:flex-start}.grid-2{grid-template-columns:1fr}}
-.tool{display:flex;flex-direction:column;gap:10px}
+.hero-left{flex:1}
+.hero-right{width:320px}
+
+/* Search & chips */
+.search{
+  display:flex;gap:8px;margin-top:10px;align-items:center;
+}
 .input, textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px}
-.row{display:flex;gap:10px}.row .input{flex:1}
-.result{background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-weight:600}
-.pomodoro{display:flex;flex-direction:column;align-items:center;gap:12px}
-.timer{width:160px;height:160px;border-radius:90px;display:flex;align-items:center;justify-content:center;font-size:32px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
-.pomo-controls{display:flex;gap:8px}
-.habits{display:flex;flex-direction:column;gap:8px}
-.habit-item{display:flex;align-items:center;gap:8px}
-.habit-item input[type="checkbox"]{width:18px;height:18px}
-.flash{display:flex;flex-direction:column;gap:10px;align-items:stretch}
-.card-face{min-height:90px;border-radius:10px;padding:12px;border:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.01);text-align:center}
-.fc-controls{display:flex;gap:8px;justify-content:center}
-.right{display:flex;flex-direction:column;gap:18px}
-.sidebar-quote{padding:18px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;text-align:center}
-.link-list{display:flex;flex-direction:column;gap:8px}
-.link-list a{color:var(--muted);font-weight:600;background:transparent;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
-.towers{display:flex;gap:12px;justify-content:center;align-items:flex-end}
-.tower{width:34px;border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,0.35);transition:all .25s ease}
-.tower-label{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
-.footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;margin-top:10px}
+.search .input{flex:1}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);cursor:pointer;font-weight:700}
+
+/* recipe list */
+.recipes{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:900px){ .recipes{grid-template-columns:1fr} }
+.recipe{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.007));border:1px solid rgba(255,255,255,0.02)}
+.recipe h4{margin:0 0 6px 0}
+
+/* pantry */
+.pantry-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.pantry-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
+
+/* substitution table */
+.sub-table{width:100%;border-collapse:collapse}
+.sub-table td, .sub-table th{padding:8px;border-bottom:1px dashed rgba(255,255,255,0.03)}
+.sub-table th{color:var(--muted);text-align:left}
+
+/* recipe detail */
+.recipe-detail{display:flex;gap:12px;align-items:flex-start}
+.recipe-detail .meta{width:210px}
+.recipe-detail .content{flex:1}
+
+/* small helpers */
+.small{font-size:13px;color:var(--muted)}
+.badge{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:800;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+.row{display:flex;gap:8px;align-items:center}
+.col{display:flex;flex-direction:column;gap:8px}
+.sep{height:1px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));margin:12px 0;border-radius:2px}
+
+/* focus state */
+:focus{outline:none;box-shadow:0 0 0 4px rgba(255,107,107,0.08);border-radius:6px}
+
+/* responsive */
+@media(max-width:720px){
+  .topbar{flex-direction:column;align-items:flex-start}
+  .hero{flex-direction:column}
+}
+
+/* Logo SVG styling */
+.svg-logo{width:48px;height:48px;display:block}
+.brand-text{display:flex;flex-direction:column}
+.brand-tag{font-size:11px;color:var(--muted);margin-top:2px}
 </style>
 </head>
 <body>
-<div class="app" id="app">
-  <div class="header">
+
+<div class="app" role="application" aria-label="Jemway — Culinary Companion">
+
+  <!-- Topbar -->
+  <div class="topbar">
     <div class="brand">
-      <div class="logo" aria-hidden>JW</div>
-      <div class="title">
-        <h1>Jemway</h1>
-        <p class="small">Free tools for students — quick, private, and useful</p>
+      <div class="logo-wrap">
+        <!-- Inline SVG logo: simple modern symbol + wordmark -->
+        <div class="logo" aria-hidden>
+          <svg class="svg-logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle">
+            <title id="logoTitle">Jemway logo</title>
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#ff6b6b"/>
+                <stop offset="1" stop-color="#ffb86b"/>
+              </linearGradient>
+            </defs>
+            <!-- stylized J + pan icon -->
+            <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#g1)"/>
+            <g transform="translate(12,12)" fill="#fff">
+              <path d="M6 4c0-1.1.9-2 2-2h18v4H10v12c0 5.5 4.5 10 10 10 2.8 0 5.3-1.2 7.1-3.1 0.6-0.6 1.6-0.6 2.2 0 0.6 0.6 0.6 1.6 0 2.2C35.9 40.9 27.8 44 20 44 10 44 4 36 4 26V4z" opacity="0.95"/>
+              <circle cx="38" cy="10" r="3" />
+            </g>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div style="font-weight:800">Jemway</div>
+          <div class="brand-tag">Culinary Companion</div>
+        </div>
       </div>
     </div>
-    <div class="controls" role="toolbar" aria-label="Main controls">
-      <button class="btn" id="resetStorage" title="Clear saved data">Reset saved</button>
-      <button class="btn pri" id="shareBtn">Share</button>
-      <button class="btn mode-toggle" id="colorMode">Toggle Mode</button>
+
+    <div class="row">
+      <button class="btn ghost" id="btnImport">Import</button>
+      <button class="btn ghost" id="btnExport">Export</button>
+      <button class="btn" id="btnTheme">Toggle Theme</button>
+      <button class="btn primary" id="btnSave">Save</button>
     </div>
   </div>
 
+  <!-- LEFT: Main tools -->
   <div class="left">
-    <div class="grid-2">
-      <section class="card">
-        <h2>Daily Motivation</h2>
-        <p class="small">Short, study-friendly prompts to keep you focused.</p>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
-          <div id="quote" class="result">Loading...</div>
-          <div style="display:flex;gap:8px;justify-content:flex-end">
-            <button class="btn" id="newQuote">New quote</button>
-            <button class="btn" id="saveQuote">Save</button>
-          </div>
-          <div id="savedQuotes" style="margin-top:8px;color:var(--muted);font-size:13px"></div>
-        </div>
-      </section>
 
-      <section class="card">
-        <h2>Pomodoro Timer</h2>
-        <p class="small">Work in focused sprints (25/5). Runs in your browser — no account.</p>
-        <div class="pomodoro">
-          <div class="timer" id="timer">25:00</div>
-          <div class="pomo-controls">
-            <button class="btn" id="startPomo">Start</button>
-            <button class="btn" id="pausePomo">Pause</button>
-            <button class="btn" id="resetPomo">Reset</button>
-          </div>
-          <div class="small" style="text-align:center">Sessions completed: <span id="pomoCount">0</span></div>
-        </div>
-      </section>
-    </div>
+    <!-- HERO -->
+    <section class="card hero" aria-labelledby="heroTitle">
+      <div class="hero-left">
+        <h2 id="heroTitle">Cook smarter with what you already have</h2>
+        <p class="small">Add pantry items and Jemway suggests recipes, substitutes, grocery lists, and step-by-step cook mode. Everything runs locally in your browser.</p>
 
-    <section class="card">
-      <h2>Calculators</h2>
-      <div class="grid-2" style="margin-top:12px">
-        <div class="tool">
-          <h3 style="margin:0;font-size:14px">GPA Calculator (0–5.0 scale)</h3>
-          <div class="small">Enter grades 0–100, comma separated</div>
-          <input id="gpaGrades" class="input" placeholder="e.g. 95,87,78,100">
+        <div class="search">
+          <input id="pantryInput" class="input" placeholder="Add pantry items (comma separated) — e.g., eggs, flour, canned tomatoes">
+          <button class="btn primary" id="addPantry">Add</button>
+          <button class="btn" id="clearPantry">Clear</button>
+        </div>
+
+        <div class="chips" aria-hidden>
+          <div class="chip" data-suggest="breakfast">Breakfast</div>
+          <div class="chip" data-suggest="quick">15-min Meals</div>
+          <div class="chip" data-suggest="vegetarian">Vegetarian</div>
+          <div class="chip" data-suggest="baking">Baking</div>
+          <div class="chip" data-suggest="comfort">Comfort</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="small">Pantry snapshot:</div>
+          <div id="pantryPreview" style="margin-top:8px" class="small muted">No items yet — add a few staples.</div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>Kitchen Timer</strong>
+              <div class="small muted">Quick countdown</div>
+            </div>
+            <div id="timerBadge" class="badge">00:00</div>
+          </div>
+          <div style="margin-top:10px" class="row">
+            <input id="timerSeconds" class="input" placeholder="Seconds" style="width:110px">
+            <button class="btn primary" id="startKitchenTimer">Start</button>
+            <button class="btn" id="stopKitchenTimer">Stop</button>
+          </div>
+          <div style="margin-top:10px" class="small muted">Tip: open multiple tabs for parallel timers.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>Flavor Inspiration</strong><div class="small muted">Quick combo ideas</div></div>
+            <div class="badge" id="inspBadge">Inspire</div>
+          </div>
+          <div id="dailyInspo" style="margin-top:8px" class="small muted">Loading...</div>
           <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="btn" id="calcGPA">Calculate</button>
-            <div class="result" id="gpaResult">—</div>
-          </div>
-        </div>
-
-        <div class="tool">
-          <h3 style="margin:0;font-size:14px">BMI Calculator</h3>
-          <div class="small">Metric or Imperial</div>
-          <div class="row">
-            <input id="weight" class="input" placeholder="Weight (kg) or lbs">
-            <input id="height" class="input" placeholder="Height (cm) or in">
-          </div>
-          <select id="bmiUnit" class="input" style="margin-top:8px">
-            <option value="metric">Metric (kg, cm)</option>
-            <option value="imperial">Imperial (lbs, in)</option>
-          </select>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="btn" id="calcBMI">Calculate</button>
-            <div class="result" id="bmiResult">—</div>
+            <button class="btn" id="newInspo">New</button>
+            <button class="btn" id="saveInspo">Save</button>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="card">
-      <h2>Flashcards</h2>
-      <div class="flash">
-        <div id="flashFace" class="card-face">No flashcards yet — sample loaded.</div>
-        <div style="display:flex;gap:8px;justify-content:space-between;align-items:center">
-          <div style="display:flex;gap:8px">
-            <input id="fcQuestion" class="input" placeholder="Question">
-            <input id="fcAnswer" class="input" placeholder="Answer">
-            <button class="btn" id="addFlash">Add</button>
+    <!-- RECIPES -->
+    <section class="card" id="recipesSection">
+      <div class="section-title">
+        <h3>Recipe Suggestions</h3>
+        <div class="small muted">Tailored to your pantry</div>
+      </div>
+      <div class="sep"></div>
+
+      <div style="display:flex;gap:10px;align-items:center">
+        <input id="searchRecipes" class="input" placeholder="Search recipes or filter (e.g., pancake, chicken)">
+        <select id="categoryFilter" class="input" style="width:160px">
+          <option value="all">All categories</option>
+          <option value="Breakfast">Breakfast</option>
+          <option value="Lunch">Lunch</option>
+          <option value="Dinner">Dinner</option>
+          <option value="Snacks">Snacks</option>
+          <option value="Dessert">Dessert</option>
+          <option value="Drinks">Drinks</option>
+        </select>
+        <select id="difficultyFilter" class="input" style="width:140px">
+          <option value="any">Any difficulty</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+        <button class="btn" id="runSearch">Search</button>
+        <div style="flex:1"></div>
+        <div class="small muted">Matches: <span id="matchCount">0</span></div>
+      </div>
+
+      <div style="margin-top:12px" id="recipesList" class="recipes">
+        <!-- JS populates recipe cards -->
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+        <button class="btn" id="moreRecipes">More</button>
+        <button class="btn" id="shuffleRecipes">Shuffle</button>
+        <div style="flex:1"></div>
+        <button class="btn primary" id="importSample">Load Sample Pantry</button>
+      </div>
+    </section>
+
+    <!-- Recipe detail -->
+    <section class="card" id="recipeDetailCard" style="display:none">
+      <div class="section-title">
+        <h3 id="detailTitle">Recipe Title</h3>
+        <div class="small muted" id="detailMeta">—</div>
+      </div>
+      <div class="sep"></div>
+
+      <div class="recipe-detail">
+        <div class="meta small">
+          <div><strong>Serves</strong>: <span id="serves">2</span></div>
+          <div style="margin-top:6px"><strong>Time</strong>: <span id="time">30 min</span></div>
+          <div style="margin-top:6px"><strong>Difficulty</strong>: <span id="difficulty">Easy</span></div>
+
+          <div style="margin-top:12px">
+            <div class="small muted">Scale servings</div>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <button class="btn" id="scaleDown">-</button>
+              <div class="badge" id="servesBadge">2</div>
+              <button class="btn" id="scaleUp">+</button>
+            </div>
           </div>
-          <div class="fc-controls">
-            <button class="btn" id="flipFlash">Flip</button>
-            <button class="btn" id="markKnown">Mark Known</button>
-            <button class="btn" id="clearFlash">Clear all</button>
+
+          <div style="margin-top:12px">
+            <div class="small muted">Save / Grocery</div>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <button class="btn" id="saveRecipe">Save</button>
+              <button class="btn" id="addToGrocery">Add Missing to Grocery</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="content">
+          <div style="display:flex;gap:12px">
+            <div style="flex:1">
+              <h4>Ingredients</h4>
+              <ul id="ingList" class="small muted"></ul>
+            </div>
+            <div style="flex:2">
+              <h4>Steps</h4>
+              <ol id="stepList" class="small muted"></ol>
+            </div>
+          </div>
+
+          <div style="margin-top:12px" class="small muted">
+            <strong>Substitutions</strong> — alternatives for common allergens and missing items:
+            <table class="sub-table" id="subsTable" style="margin-top:8px"><thead><tr><th>Ingredient</th><th>Substitute</th></tr></thead><tbody></tbody></table>
+          </div>
+
+          <div style="margin-top:12px">
+            <button class="btn primary" id="enterCookMode">Enter Cook Mode</button>
+            <button class="btn" id="backToList">Back to List</button>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="card">
-      <h2>Daily Habits</h2>
-      <p class="small">Track small habits quickly — persists in your browser.</p>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <input id="habitInput" class="input" placeholder="Add habit (e.g. Read 20 mins)">
-        <button class="btn" id="addHabit">Add</button>
+    <!-- Cook Mode -->
+    <section class="card" id="cookMode" style="display:none;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 id="cookTitle">Cook Mode</h3>
+        <div>
+          <button class="btn" id="exitCook">Exit</button>
+          <button class="btn primary" id="startStepTimer">Start Step Timer</button>
+        </div>
       </div>
-      <div class="habits" id="habitList" style="margin-top:10px"></div>
+      <div class="sep"></div>
+      <div id="cookSteps" style="min-height:260px"></div>
+      <div style="margin-top:12px" class="small muted">Use step timers to track cook times.</div>
     </section>
+
+    <!-- Lessons -->
+    <section class="card" id="learnSection">
+      <div class="section-title">
+        <h3>Kitchen Lessons</h3>
+        <div class="small muted">Quick tips to improve your cooking</div>
+      </div>
+      <div class="sep"></div>
+      <div id="lessonsGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+        <button class="btn" id="nextLesson">Next Tip</button>
+        <button class="btn" id="prevLesson">Previous Tip</button>
+        <div style="flex:1"></div>
+        <div class="small muted">Tip index: <span id="lessonIndex">1</span>/10</div>
+      </div>
+    </section>
+
   </div>
 
-  <aside class="right">
-    <div class="card sidebar-quote">
-      <div style="font-size:14px;font-weight:700">You matter.</div>
-      <div style="font-size:12px;margin-top:8px;opacity:0.95">Small steps every day — that’s progress.</div>
-    </div>
+  <!-- RIGHT column -->
+  <div class="right">
 
-    <div class="card" aria-labelledby="remembranceTitle">
-      <h3 id="remembranceTitle">9/11 Remembrance</h3>
-      <p class="small">We honor the lives lost on Sept 11, 2001, and the courage of first responders.</p>
-      <div class="towers" style="margin-top:12px">
-        <div id="tower1" class="tower" style="height:110px;background:#6b63ff"></div>
-        <div id="tower2" class="tower" style="height:110px;background:#2aa7c2"></div>
-      </div>
-      <div class="tower-label">We will never forget</div>
-      <ul style="margin-top:12px;line-height:1.6;color:var(--muted);font-size:13px">
-        <li><strong>Date:</strong> September 11, 2001</li>
-        <li><strong>Lives lost:</strong> Nearly 3,000 people</li>
-        <li><strong>Locations:</strong> World Trade Center, Pentagon, Flight 93</li>
-      </ul>
-    </div>
-
+    <!-- Pantry -->
     <div class="card">
-      <h3>Quick Links</h3>
-      <div class="link-list" style="margin-top:8px">
-        <a href="https://www.khanacademy.org" target="_blank">Khan Academy — free learning</a>
-        <a href="https://www.coursera.org" target="_blank">Coursera — free courses</a>
-        <a href="https://en.wikipedia.org/wiki/Pomodoro_Technique" target="_blank">Study tips — Pomodoro guide</a>
-        <a href="mailto:adzenturabusiness@gmail.com">Contact (email)</a>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Pantry</strong><div class="small muted">Stored staples</div></div>
+        <div class="badge" id="pantryCount">0</div>
+      </div>
+      <div class="sep"></div>
+      <div class="pantry-list" id="pantryList"></div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button class="btn" id="editPantry">Edit</button>
+        <button class="btn" id="clearPantryAll">Clear All</button>
       </div>
     </div>
-  </aside>
 
-  <div class="footer small">Built with ❤️ — Jemway · All data stays in your browser unless you export it.</div>
+    <!-- Grocery -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Grocery List</strong><div class="small muted">Missing items aggregated from recipes</div></div>
+        <div class="badge" id="groceryCount">0</div>
+      </div>
+      <div class="sep"></div>
+      <div id="groceryList" class="small muted"></div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button class="btn" id="exportGrocery">Export</button>
+        <button class="btn" id="clearGrocery">Clear</button>
+      </div>
+    </div>
+
+    <!-- Saved -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Saved Recipes</strong><div class="small muted">Your favorites</div></div>
+        <div class="badge" id="savedCount">0</div>
+      </div>
+      <div class="sep"></div>
+      <div id="savedList" class="small muted">No saved recipes yet</div>
+    </div>
+
+    <!-- Converter -->
+    <div class="card">
+      <h4>Measurement Converter</h4>
+      <div class="small muted">Quick kitchen conversions</div>
+      <div style="margin-top:8px" class="row">
+        <input id="measInput" class="input" placeholder="e.g., 1 cup">
+        <select id="measTo" class="input" style="width:140px">
+          <option value="ml">ml</option>
+          <option value="g">g</option>
+          <option value="tbsp">tbsp</option>
+          <option value="tsp">tsp</option>
+        </select>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button class="btn" id="measRun">Convert</button>
+        <button class="btn" id="measClear">Clear</button>
+      </div>
+      <div style="margin-top:8px" id="measResult" class="small muted">—</div>
+    </div>
+
+    <!-- Quick tools -->
+    <div class="card">
+      <h4>Quick Tools</h4>
+      <div class="small muted">Speedy helpers</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <div style="display:flex;gap:8px">
+          <input id="tempQuick" class="input" placeholder="°C">
+          <button class="btn" id="toF">→ °F</button>
+        </div>
+        <div style="display:flex;gap:8px">
+          <input id="weightQuick" class="input" placeholder="grams">
+          <button class="btn" id="toOz">→ oz</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card small muted">
+      <strong>Need help?</strong>
+      <div style="margin-top:6px">Jemway is local-first. No accounts, no tracking.</div>
+      <div style="margin-top:6px">Created by <strong>Dylan Castro</strong></div>
+    </div>
+
+  </div>
+
+  <div class="footer">Jemway — Culinary Companion • Local-first cooking tools • Created by Dylan Castro</div>
+
 </div>
 
 <script>
-// ===== Quotes =====
-const storage={get(k,f){try{const v=localStorage.getItem('jem_'+k);return v?JSON.parse(v):f}catch(e){return f}},set(k,v){try{localStorage.setItem('jem_'+k,JSON.stringify(v))}catch(e){}},clear(){Object.keys(localStorage).filter(k=>k.startsWith('jem_')).forEach(k=>localStorage.removeItem(k));location.reload()}};
-const QUOTES=["Small progress is still progress. Focus on the next small step.","Study with purpose: 25 minutes of focused work > 3 hours of distracted effort.","Active recall beats passive reading. Quiz yourself.","Consistency compounds. Show up today.","Break big tasks into tiny wins — then stack them."];
-const quoteEl=document.getElementById('quote'); const savedQuotesEl=document.getElementById('savedQuotes');
-function randomQuote(){return QUOTES[Math.floor(Math.random()*QUOTES.length)]}
-function renderQuote(){quoteEl.textContent=storage.get('currentQuote',randomQuote())}
-function newQuote(){const q=randomQuote(); storage.set('currentQuote',q); renderQuote()}
-function saveQuote(){const cur=storage.get('currentQuote','').trim(); if(!cur)return; const arr=storage.get('savedQuotes',[]); arr.unshift({text:cur,at:Date.now()}); storage.set('savedQuotes',arr.slice(0,10)); renderSaved()}
-function renderSaved(){const arr=storage.get('savedQuotes',[]); if(!arr.length){savedQuotesEl.textContent='';return;} savedQuotesEl.innerHTML=arr.map(s=>'• '+s.text).join('<br>')}
-document.getElementById('newQuote').onclick=newQuote
-document.getElementById('saveQuote').onclick=saveQuote
-renderQuote(); renderSaved();
+/* =========================================================================
+   Jemway — JavaScript (with SVG logo + 50+ Breakfasts + full hub)
+   - programmatic recipe generation with many breakfast recipes
+   - pantry, matching, substitutions, scaling, grocery aggregation
+   - converters, timers, lessons, import/export, local persistence
+   - integrated logo already in the header
+   ========================================================================= */
 
-// ===== GPA Calculator 0–5.0 =====
-function gradeToGPA5(n){
-  if(n>=95) return 5.0;
-  if(n>=90) return 4.7;
-  if(n>=85) return 4.3;
-  if(n>=80) return 4.0;
-  if(n>=75) return 3.7;
-  if(n>=70) return 3.3;
-  if(n>=65) return 3.0;
-  if(n>=60) return 2.7;
-  if(n>=55) return 2.3;
-  if(n>=50) return 2.0;
-  return 0;
+/* --------------------------
+   Helpers & storage
+   -------------------------- */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const KEY = 'jemway_v2';
+const round = (v,n=2) => Math.round((v + Number.EPSILON) * Math.pow(10,n)) / Math.pow(10,n);
+
+function save(k, v){
+  try{ localStorage.setItem(KEY + '_' + k, JSON.stringify(v)); } catch(e){}
 }
-document.getElementById('calcGPA').onclick=function(){
-  const val=document.getElementById('gpaGrades').value;
-  if(!val.trim()){document.getElementById('gpaResult').textContent='—';return;}
-  const nums=val.split(',').map(x=>parseFloat(x.trim())).filter(x=>!isNaN(x)&&x>=0&&x<=100);
-  if(!nums.length){document.getElementById('gpaResult').textContent='Invalid';return;}
-  const avg=(nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1);
-  const gpa=nums.map(gradeToGPA5).reduce((a,b)=>a+b,0)/nums.length;
-  document.getElementById('gpaResult').textContent=`GPA: ${gpa.toFixed(2)} /5.0 (Avg score: ${avg})`;
+function load(k, d){
+  try{ const v = localStorage.getItem(KEY + '_' + k); return v ? JSON.parse(v) : d; } catch(e){ return d; }
+}
+function downloadJSON(obj, filename='jemway-backup.json'){
+  const blob = new Blob([JSON.stringify(obj,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
-// ===== BMI Calculator =====
-document.getElementById('calcBMI').onclick=function(){
-  const w=parseFloat(document.getElementById('weight').value);
-  const h=parseFloat(document.getElementById('height').value);
-  const unit=document.getElementById('bmiUnit').value;
-  if(isNaN(w)||isNaN(h)||w<=0||h<=0){document.getElementById('bmiResult').textContent='Invalid';return;}
-  let bmi=0;
-  if(unit==='metric'){bmi=w/((h/100)**2)}
-  else{bmi=703*w/(h*h)}
-  let cat='';
-  if(bmi<18.5) cat='Underweight';
-  else if(bmi<25) cat='Normal';
-  else if(bmi<30) cat='Overweight';
-  else cat='Obese';
-  document.getElementById('bmiResult').textContent=`BMI: ${bmi.toFixed(1)} (${cat})`;
+/* --------------------------
+   App state (persistent)
+   -------------------------- */
+const state = {
+  pantry: load('pantry', []),
+  recipes: load('recipes', []),
+  saved: load('saved', []),
+  grocery: load('grocery', []),
+  favorites: load('favorites', []),
+  lessons: [
+    "Salt intensifies flavor — add gradually and taste as you go.",
+    "Let meat rest after cooking to keep juices locked in.",
+    "Use a sharp knife — it's safer and more precise.",
+    "Toast whole spices lightly to release aroma before grinding.",
+    "Acid (lemon/vinegar) brightens finished dishes."
+  ],
+  lessonIndex: load('lessonIndex', 0)
+};
+
+/* --------------------------
+   Build an explicit Breakfast list (50+ items)
+   We'll include a large curated breakfast set, then also generate other categories
+   -------------------------- */
+const breakfastManual = [
+  /* 50+ curated breakfast recipes (ingredients simplified) */
+  {
+    id:'bf-001', category:'Breakfast', title:'Fluffy Pancakes',
+    ingredients:[{name:'flour',qty:200,unit:'g'},{name:'milk',qty:300,unit:'ml'},{name:'egg',qty:1,unit:'pc'},{name:'baking powder',qty:2,unit:'tsp'},{name:'salt',qty:0.5,unit:'tsp'},{name:'butter',qty:20,unit:'g'}],
+    steps:['Combine dry ingredients.','Whisk milk and egg; combine with dry mix.','Melt butter in pan; pour batter and cook until golden.'],
+    tags:['breakfast','baking'], serves:4, time:25, difficulty:'medium'
+  },
+  { id:'bf-002', category:'Breakfast', title:'Classic French Toast', ingredients:[{name:'bread',qty:4,unit:'slices'},{name:'egg',qty:2,unit:'pcs'},{name:'milk',qty:100,unit:'ml'},{name:'cinnamon',qty:0.5,unit:'tsp'},{name:'butter',qty:10,unit:'g'}], steps:['Whisk egg, milk and cinnamon.','Soak bread and pan-fry in butter until golden.'], tags:['breakfast','quick'], serves:2, time:10, difficulty:'easy' },
+  { id:'bf-003', category:'Breakfast', title:'Avocado Toast', ingredients:[{name:'bread',qty:2,unit:'slices'},{name:'avocado',qty:1,unit:'pc'},{name:'salt',qty:0.25,unit:'tsp'},{name:'pepper',qty:0.1,unit:'tsp'}], steps:['Toast bread.','Mash avocado, season and spread on toast.'], tags:['breakfast','vegetarian','quick'], serves:1, time:8, difficulty:'easy' },
+  { id:'bf-004', category:'Breakfast', title:'Overnight Oats (Basic)', ingredients:[{name:'rolled oats',qty:50,unit:'g'},{name:'milk',qty:120,unit:'ml'},{name:'yogurt',qty:50,unit:'g'},{name:'honey',qty:1,unit:'tbsp'}], steps:['Combine all in jar and refrigerate overnight.','Top with fruit and nuts to serve.'], tags:['breakfast','make-ahead','vegetarian'], serves:1, time:10, difficulty:'easy' },
+  { id:'bf-005', category:'Breakfast', title:'Smoothie Bowl', ingredients:[{name:'banana',qty:1,unit:'pc'},{name:'frozen berries',qty:100,unit:'g'},{name:'yogurt',qty:100,unit:'g'},{name:'granola',qty:30,unit:'g'}], steps:['Blend banana, berries and yogurt until smooth.','Pour into bowl and top with granola.'], tags:['breakfast','healthy','vegetarian'], serves:1, time:6, difficulty:'easy' },
+  { id:'bf-006', category:'Breakfast', title:'Spinach & Feta Omelette', ingredients:[{name:'egg',qty:3,unit:'pcs'},{name:'spinach',qty:50,unit:'g'},{name:'feta',qty:30,unit:'g'},{name:'butter',qty:10,unit:'g'}], steps:['Beat eggs.','Sauté spinach, add egg, crumble feta and fold.'], tags:['breakfast','quick'], serves:1, time:8, difficulty:'easy' },
+  { id:'bf-007', category:'Breakfast', title:'Breakfast Burrito', ingredients:[{name:'tortilla',qty:1,unit:'pc'},{name:'eggs',qty:2,unit:'pcs'},{name:'cheese',qty:30,unit:'g'},{name:'salsa',qty:2,unit:'tbsp'}], steps:['Scramble eggs, add cheese.','Place in tortilla with salsa and roll.'], tags:['breakfast','quick'], serves:1, time:10, difficulty:'easy' },
+  { id:'bf-008', category:'Breakfast', title:'Shakshuka (Simple)', ingredients:[{name:'canned tomatoes',qty:400,unit:'g'},{name:'egg',qty:4,unit:'pcs'},{name:'onion',qty:1,unit:'pc'},{name:'paprika',qty:1,unit:'tsp'}], steps:['Sauté onion, add tomatoes and spices.','Make wells, crack eggs and simmer until set.'], tags:['breakfast','vegetarian','one-pan'], serves:2, time:20, difficulty:'medium' },
+  { id:'bf-009', category:'Breakfast', title:'Greek Yogurt Parfait', ingredients:[{name:'greek yogurt',qty:200,unit:'g'},{name:'honey',qty:1,unit:'tbsp'},{name:'granola',qty:40,unit:'g'},{name:'berries',qty:80,unit:'g'}], steps:['Layer yogurt, honey, granola and berries in a glass.'], tags:['breakfast','healthy'], serves:1, time:5, difficulty:'easy' },
+  { id:'bf-010', category:'Breakfast', title:'Chia Pudding', ingredients:[{name:'chia seeds',qty:3,unit:'tbsp'},{name:'milk',qty:200,unit:'ml'},{name:'vanilla',qty:0.5,unit:'tsp'},{name:'maple syrup',qty:1,unit:'tbsp'}], steps:['Mix chia and milk, refrigerate 4+ hours.','Top with fruit.'], tags:['breakfast','make-ahead','vegan'], serves:2, time:10, difficulty:'easy' },
+  { id:'bf-011', category:'Breakfast', title:'Banana Pancakes (2-ingredient)', ingredients:[{name:'banana',qty:1,unit:'pc'},{name:'egg',qty:1,unit:'pc'}], steps:['Mash banana, mix with egg.','Cook small pancakes in butter until golden.'], tags:['breakfast','quick','gluten-free'], serves:1, time:7, difficulty:'easy' },
+  { id:'bf-012', category:'Breakfast', title:'Belgian Waffles', ingredients:[{name:'flour',qty:250,unit:'g'},{name:'milk',qty:300,unit:'ml'},{name:'egg',qty:2,unit:'pcs'},{name:'baking powder',qty:2,unit:'tsp'},{name:'butter',qty:30,unit:'g'}], steps:['Prepare batter.','Cook in waffle iron until golden.'], tags:['breakfast','baking'], serves:3, time:20, difficulty:'medium' },
+  { id:'bf-013', category:'Breakfast', title:'English Breakfast (Simple)', ingredients:[{name:'egg',qty:1,unit:'pc'},{name:'bacon',qty:2,unit:'pcs'},{name:'bread',qty:1,unit:'slice'},{name:'tomato',qty:1,unit:'pc'}], steps:['Fry bacon and tomato, fry egg, toast bread.','Serve together.'], tags:['breakfast','hearty'], serves:1, time:15, difficulty:'easy' },
+  { id:'bf-014', category:'Breakfast', title:'Muesli with Milk', ingredients:[{name:'muesli',qty:60,unit:'g'},{name:'milk',qty:200,unit:'ml'},{name:'banana',qty:1,unit:'pc'}], steps:['Combine muesli and milk, top with sliced banana.'], tags:['breakfast','healthy'], serves:1, time:5, difficulty:'easy' },
+  { id:'bf-015', category:'Breakfast', title:'Savory Oatmeal', ingredients:[{name:'rolled oats',qty:50,unit:'g'},{name:'water',qty:200,unit:'ml'},{name:'egg',qty:1,unit:'pc'},{name:'cheese',qty:20,unit:'g'}], steps:['Cook oats in water, top with a poached egg and cheese.'], tags:['breakfast','quick'], serves:1, time:10, difficulty:'easy' },
+  { id:'bf-016', category:'Breakfast', title:'Eggs Benedict (Simple)', ingredients:[{name:'english muffin',qty:1,unit:'pc'},{name:'egg',qty:1,unit:'pc'},{name:'ham',qty:1,unit:'slice'},{name:'butter',qty:10,unit:'g'}], steps:['Toast muffin, poach egg, assemble with ham and hollandaise (optional).'], tags:['breakfast','brunch'], serves:1, time:15, difficulty:'medium' },
+  { id:'bf-017', category:'Breakfast', title:'Breakfast Sandwich', ingredients:[{name:'bagel',qty:1,unit:'pc'},{name:'egg',qty:1,unit:'pc'},{name:'cheese',qty:20,unit:'g'},{name:'bacon',qty:1,unit:'pc'}], steps:['Cook egg and bacon, assemble on bagel with cheese.'], tags:['breakfast','quick'], serves:1, time:10, difficulty:'easy' },
+  { id:'bf-018', category:'Breakfast', title:'Cottage Cheese & Fruit', ingredients:[{name:'cottage cheese',qty:150,unit:'g'},{name:'honey',qty:1,unit:'tbsp'},{name:'fruit',qty:100,unit:'g'}], steps:['Spoon cottage cheese into bowl, top with honey and fruit.'], tags:['breakfast','healthy'], serves:1, time:3, difficulty:'easy' },
+  { id:'bf-019', category:'Breakfast', title:'Granola Bars (No-Bake)', ingredients:[{name:'oats',qty:150,unit:'g'},{name:'honey',qty:100,unit:'g'},{name:'peanut butter',qty:80,unit:'g'}], steps:['Mix oats, honey and peanut butter, press into pan, chill until firm.'], tags:['breakfast','snack','make-ahead'], serves:8, time:20, difficulty:'easy' },
+  { id:'bf-020', category:'Breakfast', title:'Apple Cinnamon Oatmeal', ingredients:[{name:'rolled oats',qty:60,unit:'g'},{name:'milk',qty:200,unit:'ml'},{name:'apple',qty:1,unit:'pc'},{name:'cinnamon',qty:0.5,unit:'tsp'}], steps:['Cook oats in milk with diced apple and cinnamon.'], tags:['breakfast','warm'], serves:1, time:10, difficulty:'easy' },
+  { id:'bf-021', category:'Breakfast', title:'Huevos Rancheros (Simple)', ingredients:[{name:'tortilla',qty:1,unit:'pc'},{name:'egg',qty:1,unit:'pc'},{name:'canned tomatoes',qty:100,unit:'g'},{name:'beans',qty:100,unit:'g'}], steps:['Warm beans and salsa, fry egg, assemble on tortilla.'], tags:['breakfast','hearty'], serves:1, time:15, difficulty:'medium' },
+  { id:'bf-022', category:'Breakfast', title:'Ricotta Toast with Honey', ingredients:[{name:'bread',qty:2,unit:'slices'},{name:'ricotta',qty:100,unit:'g'},{name:'honey',qty:1,unit:'tbsp'}], steps:['Toast bread, spread ricotta and drizzle honey.'], tags:['breakfast','quick'], serves:1, time:5, difficulty:'easy' },
+  { id:'bf-023', category:'Breakfast', title:'Breakfast Quesadilla', ingredients:[{name:'tortilla',qty:1,unit:'pc'},{name:'egg',qty:1,unit:'pc'},{name:'cheese',qty:30,unit:'g'},{name:'spinach',qty:20,unit:'g'}], steps:['Fill tortilla with scrambled eggs and cheese, fold and crisp on pan.'], tags:['breakfast','quick'], serves:1, time:10, difficulty:'easy' },
+  { id:'bf-024', category:'Breakfast', title:'Tofu Scramble', ingredients:[{name:'tofu',qty:200,unit:'g'},{name:'turmeric',qty:0.5,unit:'tsp'},{name:'spinach',qty:40,unit:'g'},{name:'onion',qty:0.5,unit:'pc'}], steps:['Crumble tofu, sauté with spices and veg until heated.'], tags:['breakfast','vegan'], serves:1, time:12, difficulty:'easy' },
+  { id:'bf-025', category:'Breakfast', title:'Crepes (Basic)', ingredients:[{name:'flour',qty:100,unit:'g'},{name:'milk',qty:200,unit:'ml'},{name:'egg',qty:1,unit:'pc'},{name:'butter',qty:10,unit:'g'}], steps:['Make thin batter, cook in pan, fill sweet or savory.'], tags:['breakfast','baking'], serves:2, time:20, difficulty:'medium' },
+  { id:'bf-026', category:'Breakfast', title:'Breakfast Bowl with Quinoa', ingredients:[{name:'quinoa',qty:100,unit:'g'},{name:'egg',qty:1,unit:'pc'},{name:'avocado',qty:0.5,unit:'pc'},{name:'tomato',qty:1,unit:'pc'}], steps:['Cook quinoa, top with egg (poached), avocado and tomato.'], tags:['breakfast','healthy'], serves:1, time:20, difficulty:'medium' },
+  { id:'bf-027', category:'Breakfast', title:'Masala Omelette', ingredients:[{name:'egg',qty:2,unit:'pcs'},{name:'onion',qty:0.5,unit:'pc'},{name:'tomato',qty:0.5,unit:'pc'},{name:'green chillies',qty:1,unit:'pc'}], steps:['Beat eggs with chopped masala (onion, tomato, chillies) and cook.'], tags:['breakfast','spicy'], serves:1, time:8, difficulty:'easy' },
+  { id:'bf-028', category:'Breakfast', title:'Bagel with Lox', ingredients:[{name:'bagel',qty:1,unit:'pc'},{name:'smoked salmon',qty:50,unit:'g'},{name:'cream cheese',qty:30,unit:'g'},{name:'capers',qty:1,unit:'tsp'}], steps:['Toast bagel, spread cream cheese, top with lox and capers.'], tags:['breakfast','brunch'], serves:1, time:5, difficulty:'easy' },
+  { id:'bf-029', category:'Breakfast', title:'Polenta with Cheese & Egg', ingredients:[{name:'polenta',qty:80,unit:'g'},{name:'water',qty:400,unit:'ml'},{name:'cheese',qty:30,unit:'g'},{name:'egg',qty:1,unit:'pc'}], steps:['Cook polenta until creamy, top with cheese and a fried egg.'], tags:['breakfast','comfort'], serves:1, time:20, difficulty:'medium' },
+  { id:'bf-030', category:'Breakfast', title:'Cinnamon Rolls (Quick)', ingredients:[{name:'pre-made dough',qty:1,unit:'pc'},{name:'cinnamon',qty:1,unit:'tbsp'},{name:'sugar',qty:50,unit:'g'},{name:'butter',qty:20,unit:'g'}], steps:['Roll dough with cinnamon-sugar, bake until golden, glaze if desired.'], tags:['breakfast','baking','treat'], serves:6, time:30, difficulty:'medium' },
+  { id:'bf-031', category:'Breakfast', title:'Breakfast Hash', ingredients:[{name:'potato',qty:200,unit:'g'},{name:'onion',qty:1,unit:'pc'},{name:'bell pepper',qty:1,unit:'pc'},{name:'egg',qty:2,unit:'pcs'}], steps:['Pan-fry diced potato and veg until tender, top with fried eggs.'], tags:['breakfast','hearty'], serves:2, time:25, difficulty:'medium' },
+  { id:'bf-032', category:'Breakfast', title:'Sourdough Toast with Almond Butter', ingredients:[{name:'sourdough',qty:2,unit:'slices'},{name:'almond butter',qty:2,unit:'tbsp'},{name:'banana',qty:1,unit:'pc'}], steps:['Toast sourdough, spread almond butter, top with banana slices.'], tags:['breakfast','quick','healthy'], serves:1, time:5, difficulty:'easy' },
+  { id:'bf-033', category:'Breakfast', title:'Breakfast Fried Rice', ingredients:[{name:'leftover rice',qty:200,unit:'g'},{name:'egg',qty:1,unit:'pc'},{name:'soy sauce',qty:1,unit:'tbsp'},{name:'scallion',qty:1,unit:'pc'}], steps:['Stir-fry rice with egg and soy sauce, top with scallion.'], tags:['breakfast','quick','leftovers'], serves:1, time:10, difficulty:'easy' },
+  { id:'bf-034', category:'Breakfast', title:'Ricotta Pancakes', ingredients:[{name:'ricotta',qty:150,unit:'g'},{name:'flour',qty:100,unit:'g'},{name:'egg',qty:1,unit:'pc'},{name:'milk',qty:100,unit:'ml'}], steps:['Combine ingredients to form batter, cook pancakes until golden.'], tags:['breakfast','baking'], serves:3, time:20, difficulty:'medium' },
+  { id:'bf-035', category:'Breakfast', title:'Mango Lassi Smoothie', ingredients:[{name:'mango',qty:1,unit:'pc'},{name:'yogurt',qty:200,unit:'g'},{name:'milk',qty:50,unit:'ml'},{name:'honey',qty:1,unit:'tbsp'}], steps:['Blend all until smooth.'], tags:['breakfast','drink','vegetarian'], serves:2, time:5, difficulty:'easy' },
+  { id:'bf-036', category:'Breakfast', title:'Egg Muffins (Baked)', ingredients:[{name:'egg',qty:6,unit:'pcs'},{name:'cheese',qty:50,unit:'g'},{name:'spinach',qty:50,unit:'g'},{name:'bell pepper',qty:1,unit:'pc'}], steps:['Mix eggs and fillings, pour into muffin tin, bake until set.'], tags:['breakfast','make-ahead'], serves:6, time:20, difficulty:'easy' },
+  { id:'bf-037', category:'Breakfast', title:'Poached Eggs on Greens', ingredients:[{name:'egg',qty:2,unit:'pcs'},{name:'spinach',qty:100,unit:'g'},{name:'lemon',qty:0.5,unit:'pc'}], steps:['Wilt greens with olive oil and lemon, top with poached eggs.'], tags:['breakfast','healthy'], serves:1, time:12, difficulty:'medium' },
+  { id:'bf-038', category:'Breakfast', title:'Maple Bacon Pancakes', ingredients:[{name:'flour',qty:200,unit:'g'},{name:'milk',qty:300,unit:'ml'},{name:'egg',qty:1,unit:'pc'},{name:'bacon',qty:4,unit:'pcs'},{name:'maple syrup',qty:2,unit:'tbsp'}], steps:['Cook bacon, use drippings lightly, make pancakes and serve with maple.'], tags:['breakfast','treat'], serves:4, time:25, difficulty:'medium' },
+  { id:'bf-039', category:'Breakfast', title:'Coconut Yogurt & Granola', ingredients:[{name:'coconut yogurt',qty:150,unit:'g'},{name:'granola',qty:40,unit:'g'},{name:'mango',qty:1,unit:'pc'}], steps:['Layer coconut yogurt, granola and diced mango.'], tags:['breakfast','vegan'], serves:1, time:5, difficulty:'easy' },
+  { id:'bf-040', category:'Breakfast', title:'Breakfast Polenta with Tomato', ingredients:[{name:'polenta',qty:80,unit:'g'},{name:'canned tomatoes',qty:200,unit:'g'},{name:'basil',qty:1,unit:'tbsp'},{name:'parmesan',qty:20,unit:'g'}], steps:['Cook polenta, top with stewed tomatoes and parmesan.'], tags:['breakfast','comfort'], serves:2, time:25, difficulty:'medium' },
+  { id:'bf-041', category:'Breakfast', title:'Sweet Potato Hash with Egg', ingredients:[{name:'sweet potato',qty:300,unit:'g'},{name:'onion',qty:1,unit:'pc'},{name:'egg',qty:2,unit:'pcs'}], steps:['Dice and pan-fry sweet potato and onion until tender, top with eggs.'], tags:['breakfast','hearty'], serves:2, time:30, difficulty:'medium' },
+  { id:'bf-042', category:'Breakfast', title:'Berry Smoothie', ingredients:[{name:'mixed berries',qty:150,unit:'g'},{name:'banana',qty:1,unit:'pc'},{name:'milk',qty:200,unit:'ml'},{name:'honey',qty:1,unit:'tbsp'}], steps:['Blend all ingredients until smooth.'], tags:['breakfast','drink'], serves:2, time:5, difficulty:'easy' },
+  { id:'bf-043', category:'Breakfast', title:'Pumpkin Spice Oatmeal', ingredients:[{name:'rolled oats',qty:60,unit:'g'},{name:'pumpkin puree',qty:80,unit:'g'},{name:'milk',qty:200,unit:'ml'},{name:'cinnamon',qty:1,unit:'tsp'}], steps:['Cook oats with pumpkin and spices until creamy.'], tags:['breakfast','seasonal'], serves:1, time:10, difficulty:'easy' },
+  { id:'bf-044', category:'Breakfast', title:'Eggs Florentine', ingredients:[{name:'english muffin',qty:1,unit:'pc'},{name:'spinach',qty:50,unit:'g'},{name:'egg',qty:1,unit:'pc'},{name:'hollandaise (opt)',qty:1,unit:'tbsp'}], steps:['Toast muffin, wilt spinach, poach egg, assemble with sauce.'], tags:['breakfast','brunch'], serves:1, time:15, difficulty:'medium' },
+  { id:'bf-045', category:'Breakfast', title:'Peanut Butter Banana Toast', ingredients:[{name:'bread',qty:2,unit:'slices'},{name:'peanut butter',qty:2,unit:'tbsp'},{name:'banana',qty:1,unit:'pc'}], steps:['Toast bread, spread peanut butter, top with banana.'], tags:['breakfast','quick'], serves:1, time:5, difficulty:'easy' },
+  { id:'bf-046', category:'Breakfast', title:'Savoury Dutch Baby', ingredients:[{name:'egg',qty:3,unit:'pcs'},{name:'milk',qty:150,unit:'ml'},{name:'flour',qty:100,unit:'g'},{name:'cheese',qty:50,unit:'g'}], steps:['Blend batter, bake in a hot pan until puffed, top with cheese.'], tags:['breakfast','baking','brunch'], serves:2, time:20, difficulty:'medium' },
+  { id:'bf-047', category:'Breakfast', title:'Cottage Cheese Pancakes', ingredients:[{name:'cottage cheese',qty:150,unit:'g'},{name:'egg',qty:2,unit:'pcs'},{name:'flour',qty:50,unit:'g'}], steps:['Mix ingredients and pan-fry small pancakes.'], tags:['breakfast','protein'], serves:2, time:12, difficulty:'easy' },
+  { id:'bf-048', category:'Breakfast', title:'Savory Yogurt Bowl', ingredients:[{name:'yogurt',qty:150,unit:'g'},{name:'cucumber',qty:50,unit:'g'},{name:'dill',qty:1,unit:'tsp'},{name:'olive oil',qty:1,unit:'tbsp'}], steps:['Mix yogurt with diced cucumber and dill, drizzle olive oil.'], tags:['breakfast','quick','healthy'], serves:1, time:5, difficulty:'easy' },
+  { id:'bf-049', category:'Breakfast', title:'Ham & Cheese Croissant', ingredients:[{name:'croissant',qty:1,unit:'pc'},{name:'ham',qty:1,unit:'slice'},{name:'cheese',qty:20,unit:'g'}], steps:['Slice croissant, fill with ham and cheese, warm in oven.'], tags:['breakfast','treat'], serves:1, time:8, difficulty:'easy' },
+  { id:'bf-050', category:'Breakfast', title:'Lemon Ricotta Pancakes', ingredients:[{name:'ricotta',qty:150,unit:'g'},{name:'flour',qty:120,unit:'g'},{name:'milk',qty:100,unit:'ml'},{name:'lemon zest',qty:1,unit:'tsp'}], steps:['Mix ingredients, cook pancakes until golden.'], tags:['breakfast','baking'], serves:3, time:20, difficulty:'medium' },
+  { id:'bf-051', category:'Breakfast', title:'Savory Porridge with Mushrooms', ingredients:[{name:'oats',qty:60,unit:'g'},{name:'mushrooms',qty:100,unit:'g'},{name:'parmesan',qty:20,unit:'g'},{name:'garlic',qty:1,unit:'clove'}], steps:['Cook oats, sauté mushrooms with garlic, combine and finish with parmesan.'], tags:['breakfast','comfort'], serves:1, time:20, difficulty:'medium' },
+  { id:'bf-052', category:'Breakfast', title:'Green Smoothie', ingredients:[{name:'spinach',qty:50,unit:'g'},{name:'banana',qty:1,unit:'pc'},{name:'apple',qty:1,unit:'pc'},{name:'water',qty:150,unit:'ml'}], steps:['Blend everything until smooth.'], tags:['breakfast','healthy','drink'], serves:1, time:5, difficulty:'easy' }
+];
+
+/* --------------------------
+   Programmatic generation for non-breakfast categories
+   -------------------------- */
+function generateOtherRecipes(count = 120){
+  const categories = ['Lunch','Dinner','Snacks','Dessert','Drinks'];
+  const proteins = ['chicken','beef','pork','tofu','salmon','shrimp','lentils','chickpeas'];
+  const veg = ['tomato','onion','garlic','carrot','bell pepper','spinach','mushroom','zucchini','potatoes','peas','broccoli'];
+  const pantry = ['olive oil','butter','salt','black pepper','soy sauce','vinegar','sugar','flour','milk','cheese','canned tomatoes','cumin','paprika','basil','oregano'];
+  const methods = ['roast','stir-fry','bake','simmer','grill','pan-fry','steam','braise'];
+
+  const recipes = [];
+  for(let i=0;i<count;i++){
+    const cat = categories[i % categories.length];
+    const protein = proteins[Math.floor(Math.random()*proteins.length)];
+    const v1 = veg[Math.floor(Math.random()*veg.length)];
+    const v2 = veg[Math.floor(Math.random()*veg.length)];
+    const pan = pantry[Math.floor(Math.random()*pantry.length)];
+    const method = methods[Math.floor(Math.random()*methods.length)];
+    const serve = [1,2,3,4][Math.floor(Math.random()*4)];
+    const time = 15 + Math.floor(Math.random()*70);
+    const diff = time <= 25 ? 'easy' : (time <= 45 ? 'medium' : 'hard');
+
+    const ingredients = [];
+    ingredients.push({name: protein, qty: protein==='tofu'?200:250, unit:'g'});
+    if(Math.random()>0.2) ingredients.push({name: v1, qty: 1, unit: 'pc'});
+    if(Math.random()>0.3) ingredients.push({name: v2, qty: 80, unit: 'g'});
+    ingredients.push({name: pan, qty: pan.includes('oil')?1:1, unit: pan.includes('oil') ? 'tbsp' : ''});
+    ingredients.push({name: 'salt', qty: 'to taste', unit:''});
+
+    const steps = [];
+    steps.push(`Prep ingredients: chop ${v1}${v2? ' and ' + v2: ''}.`);
+    if(method === 'stir-fry'){
+      steps.push(`Heat ${pan} in a pan, stir-fry ${protein} until nearly cooked.`);
+      steps.push(`Add vegetables and seasoning, toss till done. Serve hot.`);
+    } else if(method === 'roast'){
+      steps.push(`Preheat oven to 200°C, toss ingredients with ${pan} and roast until done.`);
+    } else {
+      steps.push(`Cook using ${method} until ingredients are tender and flavors meld.`);
+    }
+
+    const title = `${method.charAt(0).toUpperCase() + method.slice(1)} ${protein.charAt(0).toUpperCase() + protein.slice(1)} with ${v1}`;
+
+    recipes.push({
+      id: `gen-${cat.toLowerCase()}-${i+1}`,
+      category: cat,
+      title,
+      ingredients,
+      steps,
+      tags: [cat.toLowerCase(), method],
+      serves: serve,
+      time,
+      difficulty: diff
+    });
+  }
+  return recipes;
 }
 
-// ===== Flashcards =====
-let flashcards=storage.get('flashcards',[{q:"Sample Q?",a:"Sample A"}]);
-let fcIndex=0; let showAnswer=false;
-const flashFace=document.getElementById('flashFace');
-function renderFlash(){if(!flashcards.length){flashFace.textContent='No flashcards.'; return;} flashFace.textContent=showAnswer?flashcards[fcIndex].a:flashcards[fcIndex].q}
-document.getElementById('flipFlash').onclick=function(){showAnswer=!showAnswer; renderFlash()}
-document.getElementById('addFlash').onclick=function(){
-  const q=document.getElementById('fcQuestion').value.trim();
-  const a=document.getElementById('fcAnswer').value.trim();
-  if(!q||!a)return;
-  flashcards.push({q,a}); storage.set('flashcards',flashcards);
-  document.getElementById('fcQuestion').value=''; document.getElementById('fcAnswer').value=''; fcIndex=flashcards.length-1; showAnswer=false; renderFlash()
+/* --------------------------
+   Initialize recipes in state
+   -------------------------- */
+if(!state.recipes || state.recipes.length < 80){
+  // merge breakfastManual and generated others
+  const other = generateOtherRecipes(180);
+  // ensure breakfastManual first (explicit curated breakfast list)
+  state.recipes = breakfastManual.concat(other);
+  save('recipes', state.recipes);
 }
-document.getElementById('markKnown').onclick=function(){flashcards.splice(fcIndex,1); storage.set('flashcards',flashcards); fcIndex=Math.max(0,fcIndex-1); showAnswer=false; renderFlash()}
-document.getElementById('clearFlash').onclick=function(){flashcards=[]; storage.set('flashcards',flashcards); renderFlash()}
-renderFlash();
 
-// ===== Habits =====
-let habits=storage.get('habits',[]);
-const habitList=document.getElementById('habitList');
-function renderHabits(){habitList.innerHTML='';habits.forEach((h,i)=>{const div=document.createElement('div');div.className='habit-item';div.innerHTML=`<input type="checkbox" ${h.done?'checked':''} data-id="${i}"> ${h.name}`;habitList.appendChild(div)})}
-habitList.addEventListener('change',e=>{if(e.target.dataset.id!==undefined){const i=parseInt(e.target.dataset.id);habits[i].done=e.target.checked;storage.set('habits',habits)}})
-document.getElementById('addHabit').onclick=function(){const val=document.getElementById('habitInput').value.trim();if(!val)return; habits.push({name:val,done:false});storage.set('habits',habits);document.getElementById('habitInput').value='';renderHabits()}
-renderHabits();
+/* --------------------------
+   Pantry functions
+   -------------------------- */
+function normalizeItemName(name){ return name.trim().toLowerCase(); }
 
-// ===== Pomodoro =====
-let pomoInterval=null,pomoSeconds=1500,pomoCount=0;
-const timerEl=document.getElementById('timer'); const countEl=document.getElementById('pomoCount');
-function renderTimer(){const m=Math.floor(pomoSeconds/60).toString().padStart(2,'0');const s=(pomoSeconds%60).toString().padStart(2,'0');timerEl.textContent=`${m}:${s}`}
-function startPomo(){if(pomoInterval)return; pomoInterval=setInterval(()=>{pomoSeconds--; if(pomoSeconds<=0){pomoCount++;pomoSeconds=1500; clearInterval(pomoInterval); pomoInterval=null} renderTimer(); countEl.textContent=pomoCount},1000)}
-function pausePomo(){clearInterval(pomoInterval);pomoInterval=null}
-function resetPomo(){pomoSeconds=1500;renderTimer()}
-document.getElementById('startPomo').onclick=startPomo
-document.getElementById('pausePomo').onclick=pausePomo
-document.getElementById('resetPomo').onclick=resetPomo
-renderTimer(); countEl.textContent=pomoCount;
+function addPantryItemsFromString(s){
+  const parts = s.split(',').map(p => p.trim()).filter(Boolean);
+  parts.forEach(p=>{
+    let qty = null, unit = '', name = p;
+    const m = p.match(/^(\d+(?:\.\d+)?)(?:\s*([a-zA-Z%]+))?\s+(.*)$/);
+    if(m){ qty = parseFloat(m[1]); unit = m[2] || ''; name = m[3] || name; }
+    else {
+      const m2 = p.match(/^(\d+(?:\.\d+)?)([a-zA-Z]+)\s*(.*)$/);
+      if(m2){ qty = parseFloat(m2[1]); unit = m2[2] || ''; name = m2[3] || name; }
+      else name = p;
+    }
+    name = name.trim();
+    if(!name) return;
+    const normalized = normalizeItemName(name);
+    const existing = state.pantry.find(it => it.name === normalized);
+    if(existing){
+      if(qty && !isNaN(qty) && unit === existing.unit) existing.qty = (existing.qty||0) + qty;
+    } else {
+      state.pantry.push({name:normalized, display: name, qty: qty || null, unit: unit || ''});
+    }
+  });
+  save('pantry', state.pantry);
+  renderPantry();
+}
 
-// ===== Color mode toggle =====
-const modeBtn=document.getElementById('colorMode'); let dark=true;
-modeBtn.onclick=function(){document.body.style.background=dark?'#fff':'#0f1724';document.body.style.color=dark?'#0f1724':'#e6eef8';dark=!dark}
+function renderPantry(){
+  const el = $('#pantryList');
+  el.innerHTML = '';
+  if(!state.pantry.length){
+    el.innerHTML = '<div class="small muted">Pantry is empty. Add items to get suggestions.</div>';
+    $('#pantryPreview').textContent = 'No items yet — add a few staples.';
+    $('#pantryCount').textContent = 0;
+    return;
+  }
+  state.pantry.forEach((it, idx)=>{
+    const div = document.createElement('div'); div.className = 'pantry-item';
+    const left = document.createElement('div');
+    left.innerHTML = `<strong>${it.display || it.name}</strong><div class="small muted">${it.qty ? (it.qty + (it.unit ? ' ' + it.unit : '')) : ''}</div>`;
+    const right = document.createElement('div');
+    right.innerHTML = `<button class="btn" data-idx="${idx}" data-action="remove">Remove</button>`;
+    div.appendChild(left); div.appendChild(right);
+    el.appendChild(div);
+  });
+  el.querySelectorAll('button[data-action="remove"]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const i = parseInt(b.dataset.idx,10);
+      if(i >= 0){ state.pantry.splice(i,1); save('pantry', state.pantry); renderPantry(); }
+    });
+  });
+  $('#pantryPreview').textContent = state.pantry.map(i=>i.display || i.name).slice(0,8).join(', ');
+  $('#pantryCount').textContent = state.pantry.length;
+}
 
-// ===== Reset =====
-document.getElementById('resetStorage').onclick=()=>storage.clear()
+/* --------------------------
+   Recipe matching
+   -------------------------- */
+function matchRecipes(){
+  const pantryNames = state.pantry.map(p=>p.name);
+  const matches = state.recipes.map(r=>{
+    let have = 0;
+    const missing = [];
+    r.ingredients.forEach(ing=>{
+      const nm = normalizeItemName(ing.name);
+      if(pantryNames.includes(nm)) have++;
+      else missing.push(ing);
+    });
+    const score = have / Math.max(1, r.ingredients.length);
+    return {...r, score, missing};
+  });
+  matches.sort((a,b)=> b.score - a.score || a.time - b.time);
+  return matches;
+}
+
+/* --------------------------
+   Rendering recipes
+   -------------------------- */
+function renderRecipes(list){
+  const el = $('#recipesList'); el.innerHTML = '';
+  if(!list.length){ el.innerHTML = '<div class="small muted">No recipes found. Add pantry items or load sample pantry.</div>'; $('#matchCount').textContent = 0; return; }
+  list.forEach(r=>{
+    const div = document.createElement('div'); div.className = 'recipe';
+    const percent = Math.round((r.score || 0) * 100);
+    const catBadge = `<span class="badge" style="margin-right:8px">${r.category || (r.tags && r.tags[0]) || 'General'}</span>`;
+    div.innerHTML = `
+      <h4>${r.title}</h4>
+      <div class="small muted">${catBadge} Time: ${r.time} min • Serves: ${r.serves} • ${r.difficulty} • ${percent}% matched</div>
+      <div style="margin-top:8px" class="small muted">${(r.tags||[]).slice(0,4).join(', ')}</div>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button class="btn" data-id="${r.id}" data-action="view">View</button>
+        <button class="btn" data-id="${r.id}" data-action="save">${state.saved.includes(r.id) ? 'Unsave' : 'Save'}</button>
+        <button class="btn" data-id="${r.id}" data-action="grocery">Add Missing</button>
+      </div>
+    `;
+    el.appendChild(div);
+  });
+  el.querySelectorAll('button').forEach(b=>{
+    const act = b.dataset.action; const id = b.dataset.id;
+    b.addEventListener('click', ()=> {
+      if(act === 'view') openRecipeDetail(id);
+      if(act === 'save') toggleSaveRecipe(id);
+      if(act === 'grocery') addMissingToGrocery(id);
+    });
+  });
+  $('#matchCount').textContent = list.length;
+}
+
+/* --------------------------
+   Substitutions
+   -------------------------- */
+const SUBSTITUTIONS = {
+  'butter': 'margarine or coconut oil',
+  'milk': 'soy milk or almond milk (adjust flavor)',
+  'egg': 'mashed banana (1/4 cup) or flax egg (1 tbsp flax + 3 tbsp water)',
+  'sugar': 'honey or maple syrup (reduce other liquids)',
+  'flour': 'gluten-free flour blend (adjust as needed)',
+  'canned tomatoes': 'fresh cooked tomatoes or passata',
+  'olive oil': 'vegetable oil or avocado oil',
+  'soy sauce': 'tamari or coconut aminos',
+  'chicken': 'tofu or chickpeas for vegetarian'
+};
+function findSubstitute(name){
+  const key = normalizeItemName(name);
+  for(const k in SUBSTITUTIONS) if(key.includes(k)) return SUBSTITUTIONS[k];
+  return 'No obvious substitute; try similar category ingredient';
+}
+
+/* --------------------------
+   Recipe detail & scaling
+   -------------------------- */
+let currentRecipe = null;
+function openRecipeDetail(id){
+  const r = state.recipes.find(x=>x.id===id);
+  if(!r) return alert('Recipe not found');
+  currentRecipe = JSON.parse(JSON.stringify(r));
+  $('#recipeDetailCard').style.display = 'block';
+  $('#recipeDetailCard').scrollIntoView({behavior:'smooth'});
+  $('#detailTitle').textContent = r.title;
+  $('#detailMeta').textContent = `${(r.category? r.category + ' • ' : '')}${r.tags ? r.tags.join(', ') + ' • ' : ''}${r.time} min`;
+  $('#serves').textContent = r.serves;
+  $('#servesBadge').textContent = r.serves;
+  $('#time').textContent = r.time + ' min';
+  $('#difficulty').textContent = r.difficulty;
+  renderIngredientList(currentRecipe.ingredients, currentRecipe.serves);
+  renderSteps(currentRecipe.steps);
+  renderSubstitutions(currentRecipe.ingredients);
+}
+
+function renderIngredientList(ings, serves){
+  const ul = $('#ingList'); ul.innerHTML = '';
+  ings.forEach(ing=>{
+    const li = document.createElement('li');
+    const qty = (ing.qty !== undefined && ing.qty !== null && typeof ing.qty !== 'string') ? ` — ${ing.qty}${ing.unit ? ' ' + ing.unit : ''}` : (ing.qty ? ` — ${ing.qty}` : '');
+    li.textContent = `${ing.name}${qty}`;
+    ul.appendChild(li);
+  });
+}
+
+function renderSteps(steps){
+  const ol = $('#stepList'); ol.innerHTML = '';
+  steps.forEach(s=>{
+    const li = document.createElement('li'); li.textContent = s;
+    ol.appendChild(li);
+  });
+}
+
+function renderSubstitutions(ings){
+  const tbody = $('#subsTable tbody'); tbody.innerHTML = '';
+  ings.forEach(ing=>{
+    const tr = document.createElement('tr');
+    const sub = findSubstitute(ing.name);
+    tr.innerHTML = `<td>${ing.name}</td><td>${sub}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* --------------------------
+   Scale servings
+   -------------------------- */
+let currentServes = 2;
+$('#scaleUp').addEventListener('click', ()=> {
+  if(!currentRecipe) return;
+  currentServes = Math.max(1, parseInt($('#servesBadge').textContent || '2',10) + 1);
+  $('#servesBadge').textContent = currentServes;
+  scaleIngredients(currentServes);
+});
+$('#scaleDown').addEventListener('click', ()=> {
+  if(!currentRecipe) return;
+  currentServes = Math.max(1, parseInt($('#servesBadge').textContent || '2',10) - 1);
+  $('#servesBadge').textContent = currentServes;
+  scaleIngredients(currentServes);
+});
+function scaleIngredients(newServes){
+  if(!currentRecipe) return;
+  const factor = newServes / (currentRecipe.serves || 1);
+  const scaled = currentRecipe.ingredients.map(ing=> {
+    return {...ing, qty: (ing.qty !== undefined && ing.qty !== null && typeof ing.qty === 'number') ? round(ing.qty * factor, 3) : ing.qty};
+  });
+  renderIngredientList(scaled, newServes);
+}
+
+/* --------------------------
+   Save / Saved list
+   -------------------------- */
+function toggleSaveRecipe(id){
+  const idx = state.saved.indexOf(id);
+  if(idx === -1){
+    state.saved.push(id);
+    alert('Recipe saved');
+  } else {
+    state.saved.splice(idx,1);
+    alert('Recipe removed');
+  }
+  save('saved', state.saved);
+  renderSavedList();
+  renderRecipes(matchRecipes());
+}
+function renderSavedList(){
+  const el = $('#savedList'); el.innerHTML = '';
+  if(!state.saved.length){ el.textContent = 'No saved recipes yet'; $('#savedCount').textContent = 0; return; }
+  state.saved.forEach(id=>{
+    const r = state.recipes.find(x=>x.id === id);
+    if(!r) return;
+    const d = document.createElement('div');
+    d.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div>${r.title}</div><div><button class="btn" data-id="${r.id}" data-action="open">Open</button> <button class="btn" data-id="${r.id}" data-action="remove">Remove</button></div></div>`;
+    el.appendChild(d);
+  });
+  el.querySelectorAll('button[data-action]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const act = b.dataset.action; const id = b.dataset.id;
+      if(act === 'open') openRecipeDetail(id);
+      if(act === 'remove'){
+        const i = state.saved.indexOf(id);
+        if(i > -1) state.saved.splice(i,1);
+        save('saved', state.saved);
+        renderSavedList();
+        renderRecipes(matchRecipes());
+      }
+    });
+  });
+  $('#savedCount').textContent = state.saved.length;
+}
+
+/* --------------------------
+   Grocery aggregation
+   -------------------------- */
+function addMissingToGrocery(id){
+  const r = state.recipes.find(x=>x.id === id);
+  if(!r) return;
+  const pantryNames = state.pantry.map(p=>p.name);
+  r.ingredients.forEach(ing=>{
+    const nm = normalizeItemName(ing.name);
+    if(!pantryNames.includes(nm)){
+      if(!state.grocery.find(g => g.name === nm)) state.grocery.push({name: nm, qty: (ing.qty && typeof ing.qty === 'number') ? ing.qty : null, unit: ing.unit || ''});
+    }
+  });
+  save('grocery', state.grocery);
+  renderGrocery();
+  alert('Missing items added to grocery list');
+}
+function renderGrocery(){
+  const el = $('#groceryList'); el.innerHTML = '';
+  if(!state.grocery.length){ el.textContent = 'Grocery list is empty'; $('#groceryCount').textContent = 0; return; }
+  state.grocery.forEach((g, idx)=>{
+    const div = document.createElement('div');
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div>${g.name}${g.qty ? ' — ' + g.qty + ' ' + g.unit : ''}</div><div><button class="btn" data-idx="${idx}" data-action="remove">Remove</button></div></div>`;
+    el.appendChild(div);
+  });
+  el.querySelectorAll('button[data-action="remove"]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const i = parseInt(b.dataset.idx,10);
+      if(i>-1){ state.grocery.splice(i,1); save('grocery', state.grocery); renderGrocery(); }
+    });
+  });
+  $('#groceryCount').textContent = state.grocery.length;
+}
+
+/* --------------------------
+   Measurement conversions
+   -------------------------- */
+const UNIT_MAP = {
+  'cup': 240,
+  'tbsp': 15,
+  'tsp': 5,
+  'ml': 1,
+  'l': 1000,
+  'g': 1,
+  'kg': 1000,
+  'oz': 28.3495,
+  'lb': 453.592
+};
+function convertMeasure(input, toUnit){
+  const m = input.trim().match(/^([\d\.\/]+)\s*([a-zA-Z]+)$/);
+  if(!m) return null;
+  const amountStr = m[1]; const fromUnit = m[2].toLowerCase();
+  let amount = 0;
+  if(amountStr.includes('/')){
+    const parts = amountStr.split('/');
+    amount = parseFloat(parts[0]) / parseFloat(parts[1]);
+  } else amount = parseFloat(amountStr);
+  if(isNaN(amount)) return null;
+  const fromVal = UNIT_MAP[fromUnit];
+  const toVal = UNIT_MAP[toUnit];
+  if(!fromVal || !toVal) return null;
+  const base = amount * fromVal;
+  const result = base / toVal;
+  return {value: round(result,3), unit: toUnit};
+}
+$('#measRun').addEventListener('click', ()=> {
+  const input = $('#measInput').value.trim(); const to = $('#measTo').value;
+  if(!input) return alert('Enter a measurement like "1 cup" or "200 g"');
+  const res = convertMeasure(input, to);
+  $('#measResult').textContent = res ? `${res.value} ${res.unit}` : 'Conversion unavailable';
+});
+$('#measClear').addEventListener('click', ()=> { $('#measInput').value=''; $('#measResult').textContent='—'; });
+
+$('#toF').addEventListener('click', ()=> {
+  const c = parseFloat($('#tempQuick').value);
+  if(isNaN(c)) return alert('Enter °C value');
+  const f = (c * 9/5) + 32;
+  alert(`${c} °C = ${round(f)} °F`);
+});
+$('#toOz').addEventListener('click', ()=> {
+  const g = parseFloat($('#weightQuick').value);
+  if(isNaN(g)) return alert('Enter grams');
+  const oz = g / 28.3495;
+  alert(`${g} g = ${round(oz)} oz`);
+});
+
+/* --------------------------
+   Timer logic
+   -------------------------- */
+let kitchenTimer = null;
+function updateTimerDisplay(sec){
+  const m = Math.floor(sec / 60); const s = sec % 60;
+  $('#timerBadge').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+}
+$('#startKitchenTimer').addEventListener('click', ()=> {
+  const s = parseInt($('#timerSeconds').value,10) || 60;
+  let remaining = s;
+  if(kitchenTimer) clearInterval(kitchenTimer);
+  updateTimerDisplay(remaining);
+  kitchenTimer = setInterval(()=>{
+    remaining--;
+    updateTimerDisplay(remaining);
+    if(remaining <= 0){ clearInterval(kitchenTimer); kitchenTimer = null; alert('Timer finished'); updateTimerDisplay(0); }
+  }, 1000);
+});
+$('#stopKitchenTimer').addEventListener('click', ()=> {
+  if(kitchenTimer){ clearInterval(kitchenTimer); kitchenTimer = null; alert('Timer stopped'); }
+});
+
+/* --------------------------
+   Search, filters, chips
+   -------------------------- */
+$('#runSearch').addEventListener('click', ()=> {
+  const q = $('#searchRecipes').value.trim().toLowerCase();
+  const difficulty = $('#difficultyFilter').value;
+  const category = $('#categoryFilter').value;
+  const matches = matchRecipes().filter(r=>{
+    if(category !== 'all' && (r.category || 'General') !== category) return false;
+    if(q && !r.title.toLowerCase().includes(q) && !(r.tags||[]).join(' ').includes(q)) return false;
+    if(difficulty !== 'any' && r.difficulty !== difficulty) return false;
+    return true;
+  });
+  renderRecipes(matches);
+});
+$('#moreRecipes').addEventListener('click', ()=> { renderRecipes(matchRecipes().slice(0, Math.min(matchRecipes().length, 30))); });
+$('#shuffleRecipes').addEventListener('click', ()=> { const arr = matchRecipes().sort(()=>Math.random()-0.5); renderRecipes(arr); });
+$$('.chip').forEach(ch=> ch.addEventListener('click', ()=> { $('#searchRecipes').value = ch.dataset.suggest || ''; $('#runSearch').click(); }));
+
+/* --------------------------
+   Adding pantry items
+   -------------------------- */
+$('#addPantry').addEventListener('click', ()=> {
+  const s = $('#pantryInput').value.trim();
+  if(!s) return alert('Enter pantry items (comma separated)');
+  addPantryItemsFromString(s);
+  $('#pantryInput').value = '';
+  renderPantry();
+});
+$('#clearPantry').addEventListener('click', ()=> { if(confirm('Clear pantry input?')) $('#pantryInput').value = ''; });
+$('#clearPantryAll').addEventListener('click', ()=> { if(confirm('Clear entire pantry?')){ state.pantry = []; save('pantry', state.pantry); renderPantry(); } });
+
+/* --------------------------
+   Import / Export
+   -------------------------- */
+$('#btnExport').addEventListener('click', ()=> {
+  const snap = {pantry: state.pantry, recipes: state.recipes, saved: state.saved, grocery: state.grocery, favorites: state.favorites};
+  downloadJSON(snap, 'jemway-backup-' + new Date().toISOString().slice(0,10) + '.json');
+});
+$('#btnImport').addEventListener('click', ()=> {
+  const input = document.createElement('input'); input.type='file'; input.accept='application/json';
+  input.addEventListener('change', (e)=>{
+    const f = e.target.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=> {
+      try{
+        const obj = JSON.parse(reader.result);
+        if(obj.pantry) state.pantry = obj.pantry;
+        if(obj.recipes) state.recipes = obj.recipes;
+        if(obj.saved) state.saved = obj.saved;
+        if(obj.grocery) state.grocery = obj.grocery;
+        if(obj.favorites) state.favorites = obj.favorites;
+        save('pantry', state.pantry); save('recipes', state.recipes); save('saved', state.saved); save('grocery', state.grocery); save('favorites', state.favorites);
+        renderPantry(); renderRecipes(matchRecipes()); renderSavedList(); renderGrocery();
+        alert('Import complete');
+      } catch(e){ alert('Invalid file or parse error'); }
+    };
+    reader.readAsText(f);
+  });
+  input.click();
+});
+
+/* --------------------------
+   Lessons rendering
+   -------------------------- */
+function renderLessonsGrid(){
+  const el = $('#lessonsGrid'); el.innerHTML = '';
+  for(let i=0;i<3;i++){
+    const idx = (state.lessonIndex + i) % state.lessons.length;
+    const panel = document.createElement('div'); panel.className = 'panel';
+    panel.innerHTML = `<strong>${state.lessons[idx]}</strong><div class="small muted" style="margin-top:6px">Quick technique</div>`;
+    el.appendChild(panel);
+  }
+  $('#lessonIndex').textContent = state.lessonIndex + 1;
+}
+$('#nextLesson').addEventListener('click', ()=> { state.lessonIndex = (state.lessonIndex + 1) % state.lessons.length; save('lessonIndex', state.lessonIndex); renderLessonsGrid(); });
+$('#prevLesson').addEventListener('click', ()=> { state.lessonIndex = (state.lessonIndex - 1 + state.lessons.length) % state.lessons.length; save('lessonIndex', state.lessonIndex); renderLessonsGrid(); });
+renderLessonsGrid();
+
+/* --------------------------
+   Inspiration
+   -------------------------- */
+const INSPOS = [
+  'Lemon + Thyme + Garlic — brightens roasted veg or fish',
+  'Soy + Sesame + Scallion — fast umami sauce',
+  'Cumin + Paprika + Coriander — warm spice blend for chickpeas',
+  'Butter + Sage — simple and rich for pasta',
+  'Honey + Mustard + Apple Cider — excellent glaze for roast',
+  'Mint + Cucumber + Yogurt — cooling combo for warm days',
+  'Peanut butter + Banana + Oats — hearty quick bowl'
+];
+function newInspiration(){ $('#dailyInspo').textContent = INSPOS[Math.floor(Math.random()*INSPOS.length)]; }
+$('#newInspo').addEventListener('click', ()=> newInspiration());
+$('#saveInspo').addEventListener('click', ()=> { const t = $('#dailyInspo').textContent; if(!t) return; state.favorites = state.favorites || []; state.favorites.push({text: t, at: new Date().toISOString()}); save('favorites', state.favorites); alert('Inspiration saved'); });
+newInspiration();
+
+/* --------------------------
+   Cook mode
+   -------------------------- */
+$('#enterCookMode').addEventListener('click', ()=> {
+  if(!currentRecipe) return alert('Open a recipe first');
+  $('#cookMode').style.display = 'block';
+  $('#recipeDetailCard').style.display = 'none';
+  renderCookMode(currentRecipe);
+});
+function renderCookMode(recipe){
+  $('#cookTitle').textContent = 'Cook: ' + recipe.title;
+  const el = $('#cookSteps'); el.innerHTML = '';
+  recipe.steps.forEach((s, idx)=>{
+    const div = document.createElement('div');
+    div.style.padding='12px'; div.style.marginBottom='8px'; div.style.borderRadius='8px'; div.style.background='rgba(255,255,255,0.01)';
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Step ${idx+1}</strong></div><div><button class="btn" data-step="${idx}" data-action="start">Start Timer</button></div></div><div class="small muted" style="margin-top:8px">${s}</div>`;
+    el.appendChild(div);
+  });
+  el.querySelectorAll('button[data-action="start"]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const sidx = parseInt(b.dataset.step,10);
+      const duration = prompt('Enter seconds for this step (default 60):','60');
+      const sec = parseInt(duration,10) || 60;
+      startStepTimer(sec, sidx);
+    });
+  });
+}
+let stepTimerInterval = null;
+function startStepTimer(sec, stepIdx){
+  let remaining = sec;
+  if(stepTimerInterval) clearInterval(stepTimerInterval);
+  alert(`Starting timer for step ${stepIdx + 1}: ${sec} seconds`);
+  stepTimerInterval = setInterval(()=>{
+    remaining--;
+    if(remaining <= 0){ clearInterval(stepTimerInterval); stepTimerInterval = null; alert('Step timer done'); }
+  }, 1000);
+}
+$('#exitCook').addEventListener('click', ()=> { $('#cookMode').style.display = 'none'; $('#recipeDetailCard').style.display = 'block'; });
+
+/* --------------------------
+   Grocery export / clear
+   -------------------------- */
+$('#exportGrocery').addEventListener('click', ()=> {
+  if(!state.grocery.length) return alert('Grocery list is empty');
+  const txt = state.grocery.map(g => `${g.name}${g.qty ? ' — ' + g.qty + ' ' + g.unit : ''}`).join('\n');
+  const blob = new Blob([txt], {type:'text/plain'}); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'grocery.txt'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+$('#clearGrocery').addEventListener('click', ()=> { if(confirm('Clear grocery list?')){ state.grocery = []; save('grocery', state.grocery); renderGrocery(); } });
+
+/* --------------------------
+   Sample pantry loader
+   -------------------------- */
+$('#importSample').addEventListener('click', ()=> {
+  state.pantry = [
+    {name:'eggs', display:'Eggs', qty:6, unit:'pcs'},
+    {name:'flour', display:'Flour', qty:1000, unit:'g'},
+    {name:'milk', display:'Milk', qty:1000, unit:'ml'},
+    {name:'olive oil', display:'Olive Oil', qty:250, unit:'ml'},
+    {name:'canned tomatoes', display:'Canned Tomatoes', qty:400, unit:'g'},
+    {name:'garlic', display:'Garlic', qty:4, unit:'cloves'}
+  ];
+  save('pantry', state.pantry);
+  renderPantry(); renderRecipes(matchRecipes());
+  alert('Sample pantry loaded');
+});
+
+/* --------------------------
+   Save, import/export wiring
+   -------------------------- */
+$('#btnSave').addEventListener('click', ()=> {
+  save('pantry', state.pantry); save('recipes', state.recipes); save('saved', state.saved); save('grocery', state.grocery); save('favorites', state.favorites);
+  alert('Jemway state saved locally');
+});
+$('#btnExport').addEventListener('click', ()=> {
+  const snap = {pantry: state.pantry, recipes: state.recipes, saved: state.saved, grocery: state.grocery, favorites: state.favorites};
+  downloadJSON(snap, 'jemway-backup-' + new Date().toISOString().slice(0,10) + '.json');
+});
+$('#btnImport').addEventListener('click', ()=> {
+  const input = document.createElement('input'); input.type='file'; input.accept='application/json';
+  input.addEventListener('change', (e)=>{
+    const f = e.target.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=> {
+      try{
+        const obj = JSON.parse(reader.result);
+        if(obj.pantry) state.pantry = obj.pantry;
+        if(obj.recipes) state.recipes = obj.recipes;
+        if(obj.saved) state.saved = obj.saved;
+        if(obj.grocery) state.grocery = obj.grocery;
+        if(obj.favorites) state.favorites = obj.favorites;
+        save('pantry', state.pantry); save('recipes', state.recipes); save('saved', state.saved); save('grocery', state.grocery); save('favorites', state.favorites);
+        renderPantry(); renderRecipes(matchRecipes()); renderSavedList(); renderGrocery();
+        alert('Import complete');
+      } catch(e){ alert('Invalid file or parse error'); }
+    };
+    reader.readAsText(f);
+  });
+  input.click();
+});
+
+/* --------------------------
+   Theme toggle
+   -------------------------- */
+$('#btnTheme').addEventListener('click', ()=> { document.body.classList.toggle('light'); });
+
+/* --------------------------
+   Small UI wiring and shortcuts
+   -------------------------- */
+$('#measInput').addEventListener('keydown', (e)=> { if(e.key === 'Enter') $('#measRun').click(); });
+$('#searchRecipes').addEventListener('keydown', (e)=> { if(e.key === 'Enter') $('#runSearch').click(); });
+$('#pantryInput').addEventListener('keydown', (e)=> { if(e.key === 'Enter') $('#addPantry').click(); });
+window.addEventListener('keydown', (e)=> { if(e.ctrlKey && e.key === 's'){ e.preventDefault(); $('#btnSave').click(); } });
+
+/* --------------------------
+   Initial render
+   -------------------------- */
+renderPantry();
+renderRecipes(matchRecipes());
+renderSavedList();
+renderGrocery();
+renderLessonsGrid();
+newInspiration();
+
+/* --------------------------
+   Console
+   -------------------------- */
+console.log('Jemway ready — Created by Dylan Castro • Recipes:', state.recipes.length);
 </script>
 </body>
 </html>
