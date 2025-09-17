@@ -63,6 +63,7 @@
   .btn.primary{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));border:0;color:black}
   .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
   .btn.small{padding:6px 8px;font-size:13px}
+  .btn.danger{background:linear-gradient(90deg,var(--danger),#d94b4b);border:0;color:black}
 
   /* Cards */
   .card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow);transition:transform .14s var(--ease), opacity .3s}
@@ -110,6 +111,10 @@
   .hidden{display:none}
   a.link{color:var(--accent-2);text-decoration:none;font-weight:700}
   .footer{grid-column:1/-1;text-align:center;color:var(--muted);margin-top:18px}
+
+  /* community list tweaks */
+  .community-card { background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); margin-bottom:10px; }
+  .mono { font-family: var(--mono); font-size:13px; color:var(--muted); }
 </style>
 </head>
 <body>
@@ -287,6 +292,20 @@
           <button class="btn" id="restoreFromClipboard">Restore</button>
         </div>
       </div>
+
+      <!-- COMMUNITY RECIPES CARD -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Community Recipes</strong><div class="small muted">Shared by users — view, post (logged-in), delete your own</div></div>
+          <div class="badge" id="communityCount">-</div>
+        </div>
+        <div style="height:12px"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="btnViewCommunity">View</button>
+          <button class="btn primary" id="btnNewCommunity">Post</button>
+        </div>
+      </div>
+
     </aside>
 
     <div class="footer muted" style="grid-column:1/-1;margin-top:10px;">
@@ -347,12 +366,60 @@
     </div>
   </div>
 
+  <!-- Community modal -->
+  <div id="communityModal" class="modal" aria-hidden="true">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3 style="margin:0">Community Recipes</h3>
+          <div class="small muted">Recipes shared by the community. Click a recipe to read full details.</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn" id="closeCommunityModal">Close</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <input id="communitySearch" class="input" placeholder="Search title or ingredient">
+          <button class="btn" id="communityRefresh">Refresh</button>
+          <div style="flex:1"></div>
+          <div class="small muted">Logged-in users can post & delete their own recipes.</div>
+        </div>
+        <div id="communityList" class="list-compact"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post Community modal -->
+  <div id="postCommunityModal" class="modal" aria-hidden="true">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3 style="margin:0">Post a Community Recipe</h3>
+          <div class="small muted">Title, ingredients (one per line), and detailed instructions</div>
+        </div>
+        <div><button class="btn" id="closePostCommunity">Close</button></div>
+      </div>
+
+      <div style="margin-top:12px;display:grid;gap:8px">
+        <input id="newCommTitle" class="input" placeholder="Recipe title">
+        <textarea id="newCommIngredients" class="input" rows="4" placeholder="Ingredients — one per line"></textarea>
+        <textarea id="newCommInstructions" class="input" rows="6" placeholder="Step-by-step instructions"></textarea>
+        <div style="display:flex;gap:8px">
+          <button class="btn primary" id="postCommSubmit">Post</button>
+          <button class="btn ghost" id="postCommCancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
 /* =================================================================================
-   Jemway — Full merged script
+   Jemway — Full merged script with Community Recipes
    - Dual-mode persistence (Supabase profiles <-> localStorage)
-   - Forgot password support
-   - Cleaner recipe instructions
+   - Community recipes: view, post (logged-in), delete own
+   - Forgot password, timers, search, profiles, etc.
    ================================================================================= */
 
 /* ========================
@@ -379,6 +446,7 @@ const $ = (sel, root=document)=> root.querySelector(sel);
 const $$ = (sel, root=document)=> Array.from((root||document).querySelectorAll(sel));
 function humanTime(sec){ const m=Math.floor(sec/60).toString().padStart(2,'0'); const s=Math.floor(sec%60).toString().padStart(2,'0'); return `${m}:${s}`; }
 function normalize(str){ return (str||'').toString().trim().toLowerCase(); }
+function escapeHTML(str){ return (str||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 /* ========================
    App state (initial read from localStorage as fallback)
@@ -390,15 +458,14 @@ const state = {
   grocery: JSON.parse(localStorage.getItem(KEY + '_grocery') || '[]'),
   favorites: JSON.parse(localStorage.getItem(KEY + '_favorites') || '[]'),
   profiles: JSON.parse(localStorage.getItem(KEY + '_profiles') || '{}'),
-  lessonIndex: JSON.parse(localStorage.getItem(KEY + '_lessonIndex') || '0')
+  lessonIndex: JSON.parse(localStorage.getItem(KEY + '_lessonIndex') || '0'),
+  community: []
 };
+
+let currentUser = null;
 
 /* ========================
    Dual-mode persistence functions
-   - saveState() writes pantry, saved, grocery, favorites, profiles to cloud when logged in,
-     otherwise writes to localStorage.
-   - loadState() pulls from cloud when logged in, otherwise from localStorage.
-   - On first login, if cloud has no data but local does, we push local -> cloud so user doesn't lose data.
    ======================== */
 
 async function saveState(){ // non-blocking usage OK
@@ -411,7 +478,6 @@ async function saveState(){ // non-blocking usage OK
   };
 
   if(!supabase) {
-    // fallback to local for safety
     localStorage.setItem(KEY_STATE, JSON.stringify(payload));
     localStorage.setItem(KEY + '_pantry', JSON.stringify(state.pantry));
     localStorage.setItem(KEY + '_saved', JSON.stringify(state.saved));
@@ -437,7 +503,6 @@ async function saveState(){ // non-blocking usage OK
       localStorage.setItem(KEY + '_favorites', JSON.stringify(state.favorites));
       localStorage.setItem(KEY + '_profiles', JSON.stringify(state.profiles));
     } else {
-      // guest -> local
       localStorage.setItem(KEY_STATE, JSON.stringify(payload));
       localStorage.setItem(KEY + '_pantry', JSON.stringify(state.pantry));
       localStorage.setItem(KEY + '_saved', JSON.stringify(state.saved));
@@ -452,25 +517,19 @@ async function saveState(){ // non-blocking usage OK
 }
 
 async function loadState(){
-  // Try cloud if logged in
   try {
     if(supabase){
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData?.session?.user || null;
       if(user){
-        // fetch cloud profile
+        currentUser = user;
         const { data: profile, error } = await supabase.from('profiles').select('data').eq('id', user.id).single();
-        if(error && error.code !== 'PGRST116') { // don't spam errors for missing rows
-          console.warn('loadState supabase error:', error);
-        }
         if(profile && profile.data){
-          // cloud has authoritative data — load it
           state.pantry = profile.data.pantry || [];
           state.saved = profile.data.saved || [];
           state.grocery = profile.data.grocery || [];
           state.favorites = profile.data.favorites || [];
           state.profiles = profile.data.profiles || {};
-          // reflect locally too
           localStorage.setItem(KEY_STATE, JSON.stringify(profile.data));
           localStorage.setItem(KEY + '_pantry', JSON.stringify(state.pantry));
           localStorage.setItem(KEY + '_saved', JSON.stringify(state.saved));
@@ -479,14 +538,12 @@ async function loadState(){
           localStorage.setItem(KEY + '_profiles', JSON.stringify(state.profiles));
           return;
         } else {
-          // no cloud data found — if local guest data exists, push it to cloud to avoid data loss
+          // no cloud data — push local if present
           const raw = localStorage.getItem(KEY_STATE);
           if(raw){
             try {
               const localPayload = JSON.parse(raw);
-              // upsert local payload to cloud
               await supabase.from('profiles').upsert({ id: user.id, data: localPayload, updated_at: new Date() });
-              // ensure state reflects local (already in local)
               state.pantry = localPayload.pantry || state.pantry;
               state.saved = localPayload.saved || state.saved;
               state.grocery = localPayload.grocery || state.grocery;
@@ -497,16 +554,16 @@ async function loadState(){
               console.warn('invalid local payload when pushing to cloud', e);
             }
           }
-          // else leave state as-is (local defaults)
         }
+      } else {
+        currentUser = null;
       }
     }
   } catch(e){
     console.warn('loadState encountered error', e);
-    // continue to fallback
   }
 
-  // Fallback: load from localStorage (guest)
+  // fallback -- local only
   try {
     const raw = localStorage.getItem(KEY_STATE);
     if(raw){
@@ -517,7 +574,6 @@ async function loadState(){
       state.favorites = obj.favorites || state.favorites;
       state.profiles = obj.profiles || state.profiles;
     } else {
-      // Also support older individual keys
       state.pantry = JSON.parse(localStorage.getItem(KEY + '_pantry') || JSON.stringify(state.pantry));
       state.saved = JSON.parse(localStorage.getItem(KEY + '_saved') || JSON.stringify(state.saved));
       state.grocery = JSON.parse(localStorage.getItem(KEY + '_grocery') || JSON.stringify(state.grocery));
@@ -531,7 +587,6 @@ async function loadState(){
 
 /* ========================
    Seed recipes (curated + generator)
-   - I improved the manual breakfast recipes with clearer steps and timings
    ======================== */
 const breakfastManual = [
   { id:'bf-001', category:'Breakfast', title:'Fluffy Pancakes', ingredients:[
@@ -646,7 +701,7 @@ function renderPantry(){
   }
   state.pantry.forEach((it, idx)=>{
     const node = document.createElement('div'); node.className='list-item';
-    node.innerHTML = `<div><strong>${it.display || it.name}</strong><div class="small muted">${it.qty ? (it.qty + (it.unit ? ' ' + it.unit : '')) : ''}</div></div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
+    node.innerHTML = `<div><strong>${escapeHTML(it.display || it.name)}</strong><div class="small muted">${it.qty ? (escapeHTML(it.qty + (it.unit ? ' ' + it.unit : ''))) : ''}</div></div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
     el.appendChild(node);
   });
   $$('#pantryList button[data-action="remove"]').forEach(b=>{
@@ -733,9 +788,9 @@ function renderRecipes(list){
     card.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="flex:1">
-          <h4 style="margin:0">${r.title}</h4>
-          <div class="rmeta">${r.category || (r.tags && r.tags[0]) || 'General'} • ${r.time} min • Serves: ${r.serves || '-'} • ${r.difficulty || '-'}</div>
-          <div style="margin-top:8px" class="small muted">Missing: ${(r.missing||[]).slice(0,4).join(', ') || '—'}</div>
+          <h4 style="margin:0">${escapeHTML(r.title)}</h4>
+          <div class="rmeta">${escapeHTML(r.category || (r.tags && r.tags[0]) || 'General')} • ${r.time} min • Serves: ${r.serves || '-'} • ${r.difficulty || '-'}</div>
+          <div style="margin-top:8px" class="small muted">Missing: ${(r.missing||[]).slice(0,4).map(escapeHTML).join(', ') || '—'}</div>
         </div>
         <div style="margin-left:12px;text-align:right">
           <div class="badge">${percent}%</div>
@@ -798,15 +853,14 @@ function openRecipeDetail(id){
   // ingredients
   const ing = $('#ingList'); ing.innerHTML = '';
   (r.ingredients || []).forEach(i=>{
-    const li = document.createElement('li');
-    li.textContent = (i.name || i) + (i.qty && typeof i.qty !== 'string' ? ` — ${i.qty}${i.unit? ' '+i.unit : ''}` : (i.qty ? ` — ${i.qty}` : ''));
+    const li = document.createElement('li'); li.textContent = (i.name || i) + (i.qty && typeof i.qty !== 'string' ? ` — ${i.qty}${i.unit? ' '+i.unit : ''}` : (i.qty ? ` — ${i.qty}` : ''));
     ing.appendChild(li);
   });
   // steps + attach step timers
   const steps = $('#stepList'); steps.innerHTML = '';
   (r.steps||[]).forEach((s, idx)=>{
     const li = document.createElement('li');
-    li.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:flex-start"><div>${s}</div><div><button class="btn small" data-step="${idx}" data-action="start-step">Start timer</button></div></div>`;
+    li.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:flex-start"><div>${escapeHTML(s)}</div><div><button class="btn small" data-step="${idx}" data-action="start-step">Start timer</button></div></div>`;
     steps.appendChild(li);
   });
   // substitutions
@@ -814,7 +868,7 @@ function openRecipeDetail(id){
   (r.ingredients||[]).forEach(i=>{
     const name = typeof i === 'string' ? i : i.name;
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td style="padding:8px 6px">${name}</td><td style="padding:8px 6px">${findSubstitute(name)}</td>`;
+    tr.innerHTML = `<td style="padding:8px 6px">${escapeHTML(name)}</td><td style="padding:8px 6px">${escapeHTML(findSubstitute(name))}</td>`;
     subs.appendChild(tr);
   });
 
@@ -840,7 +894,7 @@ $('#enterCookMode').addEventListener('click', ()=> {
   const container = $('#cookSteps'); container.innerHTML = '';
   (currentRecipe.steps||[]).forEach((s, idx)=>{
     const div = document.createElement('div'); div.className='step';
-    div.innerHTML = `<h4>Step ${idx+1}</h4><p>${s}</p><div style="margin-top:8px"><button class="btn primary" data-idx="${idx}" data-action="step-start">Start Timer</button></div>`;
+    div.innerHTML = `<h4>Step ${idx+1}</h4><p>${escapeHTML(s)}</p><div style="margin-top:8px"><button class="btn primary" data-idx="${idx}" data-action="step-start">Start Timer</button></div>`;
     container.appendChild(div);
   });
   // attach timers
@@ -904,7 +958,7 @@ function renderSavedList(){
     const r = findRecipeById(id);
     if(!r) return;
     const d = document.createElement('div'); d.className='list-item';
-    d.innerHTML = `<div>${r.title} <div class="small muted">• ${r.time} min</div></div><div><button class="btn small" data-id="${r.id}" data-action="open">Open</button> <button class="btn small" data-id="${r.id}" data-action="remove">Remove</button></div>`;
+    d.innerHTML = `<div>${escapeHTML(r.title)} <div class="small muted">• ${r.time} min</div></div><div><button class="btn small" data-id="${r.id}" data-action="open">Open</button> <button class="btn small" data-id="${r.id}" data-action="remove">Remove</button></div>`;
     el.appendChild(d);
   });
   $$('#savedList button').forEach(b=>{
@@ -939,7 +993,7 @@ function renderGrocery(){
   if(!state.grocery || !state.grocery.length){ el.textContent = 'Grocery list is empty'; $('#groceryCount').textContent = 0; return; }
   state.grocery.forEach((g, idx)=>{
     const div = document.createElement('div'); div.className='list-item';
-    div.innerHTML = `<div>${g.name}</div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
+    div.innerHTML = `<div>${escapeHTML(g.name)}</div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
     el.appendChild(div);
   });
   $$('#groceryList button[data-action="remove"]').forEach(b=>{
@@ -963,7 +1017,6 @@ $('#clearGrocery').addEventListener('click', ()=> {
 
 /* ========================
    Profiles & backup (user-named snapshots)
-   - these are stored in state.profiles and included in saveState() so they sync to cloud
    ======================== */
 function renderProfiles(){
   const container = $('#profilesContainer'); container.innerHTML = '';
@@ -972,7 +1025,7 @@ function renderProfiles(){
   names.forEach(name=>{
     const p = state.profiles[name];
     const row = document.createElement('div'); row.className='list-item';
-    row.innerHTML = `<div><strong>${name}</strong><div class="small muted">${(p.pantry||[]).length} pantry • ${(p.saved||[]).length} saved</div></div><div><button class="btn small" data-name="${name}" data-action="apply">Apply</button> <button class="btn small" data-name="${name}" data-action="copy">Copy</button> <button class="btn small" data-name="${name}" data-action="delete">Delete</button></div>`;
+    row.innerHTML = `<div><strong>${escapeHTML(name)}</strong><div class="small muted">${(p.pantry||[]).length} pantry • ${(p.saved||[]).length} saved</div></div><div><button class="btn small" data-name="${escapeHTML(name)}" data-action="apply">Apply</button> <button class="btn small" data-name="${escapeHTML(name)}" data-action="copy">Copy</button> <button class="btn small" data-name="${escapeHTML(name)}" data-action="delete">Delete</button></div>`;
     container.appendChild(row);
   });
   $$('#profilesContainer button').forEach(b=>{
@@ -1088,6 +1141,121 @@ function startStepTimer(sec){
 }
 
 /* ========================
+   Community Recipes (Supabase-backed)
+   - View (everyone), Post (logged-in), Delete (owner)
+   ======================== */
+
+async function loadCommunityRecipes(){
+  if(!supabase) { $('#communityList').innerHTML = '<div class="small muted">Community features require Supabase (unavailable).</div>'; return; }
+  try {
+    const { data, error } = await supabase
+      .from('community_recipes')
+      .select('id, user_id, title, ingredients, instructions, created_at')
+      .order('created_at', { ascending: false });
+    if(error) {
+      console.warn('Failed to load community recipes', error);
+      $('#communityList').innerHTML = '<div class="small muted">Failed to load community recipes.</div>';
+      return;
+    }
+    state.community = data || [];
+    renderCommunityList();
+  } catch(e){
+    console.warn('loadCommunityRecipes error', e);
+    $('#communityList').innerHTML = '<div class="small muted">Failed to load community recipes.</div>';
+  }
+}
+
+function renderCommunityList(){
+  const container = $('#communityList');
+  container.innerHTML = '';
+  $('#communityCount').textContent = state.community.length;
+  if(!state.community.length){
+    container.innerHTML = '<div class="small muted">No community recipes yet. Be the first to post!</div>';
+    return;
+  }
+
+  state.community.forEach(r=>{
+    const card = document.createElement('div');
+    card.className = 'community-card';
+    const isOwner = currentUser && currentUser.id === r.user_id;
+    // ingredients as list
+    const ingHTML = (r.ingredients || []).map(i=>`<li>${escapeHTML(i)}</li>`).join('');
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:12px">
+        <div style="flex:1">
+          <strong>${escapeHTML(r.title)}</strong>
+          <div class="small muted" style="margin-top:6px">Posted ${new Date(r.created_at).toLocaleString()}${isOwner ? ' • you' : ''}</div>
+          <div style="margin-top:8px"><strong>Ingredients</strong><ul class="small muted" style="margin:6px 0 0 16px">${ingHTML}</ul></div>
+          <div style="margin-top:8px"><strong>Instructions</strong><div class="small muted" style="margin-top:6px;white-space:pre-wrap">${escapeHTML(r.instructions || '')}</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+          ${isOwner ? `<button class="btn danger btn-delete-community" data-id="${r.id}">Delete</button>` : ''}
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  // wire delete buttons
+  $$('.btn-delete-community').forEach(b=>{
+    b.addEventListener('click', async ()=> {
+      const id = b.dataset.id;
+      if(!confirm('Delete this community recipe? This cannot be undone.')) return;
+      try {
+        const { error } = await supabase.from('community_recipes').delete().eq('id', id);
+        if(error) return alert('Delete failed: ' + error.message);
+        await loadCommunityRecipes();
+        alert('Recipe deleted');
+      } catch(e){
+        alert('Delete failed');
+        console.error(e);
+      }
+    });
+  });
+}
+
+/* Open/close community modals handlers */
+$('#btnViewCommunity').addEventListener('click', async ()=> {
+  $('#communityModal').classList.add('open');
+  await loadCommunityRecipes();
+});
+$('#closeCommunityModal').addEventListener('click', ()=> { $('#communityModal').classList.remove('open'); });
+$('#communityRefresh').addEventListener('click', ()=> loadCommunityRecipes());
+
+/* Post community recipe modal */
+$('#btnNewCommunity').addEventListener('click', async ()=> {
+  if(!currentUser) {
+    // show login prompt modal
+    openLoginModal();
+    return;
+  }
+  $('#postCommunityModal').classList.add('open');
+});
+$('#closePostCommunity').addEventListener('click', ()=> { $('#postCommunityModal').classList.remove('open'); });
+$('#postCommCancel').addEventListener('click', ()=> { $('#postCommunityModal').classList.remove('open'); });
+
+$('#postCommSubmit').addEventListener('click', async ()=> {
+  if(!currentUser) return alert('Please log in to post a recipe');
+  const title = ($('#newCommTitle').value || '').trim();
+  const ingredients = ($('#newCommIngredients').value || '').split('\n').map(s=>s.trim()).filter(Boolean);
+  const instructions = ($('#newCommInstructions').value || '').trim();
+  if(!title || !ingredients.length || !instructions) return alert('Fill all fields (title, ingredients, instructions)');
+  try {
+    const { error } = await supabase.from('community_recipes').insert([{ user_id: currentUser.id, title, ingredients, instructions }]);
+    if(error) return alert('Post failed: ' + error.message);
+    $('#newCommTitle').value = '';
+    $('#newCommIngredients').value = '';
+    $('#newCommInstructions').value = '';
+    $('#postCommunityModal').classList.remove('open');
+    await loadCommunityRecipes();
+    alert('Recipe posted to community');
+  } catch(e){
+    console.error('postCommunity error', e);
+    alert('Post failed');
+  }
+});
+
+/* ========================
    Initialization UI
    ======================== */
 function initialRender(){
@@ -1098,19 +1266,22 @@ function initialRender(){
   renderProfiles();
 }
 
-/* we'll load state on page start (cloud if logged in, else local) */
+/* load state then initial render & community */
 (async function(){
   await loadState();
   initialRender();
+  // attempt to fetch community recipes even for guests (reads are allowed if table policy permits)
+  try{ await loadCommunityRecipes(); }catch(e){}
 })();
 
 /* ========================
    Supabase Auth & Profile sync
    ======================== */
 async function updateAuthUI(){
-  if(!supabase) { $('#userEmail').textContent = ''; return; }
+  if(!supabase) { $('#userEmail').textContent = ''; currentUser = null; return; }
   const { data } = await supabase.auth.getSession();
   const user = data?.session?.user || null;
+  currentUser = user;
   if(user){ $('#userEmail').textContent = user.email || user.id; }
   else { $('#userEmail').textContent = ''; }
 }
@@ -1160,7 +1331,7 @@ function openLoginModal(){
       if(!email || !password) return alert('Enter email & password');
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if(error) alert('Login error: ' + error.message);
-      else { alert('Logged in'); updateAuthUI(); loginModal.classList.remove('open'); await loadState(); renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes()); }
+      else { alert('Logged in'); updateAuthUI(); loginModal.classList.remove('open'); await loadState(); renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes()); await loadCommunityRecipes(); }
     });
 
     loginModal.querySelector('#logoutBtn').addEventListener('click', async ()=>{
@@ -1220,11 +1391,17 @@ $('#btnOpenLogin').addEventListener('click', ()=> openLoginModal() );
 if(supabase){
   supabase.auth.onAuthStateChange((event, session) => {
     updateAuthUI();
-    // when a user logs in, reload their cloud state automatically
+    // When a user signs in, reload cloud state and community recipes
     if(event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED'){
       loadState().then(()=> {
         renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
       });
+      loadCommunityRecipes();
+    }
+    // When signed out, clear currentUser and update UI
+    if(event === 'SIGNED_OUT'){
+      currentUser = null;
+      updateAuthUI();
     }
   });
   updateAuthUI();
@@ -1250,10 +1427,31 @@ window.jemwayState = state; // expose for debugging
    End of file
    ======================== */
 /*
-  Security notes:
-  - Don't commit service_role keys to client-side code.
-  - For production enable Row Level Security (RLS) and policies in Supabase to restrict access.
-  - Consider server-side endpoints for heavy operations or backups.
+  Supabase DB note (run in SQL editor):
+
+  create table if not exists community_recipes (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid references auth.users(id) on delete cascade,
+    title text not null,
+    ingredients text[],
+    instructions text,
+    created_at timestamptz default now()
+  );
+
+  Recommended RLS (run if you enable RLS):
+
+  alter table community_recipes enable row level security;
+
+  create policy "Anyone can view" on community_recipes
+    for select using (true);
+
+  create policy "Users can insert own" on community_recipes
+    for insert with check (auth.uid() = user_id);
+
+  create policy "Users can delete own" on community_recipes
+    for delete using (auth.uid() = user_id);
+
+  (Also ensure anon role has SELECT on community_recipes if you want guests to read.)
 */
 </script>
 </body>
