@@ -3,550 +3,426 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Jemway — Culinary Companion (Revamped)</title>
-<meta name="description" content="Jemway — Pantry-first recipes, substitutions, cook mode, grocery lists, profile manager. Created by Dylan Castro.">
+<title>Jemway — Culinary Companion (Pro)</title>
+<meta name="description" content="Jemway — Pantry-first recipes, substitutions, cook mode, grocery lists, profile manager.">
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Supabase JS (v2) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-/* =========================================================================
-   JEMWAY — REBUILT SINGLE-FILE APP
-   - Modern, clean, single-page
-   - Profile manager (localStorage), minutes-based timers, detailed steps
-   - No JSON file import/export (backup via clipboard)
-   ========================================================================= */
+  /* ========== Design tokens ========== */
+  :root{
+    --bg:#0f1724;
+    --panel:#0b1220;
+    --card:#0f1728;
+    --card-2:#0b1320;
+    --text:#e6f0f6;
+    --muted:#9fb1c9;
+    --accent-1:#00d1b2; /* teal */
+    --accent-2:#ff9f43; /* warm orange */
+    --danger:#ff6b6b;
+    --glass: rgba(255,255,255,0.02);
+    --radius:12px;
+    --shadow: 0 12px 40px rgba(2,6,23,0.6);
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono";
+    --ease: cubic-bezier(.2,.9,.2,1);
+    --maxW: 1200px;
+  }
 
-/* Root variables */
-:root{
-  --bg-0: #07101a;
-  --bg-1: #0f1720;
-  --panel: #0f1c26;
-  --card: #0f2430;
-  --muted: #9db0c6;
-  --text: #eaf4ff;
-  --accent: #ff6b6b;
-  --accent-2: #ffb86b;
-  --accent-3: #6bd1ff;
-  --success: #10b981;
-  --danger: #ff6b6b;
-  --glass: rgba(255,255,255,0.02);
-  --radius: 14px;
-  --shadow: 0 12px 40px rgba(2,6,23,0.6);
-  --maxW: 1400px;
-  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono";
-  --ease: cubic-bezier(.2,.9,.2,1);
-  --ui-size: 15px;
-}
+  /* Light-mode variables toggled on body.light */
+  body.light{
+    --bg:#f6f8fb;
+    --panel:#ffffff;
+    --card:#ffffff;
+    --card-2:#ffffff;
+    --text:#072031;
+    --muted:#556277;
+    --glass: rgba(0,0,0,0.04);
+    --shadow: 0 10px 30px rgba(12,18,38,0.06);
+  }
 
-/* Light theme */
-body.light{
-  --bg-0: #fbfdff;
-  --bg-1: #f5f8fb;
-  --panel: #ffffff;
-  --card: #ffffff;
-  --muted: #556277;
-  --text: #07101a;
-  --glass: rgba(0,0,0,0.04);
-  --shadow: 0 10px 30px rgba(12,18,38,0.06);
-}
+  /* ========== Base ========== */
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;padding:0;background:linear-gradient(180deg,var(--bg), #07101a 85%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);-webkit-font-smoothing:antialiased}
+  .container{width:100%;max-width:var(--maxW);margin:30px auto;padding:18px;display:grid;grid-template-columns: 1fr 360px;gap:22px}
+  @media(max-width:1100px){ .container{grid-template-columns:1fr;padding:12px} }
 
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;padding:0}
-body{
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: linear-gradient(180deg,var(--bg-0),var(--bg-1) 85%);
-  color:var(--text);
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  display:flex;
-  justify-content:center;
-  padding:26px;
-  transition: background .25s var(--ease), color .25s var(--ease);
-  font-size:var(--ui-size);
-  line-height:1.45;
-}
+  /* Topbar */
+  .topbar{grid-column:1 / -1;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.03)}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:black;font-weight:800;font-size:20px}
+  .title h1{margin:0;font-size:16px}
+  .title p{margin:0;color:var(--muted);font-size:12px}
 
-/* App container */
-.app{
-  width:100%;
-  max-width:var(--maxW);
-  display:grid;
-  grid-template-columns: 1fr 380px;
-  gap:22px;
-  align-items:start;
-}
-@media(max-width:1100px){
-  .app{grid-template-columns:1fr; padding:0 12px}
-}
+  /* Buttons */
+  .btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);font-weight:700;cursor:pointer;transition:transform .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease)}
+  .btn:hover{transform:translateY(-3px)}
+  .btn.primary{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));border:0;color:black}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+  .btn.small{padding:6px 8px;font-size:13px}
 
-/* Topbar */
-.topbar{
-  grid-column:1 / -1;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:16px;
-  border-radius:12px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border:1px solid rgba(255,255,255,0.03);
-  box-shadow:var(--shadow);
-}
-.brand{display:flex;gap:12px;align-items:center}
-.logo{
-  width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  box-shadow:0 8px 30px rgba(255,107,107,0.08);
-  color:white;font-weight:800;font-size:20px;
-}
-.title h1{margin:0;font-size:16px}
-.title p{margin:0;color:var(--muted);font-size:12px}
+  /* Cards */
+  .card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow);transition:transform .14s var(--ease), opacity .3s}
+  .card:hover{transform:translateY(-6px)}
+  .panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .small{font-size:13px;color:var(--muted)}
+  .muted{color:var(--muted)}
 
-/* Buttons */
-.btn{
-  padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);
-  background:transparent;color:var(--text);font-weight:700;cursor:pointer;
-  transition:transform .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease);
-}
-.btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,0.16)}
-.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:0;color:white}
-.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04)}
-.btn.small{padding:6px 8px;font-size:13px}
+  /* Layout sections on left column */
+  .left-grid{display:grid;grid-template-columns: 1fr;gap:18px}
+  @media(min-width:900px){ .left-grid{grid-template-columns: 1fr 1fr; } }
 
-/* Cards */
-.card{
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:var(--radius);
-  padding:16px;
-  box-shadow:var(--shadow);
-  border:1px solid rgba(255,255,255,0.03);
-  transition:transform .14s var(--ease);
-}
-.card:hover{transform:translateY(-6px)}
+  /* Pantry / timer area */
+  .pantry-input-row{display:flex;gap:8px;align-items:center}
+  .input, textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px}
+  .chip{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-weight:700;cursor:pointer;color:var(--muted)}
 
-/* Layout */
-.left{display:flex;flex-direction:column;gap:18px}
-.right{display:flex;flex-direction:column;gap:18px}
+  /* recipes list */
+  .recipes{display:grid;grid-template-columns:repeat(1,1fr);gap:12px}
+  @media(min-width:900px){ .recipes{grid-template-columns:repeat(2,1fr)} }
+  .recipe-card{padding:12px;border-radius:10px;background:var(--card-2);border:1px solid rgba(255,255,255,0.02)}
+  .recipe-card h4{margin:0 0 8px 0}
+  .rmeta{font-size:13px;color:var(--muted)}
 
-/* Hero */
-.hero{
-  display:flex;
-  gap:18px;
-  align-items:stretch;
-  padding:18px;
-  border-radius:12px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border:1px solid rgba(255,255,255,0.03);
-}
-.hero-left{flex:1}
-.hero-right{width:320px}
+  /* right column */
+  .sidebar{display:flex;flex-direction:column;gap:18px}
+  .list-compact{display:flex;flex-direction:column;gap:8px}
+  .list-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
 
-/* Search & chips */
-.search{
-  display:flex;gap:8px;margin-top:10px;align-items:center;
-}
-.input, textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px}
-.search .input{flex:1}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.chip{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);cursor:pointer;font-weight:700}
+  /* modals */
+  .modal{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(3,6,12,0.6);display:none;align-items:center;justify-content:center;z-index:4000;padding:20px}
+  .modal.open{display:flex}
+  .modal .card{max-width:980px;width:100%;max-height:90vh;overflow:auto}
 
-/* recipe list */
-.recipes{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-@media(max-width:900px){ .recipes{grid-template-columns:1fr} }
-.recipe{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.007));border:1px solid rgba(255,255,255,0.02)}
-.recipe h4{margin:0 0 6px 0}
+  /* cook mode big */
+  .cook-full{padding:22px;text-align:center}
 
-/* pantry */
-.pantry-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.pantry-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
+  /* subtle fade-in utility */
+  .fade-in{animation: fadeInUp .45s ease both}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* substitution table */
-.sub-table{width:100%;border-collapse:collapse}
-.sub-table td, .sub-table th{padding:8px;border-bottom:1px dashed rgba(255,255,255,0.03)}
-.sub-table th{color:var(--muted);text-align:left}
-
-/* recipe detail */
-.recipe-detail{display:flex;gap:12px;align-items:flex-start}
-.recipe-detail .meta{width:210px}
-.recipe-detail .content{flex:1}
-
-/* small helpers */
-.small{font-size:13px;color:var(--muted)}
-.badge{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:800;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
-.row{display:flex;gap:8px;align-items:center}
-.col{display:flex;flex-direction:column;gap:8px}
-.sep{height:1px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));margin:12px 0;border-radius:2px}
-
-/* focus state */
-:focus{outline:none;box-shadow:0 0 0 4px rgba(255,107,107,0.08);border-radius:6px}
-
-/* responsive */
-@media(max-width:720px){
-  .topbar{flex-direction:column;align-items:flex-start}
-  .hero{flex-direction:column}
-}
-
-/* Logo SVG styling */
-.svg-logo{width:48px;height:48px;display:block}
-.brand-text{display:flex;flex-direction:column}
-.brand-tag{font-size:11px;color:var(--muted);margin-top:2px}
-
-/* Cook mode styles */
-.cook-mode{display:flex;flex-direction:column;gap:12px}
-.step{padding:12px;border-radius:8px;background:rgba(255,255,255,0.01)}
-.step h5{margin:0 0 6px 0}
-.timer-display{font-weight:800;font-family:var(--mono);letter-spacing:1px}
-.profile-list{display:flex;flex-direction:column;gap:8px}
-.profile-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01)}
+  /* small helpers */
+  .right-actions{display:flex;gap:8px;align-items:center}
+  .badge{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:700;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+  .hidden{display:none}
+  a.link{color:var(--accent-2);text-decoration:none;font-weight:700}
+  .footer{grid-column:1/-1;text-align:center;color:var(--muted);margin-top:18px}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand">
-    <div class="logo" aria-hidden>J</div>
-    <div class="title">
-      <h1>Jemway</h1>
-      <p class="small">Culinary Companion — Local-first, private</p>
-    </div>
-  </div>
-
-  <div class="row">
-    <button class="btn ghost" id="btnTheme">Toggle Theme</button>
-    <button class="btn" id="btnSaveProfile">Save Profile</button>
-    <button class="btn primary" id="btnOpenProfiles">Profiles</button>
-  </div>
-</div>
-
-<div class="app" role="application" aria-label="Jemway — Culinary Companion">
-
-  <!-- LEFT: Main tools -->
-  <div class="left">
-
-    <!-- HERO -->
-    <section class="card hero" aria-labelledby="heroTitle">
-      <div class="hero-left">
-        <h2 id="heroTitle">Cook smarter with what you already have</h2>
-        <p class="small">Add pantry items and Jemway suggests recipes, detailed instructions, substitutions and grocery lists. Everything runs locally in your browser.</p>
-
-        <div class="search" style="margin-top:12px;">
-          <input id="pantryInput" class="input" placeholder="Add pantry items (comma separated) — e.g., eggs, flour, canned tomatoes">
-          <button class="btn primary" id="addPantry">Add</button>
-          <button class="btn" id="clearPantryInput">Clear</button>
-        </div>
-
-        <div class="chips" aria-hidden>
-          <div class="chip" data-suggest="breakfast">Breakfast</div>
-          <div class="chip" data-suggest="quick">15-min Meals</div>
-          <div class="chip" data-suggest="vegetarian">Vegetarian</div>
-          <div class="chip" data-suggest="baking">Baking</div>
-          <div class="chip" data-suggest="comfort">Comfort</div>
-        </div>
-
-        <div style="margin-top:12px">
-          <div class="small">Pantry snapshot:</div>
-          <div id="pantryPreview" style="margin-top:8px" class="small muted">No items yet — add a few staples.</div>
+  <!-- TOPBAR -->
+  <div class="container">
+    <div class="topbar card" style="grid-column:1 / -1">
+      <div class="brand">
+        <div class="logo" aria-hidden>J</div>
+        <div class="title">
+          <h1>Jemway</h1>
+          <p class="small muted">Culinary Companion — polished</p>
         </div>
       </div>
 
-      <div class="hero-right">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="globalSearch" class="input" placeholder="Search recipes, ingredients, tags (press Enter)">
+        <div class="right-actions">
+          <div id="userEmail" class="small muted" style="min-width:160px;text-align:right"></div>
+          <button class="btn ghost" id="btnOpenLogin">Account</button>
+          <button class="btn" id="btnTheme">Toggle Theme</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEFT: main -->
+    <main>
+
+      <!-- top left grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+        <!-- Pantry card -->
+        <div class="card">
+          <div class="panel-title">
+            <div>
+              <strong>Pantry</strong>
+              <div class="small muted">Add staples and Jemway suggests recipes</div>
+            </div>
+            <div class="badge" id="pantryCount">0</div>
+          </div>
+
+          <div style="margin-top:12px" class="pantry-input-row">
+            <input id="pantryInput" class="input" placeholder="Add items (comma-separated) — e.g., eggs, flour, canned tomatoes">
+            <button class="btn primary" id="addPantry">Add</button>
+            <button class="btn" id="clearPantryInput">Clear</button>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap" id="pantryChips" aria-hidden></div>
+
+          <div style="margin-top:12px">
+            <div class="small muted">Snapshot:</div>
+            <div id="pantryPreview" class="small muted">No items yet — add staples.</div>
+          </div>
+        </div>
+
+        <!-- Timer & inspiration -->
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div>
               <strong>Kitchen Timer</strong>
-              <div class="small muted">Enter minutes (step timers also use minutes)</div>
+              <div class="small muted">Enter minutes</div>
             </div>
             <div id="timerBadge" class="badge">00:00</div>
           </div>
-          <div style="margin-top:10px" class="row">
-            <input id="timerMinutes" class="input" placeholder="Minutes" style="width:110px">
+
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <input id="timerMinutes" class="input" placeholder="Minutes (e.g., 5)">
             <button class="btn primary" id="startKitchenTimer">Start</button>
             <button class="btn" id="stopKitchenTimer">Stop</button>
           </div>
-          <div style="margin-top:10px" class="small muted">Tip: open another tab to keep a second timer.</div>
-        </div>
 
-        <div class="card" style="margin-top:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div><strong>Flavor Inspiration</strong><div class="small muted">Quick combo ideas</div></div>
-            <div class="badge" id="inspBadge">Inspire</div>
-          </div>
-          <div id="dailyInspo" style="margin-top:8px" class="small muted">Loading...</div>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="btn" id="newInspo">New</button>
-            <button class="btn" id="saveInspo">Save</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- RECIPES -->
-    <section class="card" id="recipesSection">
-      <div class="section-title">
-        <h3>Recipe Suggestions</h3>
-        <div class="small muted">Tailored to your pantry</div>
-      </div>
-      <div class="sep"></div>
-
-      <div style="display:flex;gap:10px;align-items:center">
-        <input id="searchRecipes" class="input" placeholder="Search recipes or filter (e.g., pancake, chicken)">
-        <select id="categoryFilter" class="input" style="width:160px">
-          <option value="all">All categories</option>
-          <option value="Breakfast">Breakfast</option>
-          <option value="Lunch">Lunch</option>
-          <option value="Dinner">Dinner</option>
-          <option value="Snacks">Snacks</option>
-          <option value="Dessert">Dessert</option>
-          <option value="Drinks">Drinks</option>
-        </select>
-        <select id="difficultyFilter" class="input" style="width:140px">
-          <option value="any">Any difficulty</option>
-          <option value="easy">Easy</option>
-          <option value="medium">Medium</option>
-          <option value="hard">Hard</option>
-        </select>
-        <button class="btn" id="runSearch">Search</button>
-        <div style="flex:1"></div>
-        <div class="small muted">Matches: <span id="matchCount">0</span></div>
-      </div>
-
-      <div style="margin-top:12px" id="recipesList" class="recipes">
-        <!-- JS populates recipe cards -->
-      </div>
-
-      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-        <button class="btn" id="moreRecipes">More</button>
-        <button class="btn" id="shuffleRecipes">Shuffle</button>
-        <div style="flex:1"></div>
-        <button class="btn primary" id="importSample">Load Sample Pantry</button>
-      </div>
-    </section>
-
-    <!-- Recipe detail -->
-    <section class="card" id="recipeDetailCard" style="display:none">
-      <div class="section-title">
-        <h3 id="detailTitle">Recipe Title</h3>
-        <div class="small muted" id="detailMeta">—</div>
-      </div>
-      <div class="sep"></div>
-
-      <div class="recipe-detail">
-        <div class="meta small">
-          <div><strong>Serves</strong>: <span id="serves">2</span></div>
-          <div style="margin-top:6px"><strong>Time</strong>: <span id="time">30 min</span></div>
-          <div style="margin-top:6px"><strong>Difficulty</strong>: <span id="difficulty">Easy</span></div>
-
-          <div style="margin-top:12px">
-            <div class="small muted">Scale servings</div>
-            <div style="display:flex;gap:8px;margin-top:6px">
-              <button class="btn" id="scaleDown">-</button>
-              <div class="badge" id="servesBadge">2</div>
-              <button class="btn" id="scaleUp">+</button>
-            </div>
-          </div>
-
-          <div style="margin-top:12px">
-            <div class="small muted">Save / Grocery</div>
-            <div style="display:flex;gap:8px;margin-top:6px">
-              <button class="btn" id="saveRecipeBtn">Save</button>
-              <button class="btn" id="addToGroceryBtn">Add Missing to Grocery</button>
+          <div style="margin-top:14px">
+            <strong>Flavor Inspiration</strong>
+            <div id="dailyInspo" class="small muted" style="margin-top:8px">Loading...</div>
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <button class="btn" id="newInspo">New</button>
+              <button class="btn" id="saveInspo">Save</button>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="content">
-          <div style="display:flex;gap:12px">
-            <div style="flex:1">
-              <h4>Ingredients</h4>
-              <ul id="ingList" class="small muted"></ul>
-            </div>
-            <div style="flex:2">
-              <h4>Steps</h4>
-              <ol id="stepList" class="small muted"></ol>
-            </div>
+      <!-- Search & filters -->
+      <div class="card" style="margin-bottom:18px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Recipe Suggestions</strong><div class="small muted">Tailored to your pantry</div></div>
+          <div class="small muted">Matches: <span id="matchCount">0</span></div>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+          <input id="searchInput" class="input" placeholder="Search title, ingredient or tag">
+          <select id="timeFilter" class="input" style="width:160px">
+            <option value="any">Any time</option>
+            <option value="short">&lt; 20 min</option>
+            <option value="medium">20–40 min</option>
+            <option value="long">&gt; 40 min</option>
+          </select>
+          <select id="diffFilter" class="input" style="width:140px">
+            <option value="any">Any difficulty</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+          <button class="btn" id="runSearch">Search</button>
+          <div style="flex:1"></div>
+          <button class="btn" id="importSample">Load Sample Pantry</button>
+        </div>
+      </div>
+
+      <!-- Recipes grid -->
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Recipes</strong><div class="small muted">Click a recipe to view details & cook mode</div></div>
+          <div class="small muted">Showing: <span id="showingCount">0</span></div>
+        </div>
+
+        <div id="recipesList" class="recipes" style="margin-top:12px"></div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+          <button class="btn" id="moreRecipes">More</button>
+          <button class="btn" id="shuffleRecipes">Shuffle</button>
+          <div style="flex:1"></div>
+          <div class="small muted">Tip: use search to narrow by ingredients</div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- RIGHT: sidebar -->
+    <aside class="sidebar">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Pantry</strong><div class="small muted">Stored staples</div></div>
+          <div class="badge" id="pantryCountSide">0</div>
+        </div>
+        <div class="sep" style="height:12px"></div>
+        <div id="pantryList" class="list-compact"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn" id="editPantry">Edit</button>
+          <button class="btn" id="clearPantryAll">Clear All</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Grocery List</strong><div class="small muted">Missing items aggregated from recipes</div></div>
+          <div class="badge" id="groceryCount">0</div>
+        </div>
+        <div class="sep" style="height:12px"></div>
+        <div id="groceryList" class="list-compact small muted"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn" id="copyGrocery">Copy Grocery</button>
+          <button class="btn" id="clearGrocery">Clear</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Saved Recipes</strong><div class="small muted">Favorites</div></div>
+          <div class="badge" id="savedCount">0</div>
+        </div>
+        <div class="sep" style="height:12px"></div>
+        <div id="savedList" class="small muted">No saved recipes yet</div>
+      </div>
+
+      <div class="card">
+        <h4 style="margin:0 0 8px 0">Profiles</h4>
+        <div class="small muted">Create named profiles (pantry + favorites). Backup copies to clipboard.</div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <input id="profileName" class="input" placeholder="Profile name">
+          <button class="btn primary" id="saveProfileBtn">Save</button>
+        </div>
+        <div id="profilesContainer" style="margin-top:12px"></div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn" id="backupToClipboard">Backup</button>
+          <button class="btn" id="restoreFromClipboard">Restore</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="footer muted" style="grid-column:1/-1;margin-top:10px;">
+      Jemway — Culinary Companion • Created by Dylan Castro
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="recipeModal" class="modal" aria-hidden="true">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3 id="detailTitle" style="margin:0">Recipe</h3>
+          <div class="small muted" id="detailMeta">—</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn" id="saveRecipeBtn">Save</button>
+          <button class="btn" id="addToGroceryBtn">Add Missing</button>
+          <button class="btn ghost" id="closeRecipeModal">Close</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:grid;grid-template-columns:260px 1fr;gap:16px">
+        <div>
+          <div class="small muted">Serves <span id="servesBadge" class="badge" style="margin-left:8px">-</span></div>
+          <div style="margin-top:12px"><strong>Ingredients</strong>
+            <ul id="ingList" style="margin-top:8px" class="small muted"></ul>
           </div>
+        </div>
 
-          <div style="margin-top:12px" class="small muted">
-            <strong>Substitutions</strong> — alternatives for common allergens and missing items:
-            <table class="sub-table" id="subsTable" style="margin-top:8px"><thead><tr><th>Ingredient</th><th>Substitute</th></tr></thead><tbody></tbody></table>
-          </div>
-
+        <div>
+          <h4 style="margin:0">Steps</h4>
+          <ol id="stepList" class="small muted" style="margin-top:8px"></ol>
           <div style="margin-top:12px">
             <button class="btn primary" id="enterCookMode">Enter Cook Mode</button>
-            <button class="btn" id="backToList">Back to List</button>
+            <button class="btn ghost" id="backToList">Back to List</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <strong>Substitutions</strong>
+            <table class="sub-table" style="width:100%;margin-top:8px;color:var(--muted)">
+              <thead><tr><th style="text-align:left">Ingredient</th><th style="text-align:left">Substitute</th></tr></thead>
+              <tbody id="subsTable"></tbody>
+            </table>
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- Cook Mode -->
-    <section class="card" id="cookMode" style="display:none;flex-direction:column">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 id="cookTitle">Cook Mode</h3>
-        <div>
-          <button class="btn" id="exitCook">Exit</button>
-          <button class="btn primary" id="startStepTimer">Start Step Timer</button>
-        </div>
-      </div>
-      <div class="sep"></div>
-      <div id="cookSteps" style="min-height:260px"></div>
-      <div style="margin-top:12px" class="small muted">Use step timers (minutes) to track cook times. Click a step's "Start timer" button to time it.</div>
-    </section>
-
-    <!-- Lessons -->
-    <section class="card" id="learnSection">
-      <div class="section-title">
-        <h3>Kitchen Lessons</h3>
-        <div class="small muted">Quick tips to improve your cooking</div>
-      </div>
-      <div class="sep"></div>
-      <div id="lessonsGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"></div>
-      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-        <button class="btn" id="nextLesson">Next Tip</button>
-        <button class="btn" id="prevLesson">Previous Tip</button>
-        <div style="flex:1"></div>
-        <div class="small muted">Tip index: <span id="lessonIndex">1</span>/10</div>
-      </div>
-    </section>
-
+    </div>
   </div>
 
-  <!-- RIGHT column -->
-  <div class="right">
-
-    <!-- Pantry -->
-    <div class="card">
+  <div id="cookModal" class="modal" aria-hidden="true">
+    <div class="card cook-full">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><strong>Pantry</strong><div class="small muted">Stored staples</div></div>
-        <div class="badge" id="pantryCount">0</div>
+        <h2 id="cookTitle">Cook Mode</h2>
+        <div><button class="btn" id="exitCook">Exit</button></div>
       </div>
-      <div class="sep"></div>
-      <div class="pantry-list" id="pantryList"></div>
-      <div style="margin-top:8px;display:flex;gap:8px">
-        <button class="btn" id="editPantry">Edit</button>
-        <button class="btn" id="clearPantryAll">Clear All</button>
-      </div>
+      <div id="cookSteps" style="margin-top:18px;text-align:left"></div>
     </div>
-
-    <!-- Grocery -->
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><strong>Grocery List</strong><div class="small muted">Missing items aggregated from recipes</div></div>
-        <div class="badge" id="groceryCount">0</div>
-      </div>
-      <div class="sep"></div>
-      <div id="groceryList" class="small muted"></div>
-      <div style="margin-top:8px;display:flex;gap:8px">
-        <button class="btn" id="copyGrocery">Copy Grocery</button>
-        <button class="btn" id="clearGrocery">Clear</button>
-      </div>
-    </div>
-
-    <!-- Saved -->
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><strong>Saved Recipes</strong><div class="small muted">Your favorites</div></div>
-        <div class="badge" id="savedCount">0</div>
-      </div>
-      <div class="sep"></div>
-      <div id="savedList" class="small muted">No saved recipes yet</div>
-    </div>
-
-    <!-- Profile Manager -->
-    <div class="card">
-      <h4>Profile & Pantry Manager</h4>
-      <div class="small muted">Create named profiles (pantry + favorites). Backup copies are copied to clipboard (no file uploads required).</div>
-      <div style="margin-top:10px;display:flex;gap:8px">
-        <input id="profileName" class="input" placeholder="Profile name">
-        <button class="btn primary" id="saveProfileBtn">Save</button>
-      </div>
-      <div style="margin-top:12px" id="profilesContainer"></div>
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button class="btn" id="backupToClipboard">Backup (copy JSON)</button>
-        <button class="btn" id="restoreFromClipboard">Restore (paste JSON)</button>
-      </div>
-    </div>
-
   </div>
-
-  <div class="footer" style="grid-column:1 / -1; text-align:center; color:var(--muted); margin-top:14px;">
-    Jemway — Culinary Companion • Created by Dylan Castro
-  </div>
-
-</div>
 
 <script>
-/* =========================================================================
-   Jemway — Single-file application
-   - Profile manager replaces file import/export (supports copy/paste backups)
-   - Kitchen/step timers use minutes
-   - Detailed recipe steps for generated recipes
-   - Cleaned architecture with one set of functions
-   ========================================================================= */
+/* =================================================================================
+   Jemway — Revamp full script
+   - Large single-file SPA-style client
+   - Includes Supabase auth + profiles (uses your provided URL/key)
+   - Readable panels (not transparent), fade-in, sections, improved search/filters
+   ================================================================================= */
 
-/* ============================
-   Utilities & Storage Helpers
-   ============================ */
-const KEY = 'jemway_v3';
-const saveLS = (k,v) => { try { localStorage.setItem(KEY + '_' + k, JSON.stringify(v)); } catch(e){} };
-const loadLS = (k, fallback) => { try { const v = localStorage.getItem(KEY + '_' + k); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; } };
-const $qs = (s, root=document) => root.querySelector(s);
-const $qa = (s, root=document) => Array.from((root||document).querySelectorAll(s));
+/* ========================
+   Supabase configuration
+   ======================== */
+/*
+  NOTE: these values are taken from what you provided earlier.
+  If you want me to remove them or rotate keys later, do that in Supabase.
+*/
+const SUPABASE_URL = "https://bpdyjhiwfslvgwruoxcy.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZHlqaGl3ZnNsdmd3cnVveGN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwNjc1NTgsImV4cCI6MjA3MzY0MzU1OH0.qOLLMGQDKv_o2UC7LJY86zCYG9pL3ya7mh6yUikS4dw";
 
-function humanTime(sec){
-  const m = Math.floor(sec/60).toString().padStart(2,'0');
-  const s = (sec%60).toString().padStart(2,'0');
-  return `${m}:${s}`;
+let supabase = null;
+try {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch(e){
+  console.warn('Supabase failed to initialize', e);
+  supabase = null;
 }
 
-/* ============================
-   App State
-   ============================ */
+/* ========================
+   Utilities & storage
+   ======================== */
+const KEY = 'jemway_pro_v2';
+const saveLS = (k,v)=>{ try{ localStorage.setItem(KEY+'_'+k, JSON.stringify(v)); }catch(e){} };
+const loadLS = (k, fallback)=>{ try{ const v=localStorage.getItem(KEY+'_'+k); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } };
+const $ = (sel, root=document)=> root.querySelector(sel);
+const $$ = (sel, root=document)=> Array.from((root||document).querySelectorAll(sel));
+function humanTime(sec){ const m=Math.floor(sec/60).toString().padStart(2,'0'); const s=Math.floor(sec%60).toString().padStart(2,'0'); return `${m}:${s}`; }
+function normalize(str){ return (str||'').toString().trim().toLowerCase(); }
+
+/* ========================
+   App state
+   ======================== */
 const state = {
   pantry: loadLS('pantry', []),
-  recipes: loadLS('recipes', []), // will initialize later if empty
+  recipes: loadLS('recipes', []),
   saved: loadLS('saved', []),
   grocery: loadLS('grocery', []),
   favorites: loadLS('favorites', []),
-  profiles: loadLS('profiles', {})  // named profiles: { name: { pantry: [...], saved: [...], grocery: [...], favorites: [...] } }
+  profiles: loadLS('profiles', {}),
+  lessonIndex: loadLS('lessonIndex', 0)
 };
 
-/* ============================
-   Recipe Data: curated breakfasts + generator
-   ============================ */
-
-/* curated breakfast portion (kept from your original list) */
+/* ========================
+   Seed recipes (curated + generator)
+   ======================== */
 const breakfastManual = [
-  { id:'bf-001', category:'Breakfast', title:'Fluffy Pancakes', ingredients:[{name:'flour',qty:200,unit:'g'},{name:'milk',qty:300,unit:'ml'},{name:'egg',qty:1,unit:'pc'},{name:'baking powder',qty:2,unit:'tsp'},{name:'salt',qty:0.5,unit:'tsp'},{name:'butter',qty:20,unit:'g'}], steps:[
-    "Whisk flour, baking powder, salt and sugar in a large bowl to evenly distribute the leavening.",
-    "In a separate bowl whisk the milk and egg until smooth, then slowly stir in melted butter.",
-    "Fold the wet ingredients into the dry ingredients gently; a few small lumps are okay — overmixing makes the pancakes tough.",
-    "Heat a non-stick skillet on medium. Brush with a little butter or oil.",
-    "Pour 1/4 cup batter per pancake. Cook until small bubbles appear on top and the edges look set (about 2 minutes), then flip and cook 1–2 minutes more.",
-    "Serve immediately with butter and syrup or fresh fruit."
+  { id:'bf-001', category:'Breakfast', title:'Fluffy Pancakes', ingredients:[{name:'flour',qty:200,unit:'g'},{name:'milk',qty:300,unit:'ml'},{name:'egg',qty:1,unit:'pc'},{name:'baking powder',qty:2,unit:'tsp'},{name:'salt',qty:0.5,unit:'tsp'}], steps:[
+    "In a bowl combine flour, baking powder, salt and sugar.",
+    "Mix milk and egg; fold into dry mixture until just combined.",
+    "Cook on a hot skillet 1-2 minutes per side until golden."
   ], serves:4, time:25, difficulty:'medium' },
-  { id:'bf-002', category:'Breakfast', title:'Classic French Toast', ingredients:[{name:'bread',qty:4,unit:'slices'},{name:'egg',qty:2,unit:'pcs'},{name:'milk',qty:100,unit:'ml'},{name:'cinnamon',qty:0.5,unit:'tsp'},{name:'butter',qty:10,unit:'g'}], steps:[
-    "Whisk eggs, milk, cinnamon and a pinch of salt in a shallow bowl until well combined.",
-    "Dip each slice of bread briefly into the mixture so it soaks but doesn't fall apart.",
-    "Heat a skillet over medium and add butter. Fry the soaked bread until golden brown on both sides (about 2–3 minutes per side).",
-    "Keep finished slices warm in a low oven while you cook the rest.",
-    "Serve with syrup, powdered sugar or fresh berries."
-  ], serves:2, time:10, difficulty:'easy' },
-  { id:'bf-003', category:'Breakfast', title:'Avocado Toast', ingredients:[{name:'bread',qty:2,unit:'slices'},{name:'avocado',qty:1,unit:'pc'},{name:'salt',qty:0.25,unit:'tsp'},{name:'pepper',qty:0.1,unit:'tsp'}], steps:[
-    "Toast the bread to desired crunch.",
-    "Halve the avocado and mash with a fork; season with salt, pepper and a squeeze of lemon if available.",
-    "Spread avocado on toast and top with pepper, seeds, or a drizzle of olive oil.",
-    "Serve immediately so the bread stays crisp."
+  { id:'bf-002', category:'Breakfast', title:'Avocado Toast', ingredients:[{name:'bread',qty:2,unit:'slices'},{name:'avocado',qty:1,unit:'pc'},{name:'salt',qty:0.25,unit:'tsp'}], steps:[
+    "Toast the bread.",
+    "Mash avocado with salt and spread on toast."
   ], serves:1, time:8, difficulty:'easy' },
-  /* ... include more from your original list (I included the main ones above) ... */
+  { id:'bf-003', category:'Breakfast', title:'Classic French Toast', ingredients:[{name:'bread',qty:4,unit:'slices'},{name:'egg',qty:2,unit:'pcs'},{name:'milk',qty:100,unit:'ml'},{name:'cinnamon',qty:0.5,unit:'tsp'}], steps:[
+    "Whisk eggs, milk and cinnamon; soak bread; fry until golden."
+  ], serves:2, time:12, difficulty:'easy' }
 ];
 
-/* programmatic generator that creates detailed steps for non-breakfast categories */
-function generateOtherRecipes(count = 160){
+function generateOtherRecipes(count=220){
   const categories = ['Lunch','Dinner','Snacks','Dessert','Drinks'];
   const proteins = ['chicken','beef','pork','tofu','salmon','shrimp','lentils','chickpeas'];
   const veg = ['tomato','onion','garlic','carrot','bell pepper','spinach','mushroom','zucchini','potatoes','peas','broccoli'];
   const pantry = ['olive oil','butter','salt','black pepper','soy sauce','vinegar','sugar','flour','milk','cheese','canned tomatoes','cumin','paprika','basil','oregano'];
   const methods = ['roast','stir-fry','bake','simmer','grill','pan-fry','steam','braise'];
 
-  const recipes = [];
+  const out=[];
   for(let i=0;i<count;i++){
     const cat = categories[i % categories.length];
     const protein = proteins[Math.floor(Math.random()*proteins.length)];
@@ -557,177 +433,193 @@ function generateOtherRecipes(count = 160){
     const serve = [1,2,3,4][Math.floor(Math.random()*4)];
     const timeMin = 15 + Math.floor(Math.random()*60);
     const diff = timeMin <= 25 ? 'easy' : (timeMin <= 45 ? 'medium' : 'hard');
-
-    // construct ingredient list
     const ingredients = [];
-    ingredients.push({name: protein, qty: protein==='tofu'?200:250, unit:'g'});
-    if(Math.random()>0.15) ingredients.push({name: v1, qty: 1, unit: 'pc'});
-    if(Math.random()>0.35) ingredients.push({name: v2, qty: 80, unit: 'g'});
-    ingredients.push({name: pan, qty: pan.includes('oil')?1:1, unit: pan.includes('oil') ? 'tbsp' : ''});
-    ingredients.push({name: 'salt', qty: 'to taste', unit:''});
-    ingredients.push({name: 'black pepper', qty: 'to taste', unit:''});
-
-    // build detailed steps
-    const steps = [];
-    steps.push(`Prepare: rinse and pat dry the ${protein}. Chop ${v1}${v2? ' and ' + v2: ''} into bite-size pieces. Preheat equipment if needed.`);
-    if(method === 'roast'){
-      steps.push(`Preheat oven to 200°C (400°F). Toss ${protein} and vegetables with ${pan}, salt and pepper on a baking sheet.`);
-      steps.push(`Spread in a single layer so everything roasts evenly. Roast for ${Math.max(15, Math.round(timeMin*0.9))} minutes, tossing halfway, until vegetables are tender and protein is cooked through.`);
-      steps.push(`Remove from oven and rest for 3-5 minutes. Finish with a squeeze of lemon or fresh herbs if available.`);
-    } else if(method === 'stir-fry'){
-      steps.push(`Heat a large skillet or wok over high heat. Add ${pan} and wait until shimmering.`);
-      steps.push(`Add ${protein} and sear until nearly cooked (3–5 minutes). Remove and set aside.`);
-      steps.push(`Add remaining vegetables to the hot pan, stir-fry until bright and slightly softened (2–4 minutes). Return protein to pan, add quick sauce (soy sauce/seasoning), and toss until glazed.`);
-      steps.push(`Taste and adjust seasoning. Serve immediately over rice or noodles.`);
-    } else if(method === 'grill'){
-      steps.push(`Preheat grill or grill pan to medium-high. Brush ${protein} with ${pan}, season with salt and pepper.`);
-      steps.push(`Grill ${protein} for ${Math.max(4, Math.round(timeMin/2))} minutes per side depending on thickness, until the internal temperature is safe for the protein used.`);
-      steps.push(`Grill vegetables in a basket or foil until charred and tender. Rest protein for a few minutes before slicing.`);
-      steps.push(`Serve with a simple sauce or vinaigrette.`);
-    } else if(method === 'bake'){
-      steps.push(`Preheat oven to 180°C (350°F). Place ingredients in a baking dish, add a splash of ${pan}, cover with foil, and bake ${timeMin} minutes until cooked through.`);
-      steps.push(`Remove foil for the last 10 minutes to brown the top. Let rest and serve.`);
-    } else if(method === 'simmer'){
-      steps.push(`Sear ${protein} in a pot with ${pan} until browned. Add aromatics and then liquid (stock, tomatoes, or water) to cover.`);
-      steps.push(`Bring to a gentle simmer and cook low and slow for ${timeMin} minutes until tender and flavors meld.`);
-      steps.push(`Adjust seasoning and serve with sides.`);
+    ingredients.push({name:protein, qty: protein==='tofu'?200:250, unit:'g'});
+    if(Math.random()>0.15) ingredients.push({name:v1, qty: 1, unit: 'pc'});
+    if(Math.random()>0.35) ingredients.push({name:v2, qty: 80, unit: 'g'});
+    ingredients.push({name:pan, qty: pan.includes('oil')?1:1, unit: pan.includes('oil') ? 'tbsp' : ''});
+    ingredients.push({name:'salt', qty:'to taste', unit:''});
+    ingredients.push({name:'black pepper', qty:'to taste', unit:''});
+    const steps=[];
+    steps.push(`Prepare: rinse and pat dry the ${protein}. Chop ${v1}${v2? ' and ' + v2: ''} into pieces.`);
+    if(method==='roast'){
+      steps.push(`Preheat oven to 200°C. Toss ${protein} and vegetables with ${pan}, salt and pepper. Roast for ${Math.max(15, Math.round(timeMin*0.9))} minutes.`);
+    } else if(method==='stir-fry'){
+      steps.push(`Heat a skillet over high heat. Add ${pan}. Stir-fry ${protein} then vegetables until cooked. Add sauce and toss.`);
+    } else if(method==='grill'){
+      steps.push(`Preheat grill. Brush with ${pan} and grill ${protein} until cooked through.`);
+    } else if(method==='bake'){
+      steps.push(`Bake in a 180°C oven for ${timeMin} minutes until cooked.`);
+    } else if(method==='simmer'){
+      steps.push(`Simmer ${protein} in a pot with liquids and aromatics for ${timeMin} minutes.`);
     } else {
-      steps.push(`Cook using ${method} until ingredients are tender and flavors meld. Check tenderness every few minutes and adjust heat as needed.`);
+      steps.push(`Cook using ${method} until tender and flavors meld.`);
     }
-
-    // final plating tips
-    steps.push(`Plate: garnish with herbs, a drizzle of oil, or a wedge of citrus to brighten the dish.`);
-
-    recipes.push({
-      id: `gen-${i+1}`,
-      category: cat,
-      title: `${method.charAt(0).toUpperCase()+method.slice(1)} ${protein.charAt(0).toUpperCase()+protein.slice(1)} with ${v1}`,
-      ingredients,
-      steps,
-      tags: [cat.toLowerCase(), method],
-      serves: serve,
-      time: timeMin,
-      difficulty: diff
-    });
+    steps.push('Plate and garnish with herbs or lemon.');
+    out.push({ id:`gen-${i+1}`, category:cat, title:`${method.charAt(0).toUpperCase()+method.slice(1)} ${protein} with ${v1}`, ingredients, steps, tags:[cat.toLowerCase(), method], serves:serve, time:timeMin, difficulty:diff });
   }
-  return recipes;
+  return out;
 }
 
-/* Initialize recipes into state if missing or too small */
+/* initialize recipes if missing */
 if(!state.recipes || state.recipes.length < 100){
-  const other = generateOtherRecipes(280);
-  // put breakfast manual first for curated listing
-  state.recipes = breakfastManual.concat(other);
+  state.recipes = breakfastManual.concat(generateOtherRecipes(220));
   saveLS('recipes', state.recipes);
 }
 
-/* ============================
-   Pantry Functions
-   ============================ */
-function normalizeItemName(name){ return (name || '').trim().toLowerCase(); }
-
-function parseAndAddPantry(s){
-  // allow adding items with simple quantities: "2 eggs, flour, 200g milk"
-  const parts = s.split(',').map(p=>p.trim()).filter(Boolean);
-  parts.forEach(p=>{
-    // find quantity + unit at start
-    const m = p.match(/^(\d+(?:\.\d+)?)(?:\s*([a-zA-Z%]+))?\s+(.*)$/);
-    let display = p;
-    if(m){
-      display = m[3].trim() || p;
-    }
-    const normalized = normalizeItemName(display);
-    const existing = state.pantry.find(it => it.name === normalized);
-    if(!existing) state.pantry.push({name:normalized, display: display});
-  });
-  persistPantry(); renderPantry(); renderRecipes(matchRecipes());
-}
-
+/* ========================
+   Pantry functions & UI
+   ======================== */
 function persistPantry(){ saveLS('pantry', state.pantry); }
 function renderPantry(){
-  const el = document.getElementById('pantryList');
+  const el = $('#pantryList');
   el.innerHTML = '';
   if(!state.pantry.length){
     el.innerHTML = '<div class="small muted">Pantry is empty. Add items to get suggestions.</div>';
-    document.getElementById('pantryPreview').textContent = 'No items yet — add a few staples.';
-    document.getElementById('pantryCount').textContent = 0;
+    $('#pantryPreview').textContent = 'No items yet — add a few staples.';
+    $('#pantryCount').textContent = 0;
+    $('#pantryCountSide').textContent = 0;
     return;
   }
   state.pantry.forEach((it, idx)=>{
-    const div = document.createElement('div'); div.className = 'pantry-item';
-    const left = document.createElement('div');
-    left.innerHTML = `<strong>${it.display || it.name}</strong><div class="small muted">${it.qty ? (it.qty + (it.unit ? ' ' + it.unit : '')) : ''}</div>`;
-    const right = document.createElement('div');
-    right.innerHTML = `<button class="btn small" data-idx="${idx}" data-action="remove">Remove</button>`;
-    div.appendChild(left); div.appendChild(right);
-    el.appendChild(div);
+    const node = document.createElement('div'); node.className='list-item';
+    node.innerHTML = `<div><strong>${it.display || it.name}</strong><div class="small muted">${it.qty ? (it.qty + (it.unit ? ' ' + it.unit : '')) : ''}</div></div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
+    el.appendChild(node);
   });
-  el.querySelectorAll('button[data-action="remove"]').forEach(b=>{
+  $$('#pantryList button[data-action="remove"]').forEach(b=>{
     b.addEventListener('click', ()=>{
       const i = parseInt(b.dataset.idx,10);
-      if(i >= 0){ state.pantry.splice(i,1); persistPantry(); renderPantry(); renderRecipes(matchRecipes()); }
+      if(i>=0){ state.pantry.splice(i,1); persistPantry(); renderPantry(); renderRecipes(matchedRecipes()); }
     });
   });
-  document.getElementById('pantryPreview').textContent = state.pantry.map(i=>i.display || i.name).slice(0,8).join(', ');
-  document.getElementById('pantryCount').textContent = state.pantry.length;
+  $('#pantryPreview').textContent = state.pantry.map(i=>i.display||i.name).slice(0,8).join(', ');
+  $('#pantryCount').textContent = state.pantry.length;
+  $('#pantryCountSide').textContent = state.pantry.length;
 }
 
-/* ============================
-   Recipe Matching & Rendering
-   ============================ */
-function matchRecipes(){
+function parseAndAddPantry(s){
+  if(!s) return;
+  const parts = s.split(',').map(p=>p.trim()).filter(Boolean);
+  parts.forEach(p=>{
+    const m = p.match(/^(\d+(?:\.\d+)?)(?:\s*([a-zA-Z%]+))?\s+(.*)$/);
+    let display = p;
+    if(m) display = m[3].trim() || p;
+    const normalized = normalize(display);
+    const existing = state.pantry.find(it => it.name === normalized);
+    if(!existing) state.pantry.push({name:normalized, display: display});
+  });
+  persistPantry();
+  renderPantry();
+  renderRecipes(matchedRecipes());
+}
+
+/* UI events for pantry */
+$('#addPantry').addEventListener('click', ()=>{ parseAndAddPantry($('#pantryInput').value); $('#pantryInput').value=''; });
+$('#clearPantryInput').addEventListener('click', ()=>{ $('#pantryInput').value=''; });
+$('#importSample').addEventListener('click', ()=>{ parseAndAddPantry('eggs, flour, milk, butter, salt, sugar, canned tomatoes, rice, pasta'); alert('Sample pantry loaded'); });
+
+/* ========================
+   Matching & searching
+   ======================== */
+function matchedRecipes(){
   const pantryNames = state.pantry.map(p=>p.name);
   const matches = state.recipes.map(r=>{
-    let have = 0;
-    const missing = [];
-    (r.ingredients || []).forEach(ing=>{
-      const nm = normalizeItemName(ing.name || ing);
+    let have = 0; const missing = [];
+    (r.ingredients||[]).forEach(ing=>{
+      const nm = normalize(ing.name || ing);
       if(!nm) return;
-      if(pantryNames.includes(nm)) have++;
-      else missing.push(ing.name || ing);
+      if(pantryNames.includes(nm)) have++; else missing.push(ing.name || ing);
     });
-    const score = have / Math.max(1, (r.ingredients || []).length);
+    const score = have / Math.max(1, (r.ingredients||[]).length);
     return {...r, score, missing};
   });
   matches.sort((a,b)=> b.score - a.score || a.time - b.time);
   return matches;
 }
 
+function searchAndFilter({q='', time='any', diff='any'}){
+  q = (q||'').trim().toLowerCase();
+  let list = matchedRecipes();
+  if(q){
+    list = list.filter(r=>{
+      if((r.title||'').toLowerCase().includes(q)) return true;
+      if((r.tags||[]).join(' ').toLowerCase().includes(q)) return true;
+      if((r.ingredients||[]).some(ing => (ing.name||'').toLowerCase().includes(q))) return true;
+      return false;
+    });
+  }
+  if(time !== 'any'){
+    list = list.filter(r => {
+      if(time === 'short') return r.time < 20;
+      if(time === 'medium') return r.time >=20 && r.time <=40;
+      if(time === 'long') return r.time > 40;
+      return true;
+    });
+  }
+  if(diff !== 'any') list = list.filter(r=> (r.difficulty||'').toLowerCase() === diff);
+  return list;
+}
+
+/* pretty render recipes */
 function renderRecipes(list){
-  const el = document.getElementById('recipesList'); el.innerHTML = '';
-  if(!list.length){ el.innerHTML = '<div class="small muted">No recipes found. Add pantry items or load sample pantry.</div>'; document.getElementById('matchCount').textContent = 0; return; }
-  list.forEach(r=>{
-    const div = document.createElement('div'); div.className = 'recipe';
-    const percent = Math.round((r.score || 0) * 100);
-    const catBadge = `<span class="badge" style="margin-right:8px">${r.category || (r.tags && r.tags[0]) || 'General'}</span>`;
-    div.innerHTML = `
-      <h4>${r.title}</h4>
-      <div class="small muted">${catBadge} Time: ${r.time} ${typeof r.time === 'number' ? 'min' : ''} • Serves: ${r.serves || '-'} • ${r.difficulty || '-'} • ${percent}% matched</div>
-      <div style="margin-top:8px" class="small muted">${(r.tags||[]).slice(0,4).join(', ')}</div>
-      <div style="margin-top:10px;display:flex;gap:8px">
-        <button class="btn" data-id="${r.id}" data-action="view">View</button>
-        <button class="btn" data-id="${r.id}" data-action="save">${state.saved.includes(r.id) ? 'Unsave' : 'Save'}</button>
-        <button class="btn" data-id="${r.id}" data-action="grocery">Add Missing</button>
+  const out = $('#recipesList'); out.innerHTML = '';
+  if(!list.length){ out.innerHTML = '<div class="small muted">No recipes found. Add pantry items or load sample pantry.</div>'; $('#matchCount').textContent = 0; $('#showingCount').textContent = 0; return; }
+  list.slice(0,60).forEach(r=>{
+    const percent = Math.round((r.score||0)*100);
+    const card = document.createElement('div'); card.className='recipe-card fade-in';
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="flex:1">
+          <h4 style="margin:0">${r.title}</h4>
+          <div class="rmeta">${r.category || (r.tags && r.tags[0]) || 'General'} • ${r.time} min • Serves: ${r.serves || '-'} • ${r.difficulty || '-'}</div>
+          <div style="margin-top:8px" class="small muted">Missing: ${(r.missing||[]).slice(0,4).join(', ') || '—'}</div>
+        </div>
+        <div style="margin-left:12px;text-align:right">
+          <div class="badge">${percent}%</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+            <button class="btn small" data-id="${r.id}" data-action="view">View</button>
+            <button class="btn small" data-id="${r.id}" data-action="save">${state.saved.includes(r.id)?'Unsave':'Save'}</button>
+            <button class="btn small" data-id="${r.id}" data-action="grocery">Add Missing</button>
+          </div>
+        </div>
       </div>
     `;
-    el.appendChild(div);
+    out.appendChild(card);
   });
-  el.querySelectorAll('button').forEach(b=>{
-    const act = b.dataset.action; const id = b.dataset.id;
+
+  // wire up buttons
+  $$('#recipesList button').forEach(b=>{
     b.addEventListener('click', ()=> {
+      const id = b.dataset.id; const act = b.dataset.action;
       if(act === 'view') openRecipeDetail(id);
       if(act === 'save') toggleSaveRecipe(id);
       if(act === 'grocery') addMissingToGrocery(id);
     });
   });
-  document.getElementById('matchCount').textContent = list.length;
+
+  $('#matchCount').textContent = list.length;
+  $('#showingCount').textContent = Math.min(list.length, 60);
 }
 
-/* ============================
-   Recipe Detail / Cook Mode
-   ============================ */
+/* search UI handlers */
+$('#runSearch').addEventListener('click', ()=> {
+  const q = $('#searchInput').value;
+  const list = searchAndFilter({ q, time:$('#timeFilter').value, diff:$('#diffFilter').value });
+  renderRecipes(list);
+});
+$('#searchInput').addEventListener('keypress', (e)=>{ if(e.key==='Enter') $('#runSearch').click(); });
+$('#globalSearch').addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ $('#searchInput').value = $('#globalSearch').value; $('#runSearch').click(); }});
+$('#shuffleRecipes').addEventListener('click', ()=> { state.recipes = state.recipes.sort(()=>Math.random()-0.5); saveLS('recipes', state.recipes); renderRecipes(matchedRecipes().slice(0,60)); });
+
+/* show more */
+$('#moreRecipes').addEventListener('click', ()=> {
+  renderRecipes(matchedRecipes());
+});
+
+/* ========================
+   Recipe detail & cook mode
+   ======================== */
 let currentRecipe = null;
-let currentServes = 2;
 
 function findRecipeById(id){
   return state.recipes.find(r => r.id === id);
@@ -737,169 +629,75 @@ function openRecipeDetail(id){
   const r = findRecipeById(id);
   if(!r) return alert('Recipe not found');
   currentRecipe = JSON.parse(JSON.stringify(r));
-  document.getElementById('recipeDetailCard').style.display = 'block';
-  document.getElementById('recipeDetailCard').scrollIntoView({behavior:'smooth'});
-  document.getElementById('detailTitle').textContent = r.title;
-  document.getElementById('detailMeta').textContent = `${(r.category? r.category + ' • ' : '')}${r.tags ? r.tags.join(', ') + ' • ' : ''}${r.time} ${typeof r.time === 'number' ? 'min' : ''}`;
-
-  document.getElementById('serves').textContent = r.serves || '-';
-  document.getElementById('servesBadge').textContent = r.serves || 1;
-  currentServes = r.serves || 1;
-  document.getElementById('time').textContent = (r.time || '-') + (typeof r.time === 'number' ? ' min' : '');
-  document.getElementById('difficulty').textContent = r.difficulty || '-';
-  renderIngredientList(currentRecipe.ingredients || currentRecipe.ingredients || [], currentServes);
-  renderSteps(currentRecipe.steps || []);
-  renderSubstitutions(currentRecipe.ingredients || []);
-
-  // update save button text
-  document.getElementById('saveRecipeBtn').textContent = state.saved.includes(r.id) ? 'Unsave' : 'Save';
-}
-
-function renderIngredientList(ings, serves){
-  const ul = document.getElementById('ingList'); ul.innerHTML = '';
-  (ings || []).forEach(ing=>{
-    const li = document.createElement('li');
-    let name = typeof ing === 'string' ? ing : (ing.name || '');
-    const qty = (ing.qty !== undefined && ing.qty !== null && typeof ing.qty !== 'string') ? ` — ${ing.qty}${ing.unit ? ' ' + ing.unit : ''}` : (ing.qty ? ` — ${ing.qty}` : '');
-    li.textContent = `${name}${qty}`;
-    ul.appendChild(li);
+  $('#detailTitle').textContent = r.title;
+  $('#detailMeta').textContent = `${(r.category? r.category + ' • ' : '')}${(r.tags? r.tags.join(', ') + ' • ' : '')}${r.time} ${typeof r.time === 'number' ? 'min' : ''}`;
+  $('#servesBadge').textContent = r.serves || '-';
+  // ingredients
+  const ing = $('#ingList'); ing.innerHTML = '';
+  (r.ingredients || []).forEach(i=>{
+    const li = document.createElement('li'); li.textContent = (i.name || i) + (i.qty && typeof i.qty !== 'string' ? ` — ${i.qty}${i.unit? ' '+i.unit : ''}` : (i.qty ? ` — ${i.qty}` : ''));
+    ing.appendChild(li);
   });
-}
-
-function renderSteps(steps){
-  const ol = document.getElementById('stepList'); ol.innerHTML = '';
-  (steps || []).forEach((s, idx)=>{
+  // steps + attach step timers
+  const steps = $('#stepList'); steps.innerHTML = '';
+  (r.steps||[]).forEach((s, idx)=>{
     const li = document.createElement('li');
     li.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:flex-start"><div>${s}</div><div><button class="btn small" data-step="${idx}" data-action="start-step">Start timer</button></div></div>`;
-    ol.appendChild(li);
+    steps.appendChild(li);
   });
-  ol.querySelectorAll('button[data-action="start-step"]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const idx = parseInt(b.dataset.step,10);
-      const minutes = parseFloat(prompt('Enter minutes for this step (decimal allowed, e.g., 1.5 for 1min30sec):','1')) || 1;
-      startStepTimer(Math.max(0.1, minutes*60), idx);
-    });
-  });
-}
-
-function renderSubstitutions(ings){
-  const tbody = document.querySelector('#subsTable tbody'); if(!tbody) return;
-  tbody.innerHTML = '';
-  (ings || []).forEach(ing=>{
-    const name = typeof ing === 'string' ? ing : (ing.name || '');
-    const sub = findSubstitute(name);
+  // substitutions
+  const subs = $('#subsTable'); subs.innerHTML = '';
+  (r.ingredients||[]).forEach(i=>{
+    const name = typeof i === 'string' ? i : i.name;
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${name}</td><td>${sub}</td>`;
-    tbody.appendChild(tr);
+    tr.innerHTML = `<td style="padding:8px 6px">${name}</td><td style="padding:8px 6px">${findSubstitute(name)}</td>`;
+    subs.appendChild(tr);
   });
-}
 
-/* Scale servings */
-document.getElementById('scaleUp').addEventListener('click', ()=> {
-  if(!currentRecipe) return;
-  currentServes = Math.max(1, parseInt(document.getElementById('servesBadge').textContent || '2',10) + 1);
-  document.getElementById('servesBadge').textContent = currentServes;
-  scaleIngredients(currentServes);
-});
-document.getElementById('scaleDown').addEventListener('click', ()=> {
-  if(!currentRecipe) return;
-  currentServes = Math.max(1, parseInt(document.getElementById('servesBadge').textContent || '2',10) - 1);
-  document.getElementById('servesBadge').textContent = currentServes;
-  scaleIngredients(currentServes);
-});
-function scaleIngredients(newServes){
-  if(!currentRecipe) return;
-  const factor = newServes / (currentRecipe.serves || 1);
-  const scaled = (currentRecipe.ingredients || []).map(ing=> {
-    if(ing && typeof ing === 'object' && typeof ing.qty === 'number') {
-      return {...ing, qty: +(ing.qty * factor).toFixed(3)};
-    }
-    return ing;
-  });
-  renderIngredientList(scaled, newServes);
-}
-
-/* ============================
-   Save / Favorites / Grocery
-   ============================ */
-function toggleSaveRecipe(id){
-  const idx = state.saved.indexOf(id);
-  if(idx === -1){
-    state.saved.push(id);
-    alert('Recipe saved');
-  } else {
-    state.saved.splice(idx,1);
-    alert('Recipe removed');
-  }
-  saveLS('saved', state.saved);
-  renderSavedList();
-  renderRecipes(matchRecipes());
-}
-function renderSavedList(){
-  const el = document.getElementById('savedList'); el.innerHTML = '';
-  if(!state.saved.length){ el.textContent = 'No saved recipes yet'; document.getElementById('savedCount').textContent = 0; return; }
-  state.saved.forEach(id=>{
-    const r = findRecipeById(id);
-    if(!r) return;
-    const d = document.createElement('div');
-    d.style.display = 'flex'; d.style.justifyContent = 'space-between'; d.style.alignItems = 'center';
-    d.innerHTML = `<div>${r.title} <span class="small muted">• ${r.time} ${typeof r.time==='number'?'min':''}</span></div><div><button class="btn small" data-id="${r.id}" data-action="open">Open</button> <button class="btn small" data-id="${r.id}" data-action="remove">Remove</button></div>`;
-    el.appendChild(d);
-  });
-  el.querySelectorAll('button[data-action]').forEach(b=>{
+  // attach step buttons
+  $$('#stepList button[data-action="start-step"]').forEach(b=>{
     b.addEventListener('click', ()=>{
-      const act = b.dataset.action; const id = b.dataset.id;
-      if(act === 'open') openRecipeDetail(id);
-      if(act === 'remove'){ const i = state.saved.indexOf(id); if(i>-1) state.saved.splice(i,1); saveLS('saved', state.saved); renderSavedList(); renderRecipes(matchRecipes()); }
+      const mins = parseFloat(prompt('Enter minutes for this step (decimal allowed, e.g., 1.5 for 1min30sec):','1')) || 1;
+      startStepTimer(Math.max(0.1, mins*60));
     });
   });
-  document.getElementById('savedCount').textContent = state.saved.length;
+
+  $('#recipeModal').classList.add('open');
+  $('#recipeModal').setAttribute('aria-hidden','false');
 }
 
-/* Grocery aggregation/add missing */
-function addMissingToGrocery(id){
-  const r = findRecipeById(id);
-  if(!r) return;
-  const pantryNames = state.pantry.map(p => p.name);
-  (r.ingredients || []).forEach(ing=>{
-    const nm = normalizeItemName(typeof ing === 'string' ? ing : (ing.name || ''));
-    if(!nm) return;
-    if(!pantryNames.includes(nm)){
-      if(!state.grocery.find(g => g.name === nm)) state.grocery.push({name: nm});
-    }
+$('#closeRecipeModal').addEventListener('click', ()=> { $('#recipeModal').classList.remove('open'); $('#recipeModal').setAttribute('aria-hidden','true'); });
+
+$('#backToList').addEventListener('click', ()=> { $('#recipeModal').classList.remove('open'); $('#recipeModal').setAttribute('aria-hidden','true'); window.scrollTo({top:0, behavior:'smooth'}); });
+
+$('#enterCookMode').addEventListener('click', ()=> {
+  if(!currentRecipe) return alert('No recipe selected');
+  $('#cookTitle').textContent = currentRecipe.title;
+  const container = $('#cookSteps'); container.innerHTML = '';
+  (currentRecipe.steps||[]).forEach((s, idx)=>{
+    const div = document.createElement('div'); div.className='step';
+    div.innerHTML = `<h4>Step ${idx+1}</h4><p>${s}</p><div style="margin-top:8px"><button class="btn primary" data-idx="${idx}" data-action="step-start">Start Timer</button></div>`;
+    container.appendChild(div);
   });
-  saveLS('grocery', state.grocery);
-  renderGrocery();
-  alert('Missing items added to grocery list');
-}
-function renderGrocery(){
-  const el = document.getElementById('groceryList'); el.innerHTML = '';
-  if(!state.grocery.length){ el.textContent = 'Grocery list is empty'; document.getElementById('groceryCount').textContent = 0; return; }
-  state.grocery.forEach((g, idx)=>{
-    const div = document.createElement('div');
-    div.style.display='flex'; div.style.justifyContent='space-between'; div.style.alignItems='center'; div.style.padding='6px 0';
-    div.innerHTML = `<div>${g.name}</div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
-    el.appendChild(div);
-  });
-  el.querySelectorAll('button[data-action="remove"]').forEach(b=>{
+  // attach timers
+  $$('#cookSteps button[data-action="step-start"]').forEach(b=>{
     b.addEventListener('click', ()=>{
-      const i = parseInt(b.dataset.idx,10);
-      if(i>-1){ state.grocery.splice(i,1); saveLS('grocery', state.grocery); renderGrocery(); }
+      const mins = parseFloat(prompt('Minutes for this step:', '1')) || 1;
+      startStepTimer(Math.max(0.1, mins*60));
     });
   });
-  document.getElementById('groceryCount').textContent = state.grocery.length;
-}
 
-/* Copy grocery to clipboard */
-document.getElementById('copyGrocery').addEventListener('click', async ()=>{
-  if(!state.grocery.length) return alert('Grocery list is empty');
-  const txt = state.grocery.map(g=>g.name).join('\n');
-  try{ await navigator.clipboard.writeText(txt); alert('Grocery copied to clipboard'); } catch(e){ alert('Copy failed — fallback: see list and copy manually'); }
+  $('#recipeModal').classList.remove('open');
+  $('#cookModal').classList.add('open');
 });
+$('#exitCook').addEventListener('click', ()=> { $('#cookModal').classList.remove('open'); });
 
-/* ============================
+/* scale servings (in modal) - not destructive, only UI */
+$('#saveRecipeBtn').addEventListener('click', ()=> { if(!currentRecipe) return; toggleSaveRecipe(currentRecipe.id); $('#recipeModal').classList.remove('open'); });
+
+/* ========================
    Substitutions
-   ============================ */
+   ======================== */
 const SUBSTITUTIONS = {
   'butter': 'margarine or coconut oil',
   'milk': 'soy milk or almond milk (adjust flavor)',
@@ -913,171 +711,118 @@ const SUBSTITUTIONS = {
   'bread': 'tortilla or crackers (depending on recipe)'
 };
 function findSubstitute(name){
-  const key = normalizeItemName(name);
+  const key = normalize(name);
   for(const k in SUBSTITUTIONS) if(key.includes(k)) return SUBSTITUTIONS[k];
   return 'No obvious substitute; try similar category ingredient';
 }
 
-/* ============================
-   Timer logic (minutes-based)
-   ============================ */
-let kitchenTimerInterval = null;
-function updateKitchenDisplay(sec){
-  document.getElementById('timerBadge').textContent = humanTime(sec);
-}
-document.getElementById('startKitchenTimer').addEventListener('click', ()=> {
-  const mins = parseFloat(document.getElementById('timerMinutes').value) || 0;
-  if(mins <= 0) return alert('Enter minutes (positive number)');
-  let remaining = Math.round(mins * 60);
-  if(kitchenTimerInterval) clearInterval(kitchenTimerInterval);
-  updateKitchenDisplay(remaining);
-  kitchenTimerInterval = setInterval(()=>{
-    remaining--;
-    updateKitchenDisplay(remaining);
-    if(remaining <= 0){ clearInterval(kitchenTimerInterval); kitchenTimerInterval = null; alert('Kitchen timer finished'); updateKitchenDisplay(0); }
-  }, 1000);
-});
-document.getElementById('stopKitchenTimer').addEventListener('click', ()=> {
-  if(kitchenTimerInterval){ clearInterval(kitchenTimerInterval); kitchenTimerInterval = null; alert('Kitchen timer stopped'); updateKitchenDisplay(0); }
-});
-
-/* Step timer */
-let stepTimerInterval = null;
-function startStepTimer(sec, stepIdx){
-  let remaining = Math.round(sec);
-  if(stepTimerInterval) clearInterval(stepTimerInterval);
-  alert(`Starting timer for step ${stepIdx + 1}: ${Math.round(remaining/60)} minute(s)`);
-  stepTimerInterval = setInterval(()=>{
-    remaining--;
-    if(remaining <= 0){ clearInterval(stepTimerInterval); stepTimerInterval = null; alert('Step timer done'); }
-  }, 1000);
+/* ========================
+   Save / Favorites / Grocery
+   ======================== */
+function toggleSaveRecipe(id){
+  const idx = state.saved.indexOf(id);
+  if(idx === -1){
+    state.saved.push(id);
+    alert('Recipe saved');
+  } else {
+    state.saved.splice(idx,1);
+    alert('Recipe removed');
+  }
+  saveLS('saved', state.saved);
+  renderSavedList();
+  renderRecipes(searchAndFilter({ q:$('#searchInput').value, time:$('#timeFilter').value, diff:$('#diffFilter').value }));
 }
 
-/* ============================
-   Search, filters, chips
-   ============================ */
-document.getElementById('runSearch').addEventListener('click', ()=> {
-  const q = document.getElementById('searchRecipes').value.trim().toLowerCase();
-  const difficulty = document.getElementById('difficultyFilter').value;
-  const category = document.getElementById('categoryFilter').value;
-  const matches = matchRecipes().filter(r=>{
-    if(category !== 'all' && (r.category || 'General') !== category) return false;
-    if(q && !r.title.toLowerCase().includes(q) && !(r.tags||[]).join(' ').includes(q)) return false;
-    if(difficulty !== 'any' && r.difficulty !== difficulty) return false;
-    return true;
+function renderSavedList(){
+  const el = $('#savedList'); el.innerHTML = '';
+  if(!state.saved.length){ el.textContent = 'No saved recipes yet'; $('#savedCount').textContent = 0; return; }
+  state.saved.forEach(id=>{
+    const r = findRecipeById(id);
+    if(!r) return;
+    const d = document.createElement('div'); d.className='list-item';
+    d.innerHTML = `<div>${r.title} <div class="small muted">• ${r.time} min</div></div><div><button class="btn small" data-id="${r.id}" data-action="open">Open</button> <button class="btn small" data-id="${r.id}" data-action="remove">Remove</button></div>`;
+    el.appendChild(d);
   });
-  renderRecipes(matches);
-});
-document.getElementById('moreRecipes').addEventListener('click', ()=> { renderRecipes(matchRecipes().slice(0, Math.min(matchRecipes().length, 60))); });
-document.getElementById('shuffleRecipes').addEventListener('click', ()=> { const arr = matchRecipes().sort(()=>Math.random()-0.5); renderRecipes(arr); });
-$qa('.chip').forEach(ch=> ch.addEventListener('click', ()=> { document.getElementById('searchRecipes').value = ch.dataset.suggest || ''; document.getElementById('runSearch').click(); }));
-
-/* --------------------------
-   Adding pantry items
-   -------------------------- */
-document.getElementById('addPantry').addEventListener('click', ()=> {
-  const s = document.getElementById('pantryInput').value.trim();
-  if(!s) return alert('Enter pantry items (comma separated)');
-  parseAndAddPantry(s);
-  document.getElementById('pantryInput').value = '';
-});
-document.getElementById('clearPantryInput').addEventListener('click', ()=> { if(confirm('Clear pantry input?')) document.getElementById('pantryInput').value = ''; });
-document.getElementById('clearPantryAll').addEventListener('click', ()=> { if(confirm('Clear entire pantry?')){ state.pantry = []; persistPantry(); renderPantry(); renderRecipes(matchRecipes()); } });
-
-/* --------------------------
-   Sample pantry loader
-   -------------------------- */
-document.getElementById('importSample').addEventListener('click', ()=> {
-  state.pantry = [
-    {name:'eggs', display:'Eggs'},
-    {name:'flour', display:'Flour'},
-    {name:'milk', display:'Milk'},
-    {name:'olive oil', display:'Olive Oil'},
-    {name:'canned tomatoes', display:'Canned Tomatoes'},
-    {name:'garlic', display:'Garlic'}
-  ];
-  persistPantry();
-  renderPantry(); renderRecipes(matchRecipes());
-  alert('Sample pantry loaded');
-});
-
-/* --------------------------
-   Save / UI wiring
-   -------------------------- */
-document.getElementById('btnTheme').addEventListener('click', ()=> { document.body.classList.toggle('light'); });
-
-document.getElementById('backToList').addEventListener('click', ()=> {
-  document.getElementById('recipeDetailCard').style.display = 'none';
-  document.getElementById('recipesList').style.display = 'grid';
-});
-
-document.getElementById('enterCookMode').addEventListener('click', ()=> {
-  if(!currentRecipe) return alert('Open a recipe first');
-  // show cook mode
-  document.getElementById('recipeDetailCard').style.display = 'none';
-  document.getElementById('cookMode').style.display = 'block';
-  document.getElementById('cookTitle').textContent = currentRecipe.title;
-  const el = document.getElementById('cookSteps'); el.innerHTML = '';
-  (currentRecipe.steps || []).forEach((s, idx)=>{
-    const div = document.createElement('div'); div.className='step';
-    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><h5>Step ${idx+1}</h5><div class="small muted">${s}</div></div><div><button class="btn small" data-step="${idx}" data-action="start-step">Start timer</button></div></div>`;
-    el.appendChild(div);
-  });
-  el.querySelectorAll('button[data-action="start-step"]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const sidx = parseInt(b.dataset.step,10);
-      const minutes = parseFloat(prompt('Enter minutes for this step (decimal allowed):','1')) || 1;
-      startStepTimer(Math.max(0.1, minutes*60), sidx);
+  $$('#savedList button').forEach(b=>{
+    b.addEventListener('click', ()=> {
+      const act = b.dataset.action; const id = b.dataset.id;
+      if(act === 'open') openRecipeDetail(id);
+      if(act === 'remove'){ const i = state.saved.indexOf(id); if(i>-1){ state.saved.splice(i,1); saveLS('saved', state.saved); renderSavedList(); renderRecipes(matchedRecipes()); } }
     });
   });
+  $('#savedCount').textContent = state.saved.length;
+}
+
+/* Grocery operations */
+function addMissingToGrocery(id){
+  const r = findRecipeById(id);
+  if(!r) return;
+  const pantryNames = state.pantry.map(p => p.name);
+  (r.ingredients || []).forEach(ing=>{
+    const nm = normalize(typeof ing === 'string' ? ing : (ing.name || ''));
+    if(!nm) return;
+    if(!pantryNames.includes(nm)){
+      if(!state.grocery.find(g => g.name === nm)) state.grocery.push({name: nm});
+    }
+  });
+  saveLS('grocery', state.grocery);
+  renderGrocery();
+  alert('Missing items added to grocery list');
+}
+
+function renderGrocery(){
+  const el = $('#groceryList'); el.innerHTML = '';
+  if(!state.grocery.length){ el.textContent = 'Grocery list is empty'; $('#groceryCount').textContent = 0; return; }
+  state.grocery.forEach((g, idx)=>{
+    const div = document.createElement('div'); div.className='list-item';
+    div.innerHTML = `<div>${g.name}</div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
+    el.appendChild(div);
+  });
+  $$('#groceryList button[data-action="remove"]').forEach(b=>{
+    b.addEventListener('click', ()=> { const i = parseInt(b.dataset.idx,10); if(i>-1){ state.grocery.splice(i,1); saveLS('grocery', state.grocery); renderGrocery(); } });
+  });
+  $('#groceryCount').textContent = state.grocery.length;
+}
+
+/* copy grocery */
+$('#copyGrocery').addEventListener('click', async ()=>{
+  if(!state.grocery.length) return alert('Grocery list is empty');
+  const txt = state.grocery.map(g=>g.name).join('\n');
+  try{ await navigator.clipboard.writeText(txt); alert('Grocery copied to clipboard'); } catch(e){ alert('Copy failed — fallback: view list and copy manually'); }
 });
 
-document.getElementById('exitCook').addEventListener('click', ()=> {
-  document.getElementById('cookMode').style.display = 'none';
-  document.getElementById('recipesList').style.display = 'grid';
+/* clear grocery */
+$('#clearGrocery').addEventListener('click', ()=> {
+  if(!confirm('Clear grocery list?')) return;
+  state.grocery = []; saveLS('grocery', state.grocery); renderGrocery();
 });
 
-/* Save / Add to grocery buttons on detail card */
-document.getElementById('saveRecipeBtn').addEventListener('click', ()=> {
-  if(!currentRecipe) return;
-  toggleSaveRecipe(currentRecipe.id);
-  document.getElementById('saveRecipeBtn').textContent = state.saved.includes(currentRecipe.id) ? 'Unsave' : 'Save';
-});
-document.getElementById('addToGroceryBtn').addEventListener('click', ()=> {
-  if(!currentRecipe) return;
-  addMissingToGrocery(currentRecipe.id);
-});
-
-/* --------------------------
-   Profile Manager (no file imports)
-   - Save profiles (name -> snapshot)
-   - Copy profile JSON to clipboard (backup)
-   - Restore by pasting JSON
-   -------------------------- */
-const profilesContainer = document.getElementById('profilesContainer');
+/* ========================
+   Profiles & backup
+   ======================== */
 function renderProfiles(){
-  profilesContainer.innerHTML = '';
+  const container = $('#profilesContainer'); container.innerHTML = '';
   const names = Object.keys(state.profiles || {});
-  if(!names.length){ profilesContainer.innerHTML = '<div class="small muted">No profiles yet — save your current pantry and favorites.</div>'; return; }
+  if(!names.length){ container.innerHTML = '<div class="small muted">No profiles yet — save your current pantry & favorites</div>'; return; }
   names.forEach(name=>{
     const p = state.profiles[name];
-    const row = document.createElement('div'); row.className='profile-row';
-    row.innerHTML = `<div><strong>${name}</strong> <div class="small muted">${(p.pantry||[]).length} pantry items • ${(p.saved||[]).length} saved</div></div><div><button class="btn small" data-name="${name}" data-action="apply">Apply</button> <button class="btn small" data-name="${name}" data-action="copy">Copy</button> <button class="btn small" data-name="${name}" data-action="delete">Delete</button></div>`;
-    profilesContainer.appendChild(row);
+    const row = document.createElement('div'); row.className='list-item';
+    row.innerHTML = `<div><strong>${name}</strong><div class="small muted">${(p.pantry||[]).length} pantry • ${(p.saved||[]).length} saved</div></div><div><button class="btn small" data-name="${name}" data-action="apply">Apply</button> <button class="btn small" data-name="${name}" data-action="copy">Copy</button> <button class="btn small" data-name="${name}" data-action="delete">Delete</button></div>`;
+    container.appendChild(row);
   });
-  profilesContainer.querySelectorAll('button[data-action]').forEach(b=>{
+  $$('#profilesContainer button').forEach(b=>{
     b.addEventListener('click', async ()=>{
       const name = b.dataset.name; const act = b.dataset.action;
       if(act === 'apply'){
-        if(!confirm(`Apply profile "${name}" to your current session? This will replace your current pantry and saved recipes.`)) return;
+        if(!confirm(`Apply profile "${name}"? This will replace current pantry & saved.`)) return;
         const p = state.profiles[name];
         state.pantry = JSON.parse(JSON.stringify(p.pantry || []));
         state.saved = JSON.parse(JSON.stringify(p.saved || []));
         state.grocery = JSON.parse(JSON.stringify(p.grocery || []));
         state.favorites = JSON.parse(JSON.stringify(p.favorites || []));
         persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
-        renderPantry(); renderSavedList(); renderGrocery();
-        alert(`Profile "${name}" applied.`);
+        renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
+        alert(`Profile "${name}" applied`);
       } else if(act === 'copy'){
         const json = JSON.stringify(state.profiles[name], null, 2);
         try{ await navigator.clipboard.writeText(json); alert('Profile copied to clipboard'); } catch(e){ prompt('Copy failed. Use this JSON:', json); }
@@ -1091,8 +836,8 @@ function renderProfiles(){
   });
 }
 
-document.getElementById('saveProfileBtn').addEventListener('click', ()=> {
-  const name = (document.getElementById('profileName').value || '').trim();
+$('#saveProfileBtn').addEventListener('click', ()=> {
+  const name = ($('#profileName').value || '').trim();
   if(!name) return alert('Enter a profile name');
   state.profiles[name] = {
     pantry: JSON.parse(JSON.stringify(state.pantry)),
@@ -1102,127 +847,34 @@ document.getElementById('saveProfileBtn').addEventListener('click', ()=> {
     at: new Date().toISOString()
   };
   saveLS('profiles', state.profiles);
-  document.getElementById('profileName').value = '';
+  $('#profileName').value = '';
   renderProfiles();
   alert(`Profile "${name}" saved`);
 });
 
-document.getElementById('btnOpenProfiles').addEventListener('click', ()=> {
-  renderProfiles();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-/* Backup to clipboard (profile snapshot) */
-document.getElementById('backupToClipboard').addEventListener('click', async ()=>{
-  const snapshot = {
-    pantry: state.pantry,
-    saved: state.saved,
-    grocery: state.grocery,
-    favorites: state.favorites,
-    savedAt: new Date().toISOString()
-  };
+/* backup & restore */
+$('#backupToClipboard').addEventListener('click', async ()=>{
+  const snapshot = { pantry: state.pantry, saved: state.saved, grocery: state.grocery, favorites: state.favorites, savedAt: new Date().toISOString() };
   const json = JSON.stringify(snapshot, null, 2);
   try{ await navigator.clipboard.writeText(json); alert('Backup copied to clipboard'); } catch(e){ prompt('Copy failed. Use this JSON to back up:', json); }
 });
-
-/* Restore from clipboard (user pastes JSON) */
-document.getElementById('restoreFromClipboard').addEventListener('click', async ()=>{
+$('#restoreFromClipboard').addEventListener('click', ()=> {
   const pasted = prompt('Paste profile JSON here (this will replace your current pantry, saved and grocery):');
   if(!pasted) return;
   try{
     const obj = JSON.parse(pasted);
-    if(!obj) throw new Error('Invalid JSON');
-    state.pantry = obj.pantry || [];
-    state.saved = obj.saved || [];
-    state.grocery = obj.grocery || [];
-    state.favorites = obj.favorites || [];
+    state.pantry = obj.pantry || []; state.saved = obj.saved || []; state.grocery = obj.grocery || []; state.favorites = obj.favorites || [];
     persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
-    renderPantry(); renderSavedList(); renderGrocery();
+    renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
     alert('Profile restored from pasted JSON');
   } catch(e){
     alert('Restore failed — invalid JSON');
   }
 });
 
-/* --------------------------
-   Copy/paste grocery & other small helpers
-   -------------------------- */
-document.getElementById('copyGrocery').addEventListener('click', async ()=>{
-  try{
-    const txt = state.grocery.map(g => g.name).join('\n');
-    if(!txt) return alert('Grocery list empty');
-    await navigator.clipboard.writeText(txt);
-    alert('Grocery copied to clipboard');
-  } catch(e){
-    alert('Copy failed');
-  }
-});
-
-/* --------------------------
-   Profile / clear UI
-   -------------------------- */
-document.getElementById('btnSaveProfile').addEventListener('click', ()=> {
-  const defaultName = `auto-${new Date().toISOString().slice(0,10)}`;
-  const name = prompt('Name for this profile?', defaultName);
-  if(!name) return;
-  state.profiles[name] = {
-    pantry: JSON.parse(JSON.stringify(state.pantry)),
-    saved: JSON.parse(JSON.stringify(state.saved)),
-    grocery: JSON.parse(JSON.stringify(state.grocery)),
-    favorites: JSON.parse(JSON.stringify(state.favorites)),
-    at: new Date().toISOString()
-  };
-  saveLS('profiles', state.profiles);
-  alert(`Profile "${name}" created`);
-  renderProfiles();
-});
-
-/* --------------------------
-   Clear profile data
-   -------------------------- */
-document.getElementById('clearPantryAll').addEventListener('click', ()=> {
-  if(!confirm('Clear all pantry items?')) return;
-  state.pantry = []; persistPantry(); renderPantry(); renderRecipes(matchRecipes());
-});
-document.getElementById('clearGrocery').addEventListener('click', ()=> {
-  if(!confirm('Clear grocery list?')) return;
-  state.grocery = []; saveLS('grocery', state.grocery); renderGrocery();
-});
-document.getElementById('clearProfile')?.addEventListener('click', ()=> {
-  if(!confirm('Clear local data (pantry, saved, grocery, profiles)?')) return;
-  state.pantry = []; state.saved = []; state.grocery = []; state.favorites = []; state.profiles = {};
-  persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites); saveLS('profiles', state.profiles);
-  renderPantry(); renderSavedList(); renderGrocery(); renderProfiles();
-  alert('All local data cleared');
-});
-
-/* ============================
+/* ========================
    Lessons & Inspiration
-   ============================ */
-state.lessons = state.lessons || [
-  "Salt intensifies flavor — add gradually and taste as you go.",
-  "Let meat rest after cooking to keep juices locked in.",
-  "Use a sharp knife — it's safer and more precise.",
-  "Toast whole spices lightly to release aroma before grinding.",
-  "Acid (lemon/vinegar) brightens finished dishes."
-];
-state.lessonIndex = state.lessonIndex || 0;
-
-function renderLessonsGrid(){
-  const el = document.getElementById('lessonsGrid'); el.innerHTML = '';
-  for(let i=0;i<3;i++){
-    const idx = (state.lessonIndex + i) % state.lessons.length;
-    const panel = document.createElement('div'); panel.className = 'panel card';
-    panel.style.padding = '12px';
-    panel.innerHTML = `<strong>${state.lessons[idx]}</strong><div class="small muted" style="margin-top:6px">Quick technique</div>`;
-    el.appendChild(panel);
-  }
-  document.getElementById('lessonIndex').textContent = state.lessonIndex + 1;
-}
-document.getElementById('nextLesson').addEventListener('click', ()=> { state.lessonIndex = (state.lessonIndex + 1) % state.lessons.length; saveLS('lessonIndex', state.lessonIndex); renderLessonsGrid(); });
-document.getElementById('prevLesson').addEventListener('click', ()=> { state.lessonIndex = (state.lessonIndex - 1 + state.lessons.length) % state.lessons.length; saveLS('lessonIndex', state.lessonIndex); renderLessonsGrid(); });
-renderLessonsGrid();
-
+   ======================== */
 const INSPOS = [
   'Lemon + Thyme + Garlic — brightens roasted veg or fish',
   'Soy + Sesame + Scallion — fast umami sauce',
@@ -1233,35 +885,183 @@ const INSPOS = [
   'Peanut butter + Banana + Oats — hearty quick bowl',
   'Tomato + Basil + Balsamic — classic finishing trio'
 ];
-function newInspiration(){ document.getElementById('dailyInspo').textContent = INSPOS[Math.floor(Math.random()*INSPOS.length)]; }
-document.getElementById('newInspo').addEventListener('click', ()=> newInspiration());
-document.getElementById('saveInspo').addEventListener('click', ()=> { const t = document.getElementById('dailyInspo').textContent; if(!t) return; state.favorites = state.favorites || []; state.favorites.push({text: t, at: new Date().toISOString()}); saveLS('favorites', state.favorites); alert('Inspiration saved'); });
+function newInspiration(){ $('#dailyInspo').textContent = INSPOS[Math.floor(Math.random()*INSPOS.length)]; }
+$('#newInspo').addEventListener('click', newInspiration);
+$('#saveInspo').addEventListener('click', ()=> { state.favorites = state.favorites || []; state.favorites.push({text: $('#dailyInspo').textContent, at: new Date().toISOString()}); saveLS('favorites', state.favorites); alert('Inspiration saved'); });
 newInspiration();
 
-/* ============================
-   Substitution & Helper UI on load
-   ============================ */
-function findRecipeIdByTitle(title){
-  const r = state.recipes.find(x=>x.title === title);
-  return r ? r.id : null;
+/* ========================
+   Timers
+   ======================== */
+let kitchenTimerInterval = null;
+function updateKitchenDisplay(sec){ $('#timerBadge').textContent = humanTime(sec); }
+$('#startKitchenTimer').addEventListener('click', ()=> {
+  const mins = parseFloat($('#timerMinutes').value) || 0;
+  if(mins <= 0) return alert('Enter minutes (positive number)');
+  let remaining = Math.round(mins * 60);
+  if(kitchenTimerInterval) clearInterval(kitchenTimerInterval);
+  updateKitchenDisplay(remaining);
+  kitchenTimerInterval = setInterval(()=>{
+    remaining--;
+    updateKitchenDisplay(remaining);
+    if(remaining <= 0){ clearInterval(kitchenTimerInterval); kitchenTimerInterval = null; alert('Kitchen timer finished'); updateKitchenDisplay(0); }
+  }, 1000);
+});
+$('#stopKitchenTimer').addEventListener('click', ()=> {
+  if(kitchenTimerInterval){ clearInterval(kitchenTimerInterval); kitchenTimerInterval = null; alert('Kitchen timer stopped'); updateKitchenDisplay(0); }
+});
+
+let stepTimerInterval = null;
+function startStepTimer(sec){
+  let remaining = Math.round(sec);
+  if(stepTimerInterval) clearInterval(stepTimerInterval);
+  alert(`Step timer started (${humanTime(remaining)})`);
+  stepTimerInterval = setInterval(()=> {
+    remaining--;
+    if(remaining <= 0){ clearInterval(stepTimerInterval); stepTimerInterval = null; alert('Step timer finished'); }
+  }, 1000);
 }
 
-/* ============================
-   Initial render on load
-   ============================ */
+/* ========================
+   Initialization UI
+   ======================== */
 function initialRender(){
   renderPantry();
-  renderRecipes(matchRecipes().slice(0, Math.min(matchRecipes().length, 40)));
+  renderRecipes(matchedRecipes().slice(0, Math.min(matchedRecipes().length, 40)));
   renderSavedList();
   renderGrocery();
   renderProfiles();
 }
 initialRender();
 
-/* ============================
-   Utility: sanitize / small helpers
-   ============================ */
-/* no-op — left for future extensions */
+/* ========================
+   Supabase Auth & Profile sync
+   ======================== */
+async function updateAuthUI(){
+  if(!supabase) { $('#userEmail').textContent = ''; return; }
+  const { data } = await supabase.auth.getSession();
+  const user = data?.session?.user || null;
+  if(user){ $('#userEmail').textContent = user.email || user.id; }
+  else { $('#userEmail').textContent = ''; }
+}
+
+/* Auth modal (simple) */
+let loginModal = null;
+function openLoginModal(){
+  if(!loginModal){
+    loginModal = document.createElement('div'); loginModal.className = 'modal';
+    loginModal.innerHTML = `<div class="card" style="max-width:420px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><h3 style="margin:0">Account</h3><button class="btn ghost" id="closeLogin">Close</button></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="loginEmail" class="input" placeholder="Email">
+        <input id="loginPassword" class="input" type="password" placeholder="Password">
+        <div style="display:flex;gap:8px">
+          <button class="btn primary" id="signupBtn">Sign Up (email)</button>
+          <button class="btn" id="loginBtn">Log In</button>
+          <button class="btn ghost" id="logoutBtn" style="display:none">Log Out</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn" id="saveToDbBtn">Save to cloud</button>
+          <button class="btn" id="loadFromDbBtn">Load from cloud</button>
+        </div>
+        <div id="authNote" class="small muted" style="margin-top:8px">Profile sync stores pantry, saved recipes, grocery.</div>
+      </div>
+    </div>`;
+    document.body.appendChild(loginModal);
+
+    // handlers
+    loginModal.querySelector('#closeLogin').addEventListener('click', ()=> loginModal.classList.remove('open'));
+    loginModal.querySelector('#signupBtn').addEventListener('click', async ()=>{
+      if(!supabase) return alert('Supabase not configured');
+      const email = loginModal.querySelector('#loginEmail').value;
+      const password = loginModal.querySelector('#loginPassword').value;
+      if(!email || !password) return alert('Enter email & password');
+      const { error } = await supabase.auth.signUp({ email, password });
+      if(error) alert('Sign up error: ' + error.message);
+      else { alert('Check your email to confirm sign up (if enabled).'); updateAuthUI(); }
+    });
+    loginModal.querySelector('#loginBtn').addEventListener('click', async ()=>{
+      if(!supabase) return alert('Supabase not configured');
+      const email = loginModal.querySelector('#loginEmail').value;
+      const password = loginModal.querySelector('#loginPassword').value;
+      if(!email || !password) return alert('Enter email & password');
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if(error) alert('Login error: ' + error.message);
+      else { alert('Logged in'); updateAuthUI(); loginModal.classList.remove('open'); }
+    });
+    loginModal.querySelector('#logoutBtn').addEventListener('click', async ()=>{
+      if(!supabase) return alert('Supabase not configured');
+      await supabase.auth.signOut();
+      alert('Logged out'); updateAuthUI();
+    });
+    loginModal.querySelector('#saveToDbBtn').addEventListener('click', async ()=>{
+      if(!supabase) return alert('Supabase not configured');
+      const { data } = await supabase.auth.getSession();
+      const user = data?.session?.user;
+      if(!user) return alert('Not logged in');
+      const payload = { pantry: state.pantry, saved: state.saved, grocery: state.grocery, favorites: state.favorites };
+      const { error } = await supabase.from('profiles').upsert({ id: user.id, data: payload, updated_at: new Date() });
+      if(error) alert('Save error: ' + error.message); else alert('Saved to cloud');
+    });
+    loginModal.querySelector('#loadFromDbBtn').addEventListener('click', async ()=>{
+      if(!supabase) return alert('Supabase not configured');
+      const { data } = await supabase.auth.getSession();
+      const user = data?.session?.user;
+      if(!user) return alert('Not logged in');
+      const { data: profile, error } = await supabase.from('profiles').select('data').eq('id', user.id).single();
+      if(error) return alert('Load error: ' + error.message);
+      if(profile && profile.data){
+        state.pantry = profile.data.pantry || state.pantry;
+        state.saved = profile.data.saved || state.saved;
+        state.grocery = profile.data.grocery || state.grocery;
+        state.favorites = profile.data.favorites || state.favorites;
+        persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
+        renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
+        alert('Loaded from cloud');
+      } else alert('No profile data found');
+    });
+  }
+  loginModal.classList.add('open');
+  updateAuthUI();
+}
+
+/* bind topbar button */
+$('#btnOpenLogin').addEventListener('click', ()=> openLoginModal() );
+
+/* listen to auth state changes if supabase present */
+if(supabase){
+  supabase.auth.onAuthStateChange((event, session) => {
+    updateAuthUI();
+    // If user logged in we might update UI
+  });
+  updateAuthUI();
+}
+
+/* ========================
+   Misc UI wiring & final render
+   ======================== */
+$('#runSearch').click();
+renderProfiles();
+renderPantry();
+renderSavedList();
+renderGrocery();
+renderRecipes(matchedRecipes().slice(0, Math.min(matchedRecipes().length, 40)));
+
+/* theme toggle */
+$('#btnTheme').addEventListener('click', ()=> { document.body.classList.toggle('light'); });
+
+/* small helpers & debug */
+window.jemwayState = state; // expose for debugging
+
+/* ========================
+   End of file
+   ======================== */
+/*
+  Security & deployment notes:
+  - Don't commit service_role keys to client-side code.
+  - For production enable RLS in Supabase and restrict table operations via policies.
+  - Consider moving backups, avatar uploads, or heavy storage to server endpoints.
+*/
 </script>
 </body>
 </html>
