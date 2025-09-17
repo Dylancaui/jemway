@@ -349,19 +349,15 @@
 
 <script>
 /* =================================================================================
-   Jemway — Revamp full script
-   - Large single-file SPA-style client
-   - Includes Supabase auth + profiles (uses your provided URL/key)
-   - Readable panels (not transparent), fade-in, sections, improved search/filters
+   Jemway — Full merged script
+   - Dual-mode persistence (Supabase profiles <-> localStorage)
+   - Forgot password support
+   - Cleaner recipe instructions
    ================================================================================= */
 
 /* ========================
-   Supabase configuration
+   Supabase configuration (from your earlier paste)
    ======================== */
-/*
-  NOTE: these values are taken from what you provided earlier.
-  If you want me to remove them or rotate keys later, do that in Supabase.
-*/
 const SUPABASE_URL = "https://bpdyjhiwfslvgwruoxcy.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZHlqaGl3ZnNsdmd3cnVveGN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwNjc1NTgsImV4cCI6MjA3MzY0MzU1OH0.qOLLMGQDKv_o2UC7LJY86zCYG9pL3ya7mh6yUikS4dw";
 
@@ -374,44 +370,209 @@ try {
 }
 
 /* ========================
-   Utilities & storage
+   Utilities & storage keys
    ======================== */
 const KEY = 'jemway_pro_v2';
-const saveLS = (k,v)=>{ try{ localStorage.setItem(KEY+'_'+k, JSON.stringify(v)); }catch(e){} };
-const loadLS = (k, fallback)=>{ try{ const v=localStorage.getItem(KEY+'_'+k); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } };
+const KEY_STATE = KEY + '_state'; // guest fallback
+
 const $ = (sel, root=document)=> root.querySelector(sel);
 const $$ = (sel, root=document)=> Array.from((root||document).querySelectorAll(sel));
 function humanTime(sec){ const m=Math.floor(sec/60).toString().padStart(2,'0'); const s=Math.floor(sec%60).toString().padStart(2,'0'); return `${m}:${s}`; }
 function normalize(str){ return (str||'').toString().trim().toLowerCase(); }
 
 /* ========================
-   App state
+   App state (initial read from localStorage as fallback)
    ======================== */
 const state = {
-  pantry: loadLS('pantry', []),
-  recipes: loadLS('recipes', []),
-  saved: loadLS('saved', []),
-  grocery: loadLS('grocery', []),
-  favorites: loadLS('favorites', []),
-  profiles: loadLS('profiles', {}),
-  lessonIndex: loadLS('lessonIndex', 0)
+  pantry: JSON.parse(localStorage.getItem(KEY + '_pantry') || '[]'),
+  recipes: JSON.parse(localStorage.getItem(KEY + '_recipes') || '[]'),
+  saved: JSON.parse(localStorage.getItem(KEY + '_saved') || '[]'),
+  grocery: JSON.parse(localStorage.getItem(KEY + '_grocery') || '[]'),
+  favorites: JSON.parse(localStorage.getItem(KEY + '_favorites') || '[]'),
+  profiles: JSON.parse(localStorage.getItem(KEY + '_profiles') || '{}'),
+  lessonIndex: JSON.parse(localStorage.getItem(KEY + '_lessonIndex') || '0')
 };
 
 /* ========================
+   Dual-mode persistence functions
+   - saveState() writes pantry, saved, grocery, favorites, profiles to cloud when logged in,
+     otherwise writes to localStorage.
+   - loadState() pulls from cloud when logged in, otherwise from localStorage.
+   - On first login, if cloud has no data but local does, we push local -> cloud so user doesn't lose data.
+   ======================== */
+
+async function saveState(){ // non-blocking usage OK
+  const payload = {
+    pantry: state.pantry,
+    saved: state.saved,
+    grocery: state.grocery,
+    favorites: state.favorites,
+    profiles: state.profiles
+  };
+
+  if(!supabase) {
+    // fallback to local for safety
+    localStorage.setItem(KEY_STATE, JSON.stringify(payload));
+    localStorage.setItem(KEY + '_pantry', JSON.stringify(state.pantry));
+    localStorage.setItem(KEY + '_saved', JSON.stringify(state.saved));
+    localStorage.setItem(KEY + '_grocery', JSON.stringify(state.grocery));
+    localStorage.setItem(KEY + '_favorites', JSON.stringify(state.favorites));
+    localStorage.setItem(KEY + '_profiles', JSON.stringify(state.profiles));
+    return;
+  }
+
+  try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const user = sessionData?.session?.user || null;
+    if(user){
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({ id: user.id, data: payload, updated_at: new Date() });
+      if(error) console.error('Supabase saveState error:', error);
+      // still keep local copy for offline fallback
+      localStorage.setItem(KEY_STATE, JSON.stringify(payload));
+      localStorage.setItem(KEY + '_pantry', JSON.stringify(state.pantry));
+      localStorage.setItem(KEY + '_saved', JSON.stringify(state.saved));
+      localStorage.setItem(KEY + '_grocery', JSON.stringify(state.grocery));
+      localStorage.setItem(KEY + '_favorites', JSON.stringify(state.favorites));
+      localStorage.setItem(KEY + '_profiles', JSON.stringify(state.profiles));
+    } else {
+      // guest -> local
+      localStorage.setItem(KEY_STATE, JSON.stringify(payload));
+      localStorage.setItem(KEY + '_pantry', JSON.stringify(state.pantry));
+      localStorage.setItem(KEY + '_saved', JSON.stringify(state.saved));
+      localStorage.setItem(KEY + '_grocery', JSON.stringify(state.grocery));
+      localStorage.setItem(KEY + '_favorites', JSON.stringify(state.favorites));
+      localStorage.setItem(KEY + '_profiles', JSON.stringify(state.profiles));
+    }
+  } catch (e){
+    console.error('saveState failed', e);
+    localStorage.setItem(KEY_STATE, JSON.stringify(payload));
+  }
+}
+
+async function loadState(){
+  // Try cloud if logged in
+  try {
+    if(supabase){
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData?.session?.user || null;
+      if(user){
+        // fetch cloud profile
+        const { data: profile, error } = await supabase.from('profiles').select('data').eq('id', user.id).single();
+        if(error && error.code !== 'PGRST116') { // don't spam errors for missing rows
+          console.warn('loadState supabase error:', error);
+        }
+        if(profile && profile.data){
+          // cloud has authoritative data — load it
+          state.pantry = profile.data.pantry || [];
+          state.saved = profile.data.saved || [];
+          state.grocery = profile.data.grocery || [];
+          state.favorites = profile.data.favorites || [];
+          state.profiles = profile.data.profiles || {};
+          // reflect locally too
+          localStorage.setItem(KEY_STATE, JSON.stringify(profile.data));
+          localStorage.setItem(KEY + '_pantry', JSON.stringify(state.pantry));
+          localStorage.setItem(KEY + '_saved', JSON.stringify(state.saved));
+          localStorage.setItem(KEY + '_grocery', JSON.stringify(state.grocery));
+          localStorage.setItem(KEY + '_favorites', JSON.stringify(state.favorites));
+          localStorage.setItem(KEY + '_profiles', JSON.stringify(state.profiles));
+          return;
+        } else {
+          // no cloud data found — if local guest data exists, push it to cloud to avoid data loss
+          const raw = localStorage.getItem(KEY_STATE);
+          if(raw){
+            try {
+              const localPayload = JSON.parse(raw);
+              // upsert local payload to cloud
+              await supabase.from('profiles').upsert({ id: user.id, data: localPayload, updated_at: new Date() });
+              // ensure state reflects local (already in local)
+              state.pantry = localPayload.pantry || state.pantry;
+              state.saved = localPayload.saved || state.saved;
+              state.grocery = localPayload.grocery || state.grocery;
+              state.favorites = localPayload.favorites || state.favorites;
+              state.profiles = localPayload.profiles || state.profiles;
+              return;
+            } catch(e){
+              console.warn('invalid local payload when pushing to cloud', e);
+            }
+          }
+          // else leave state as-is (local defaults)
+        }
+      }
+    }
+  } catch(e){
+    console.warn('loadState encountered error', e);
+    // continue to fallback
+  }
+
+  // Fallback: load from localStorage (guest)
+  try {
+    const raw = localStorage.getItem(KEY_STATE);
+    if(raw){
+      const obj = JSON.parse(raw);
+      state.pantry = obj.pantry || state.pantry;
+      state.saved = obj.saved || state.saved;
+      state.grocery = obj.grocery || state.grocery;
+      state.favorites = obj.favorites || state.favorites;
+      state.profiles = obj.profiles || state.profiles;
+    } else {
+      // Also support older individual keys
+      state.pantry = JSON.parse(localStorage.getItem(KEY + '_pantry') || JSON.stringify(state.pantry));
+      state.saved = JSON.parse(localStorage.getItem(KEY + '_saved') || JSON.stringify(state.saved));
+      state.grocery = JSON.parse(localStorage.getItem(KEY + '_grocery') || JSON.stringify(state.grocery));
+      state.favorites = JSON.parse(localStorage.getItem(KEY + '_favorites') || JSON.stringify(state.favorites));
+      state.profiles = JSON.parse(localStorage.getItem(KEY + '_profiles') || JSON.stringify(state.profiles));
+    }
+  } catch (e){
+    console.warn('Failed to load from localStorage', e);
+  }
+}
+
+/* ========================
    Seed recipes (curated + generator)
+   - I improved the manual breakfast recipes with clearer steps and timings
    ======================== */
 const breakfastManual = [
-  { id:'bf-001', category:'Breakfast', title:'Fluffy Pancakes', ingredients:[{name:'flour',qty:200,unit:'g'},{name:'milk',qty:300,unit:'ml'},{name:'egg',qty:1,unit:'pc'},{name:'baking powder',qty:2,unit:'tsp'},{name:'salt',qty:0.5,unit:'tsp'}], steps:[
-    "In a bowl combine flour, baking powder, salt and sugar.",
-    "Mix milk and egg; fold into dry mixture until just combined.",
-    "Cook on a hot skillet 1-2 minutes per side until golden."
+  { id:'bf-001', category:'Breakfast', title:'Fluffy Pancakes', ingredients:[
+      {name:'all-purpose flour',qty:200,unit:'g'},
+      {name:'milk',qty:300,unit:'ml'},
+      {name:'egg',qty:1,unit:'pc'},
+      {name:'baking powder',qty:2,unit:'tsp'},
+      {name:'salt',qty:0.5,unit:'tsp'},
+      {name:'butter',qty:1,unit:'tbsp'}
+    ], steps:[
+    "In a medium bowl whisk together the flour, baking powder, salt and 2 tbsp sugar.",
+    "In another bowl whisk milk, egg and melted butter until combined.",
+    "Pour wet into dry and stir until just combined — a few lumps are fine. Do not overmix.",
+    "Heat a nonstick skillet over medium heat and lightly butter it.",
+    "Pour 1/4 cup batter per pancake. Cook 2–3 minutes until bubbles form and edges look set, flip and cook 1–2 more minutes until golden.",
+    "Serve topped with butter and maple syrup or fresh fruit."
   ], serves:4, time:25, difficulty:'medium' },
-  { id:'bf-002', category:'Breakfast', title:'Avocado Toast', ingredients:[{name:'bread',qty:2,unit:'slices'},{name:'avocado',qty:1,unit:'pc'},{name:'salt',qty:0.25,unit:'tsp'}], steps:[
-    "Toast the bread.",
-    "Mash avocado with salt and spread on toast."
+
+  { id:'bf-002', category:'Breakfast', title:'Avocado Toast', ingredients:[
+      {name:'bread',qty:2,unit:'slices'},
+      {name:'ripe avocado',qty:1,unit:'pc'},
+      {name:'salt',qty:0.25,unit:'tsp'},
+      {name:'lemon',qty:0.5,unit:'pc'},
+      {name:'olive oil',qty:1,unit:'tsp'}
+    ], steps:[
+    "Toast bread until golden and crisp.",
+    "Mash avocado with salt and a squeeze of lemon juice until slightly chunky.",
+    "Spread avocado on toast, drizzle with olive oil and finish with cracked pepper or chili flakes."
   ], serves:1, time:8, difficulty:'easy' },
-  { id:'bf-003', category:'Breakfast', title:'Classic French Toast', ingredients:[{name:'bread',qty:4,unit:'slices'},{name:'egg',qty:2,unit:'pcs'},{name:'milk',qty:100,unit:'ml'},{name:'cinnamon',qty:0.5,unit:'tsp'}], steps:[
-    "Whisk eggs, milk and cinnamon; soak bread; fry until golden."
+
+  { id:'bf-003', category:'Breakfast', title:'Classic French Toast', ingredients:[
+      {name:'bread',qty:4,unit:'slices'},
+      {name:'egg',qty:2,unit:'pcs'},
+      {name:'milk',qty:120,unit:'ml'},
+      {name:'cinnamon',qty:0.5,unit:'tsp'},
+      {name:'butter',qty:1,unit:'tbsp'}
+    ], steps:[
+    "Whisk eggs, milk and cinnamon in a shallow bowl.",
+    "Dip each bread slice 15–20 seconds per side to soak but not fall apart.",
+    "Heat a skillet over medium and melt butter. Fry bread 1–2 minutes per side until golden and crisp.",
+    "Serve with powdered sugar, syrup or fruit."
   ], serves:2, time:12, difficulty:'easy' }
 ];
 
@@ -441,21 +602,23 @@ function generateOtherRecipes(count=220){
     ingredients.push({name:'salt', qty:'to taste', unit:''});
     ingredients.push({name:'black pepper', qty:'to taste', unit:''});
     const steps=[];
-    steps.push(`Prepare: rinse and pat dry the ${protein}. Chop ${v1}${v2? ' and ' + v2: ''} into pieces.`);
+    steps.push(`Prep: rinse and pat dry the ${protein}. Chop ${v1}${v2? ' and ' + v2: ''} into bite-sized pieces. Preheat equipment as needed.`);
     if(method==='roast'){
-      steps.push(`Preheat oven to 200°C. Toss ${protein} and vegetables with ${pan}, salt and pepper. Roast for ${Math.max(15, Math.round(timeMin*0.9))} minutes.`);
+      steps.push(`Toss ${protein} and vegetables with ${pan}, salt and pepper. Spread in one layer on a baking sheet.`);
+      steps.push(`Roast in a preheated oven at 200°C (400°F) for ${Math.max(15, Math.round(timeMin*0.9))} minutes until cooked and edges caramelize.`);
     } else if(method==='stir-fry'){
-      steps.push(`Heat a skillet over high heat. Add ${pan}. Stir-fry ${protein} then vegetables until cooked. Add sauce and toss.`);
+      steps.push(`Heat a large skillet or wok over high heat. Add ${pan}. Stir-fry ${protein} until nearly cooked, remove, then stir-fry vegetables until crisp-tender.`);
+      steps.push(`Return ${protein} to pan, add a splash of soy sauce or your preferred sauce, toss until glazed and cooked through.`);
     } else if(method==='grill'){
-      steps.push(`Preheat grill. Brush with ${pan} and grill ${protein} until cooked through.`);
+      steps.push(`Preheat grill to medium-high. Brush ${protein} with ${pan} and season. Grill until cooked through, flipping halfway (time depends on thickness).`);
     } else if(method==='bake'){
-      steps.push(`Bake in a 180°C oven for ${timeMin} minutes until cooked.`);
+      steps.push(`Combine ingredients in an ovenproof dish, season, and bake at 180°C (350°F) for about ${timeMin} minutes until set and golden.`);
     } else if(method==='simmer'){
-      steps.push(`Simmer ${protein} in a pot with liquids and aromatics for ${timeMin} minutes.`);
+      steps.push(`Sear ${protein} briefly; add liquids and aromatics, then simmer gently for ${timeMin} minutes until tender and flavors meld.`);
     } else {
-      steps.push(`Cook using ${method} until tender and flavors meld.`);
+      steps.push(`Cook using ${method} until tender and flavors meld, adjusting time to reach doneness.`);
     }
-    steps.push('Plate and garnish with herbs or lemon.');
+    steps.push('Finish: taste and adjust salt/acid (lemon, vinegar). Serve warm garnished with fresh herbs.');
     out.push({ id:`gen-${i+1}`, category:cat, title:`${method.charAt(0).toUpperCase()+method.slice(1)} ${protein} with ${v1}`, ingredients, steps, tags:[cat.toLowerCase(), method], serves:serve, time:timeMin, difficulty:diff });
   }
   return out;
@@ -464,17 +627,17 @@ function generateOtherRecipes(count=220){
 /* initialize recipes if missing */
 if(!state.recipes || state.recipes.length < 100){
   state.recipes = breakfastManual.concat(generateOtherRecipes(220));
-  saveLS('recipes', state.recipes);
+  localStorage.setItem(KEY + '_recipes', JSON.stringify(state.recipes)); // keep recipes local only
 }
 
 /* ========================
    Pantry functions & UI
    ======================== */
-function persistPantry(){ saveLS('pantry', state.pantry); }
+function persistPantry(){ saveState(); }
 function renderPantry(){
   const el = $('#pantryList');
   el.innerHTML = '';
-  if(!state.pantry.length){
+  if(!state.pantry || !state.pantry.length){
     el.innerHTML = '<div class="small muted">Pantry is empty. Add items to get suggestions.</div>';
     $('#pantryPreview').textContent = 'No items yet — add a few staples.';
     $('#pantryCount').textContent = 0;
@@ -563,7 +726,7 @@ function searchAndFilter({q='', time='any', diff='any'}){
 /* pretty render recipes */
 function renderRecipes(list){
   const out = $('#recipesList'); out.innerHTML = '';
-  if(!list.length){ out.innerHTML = '<div class="small muted">No recipes found. Add pantry items or load sample pantry.</div>'; $('#matchCount').textContent = 0; $('#showingCount').textContent = 0; return; }
+  if(!list || !list.length){ out.innerHTML = '<div class="small muted">No recipes found. Add pantry items or load sample pantry.</div>'; $('#matchCount').textContent = 0; $('#showingCount').textContent = 0; return; }
   list.slice(0,60).forEach(r=>{
     const percent = Math.round((r.score||0)*100);
     const card = document.createElement('div'); card.className='recipe-card fade-in';
@@ -609,7 +772,7 @@ $('#runSearch').addEventListener('click', ()=> {
 });
 $('#searchInput').addEventListener('keypress', (e)=>{ if(e.key==='Enter') $('#runSearch').click(); });
 $('#globalSearch').addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ $('#searchInput').value = $('#globalSearch').value; $('#runSearch').click(); }});
-$('#shuffleRecipes').addEventListener('click', ()=> { state.recipes = state.recipes.sort(()=>Math.random()-0.5); saveLS('recipes', state.recipes); renderRecipes(matchedRecipes().slice(0,60)); });
+$('#shuffleRecipes').addEventListener('click', ()=> { state.recipes = state.recipes.sort(()=>Math.random()-0.5); localStorage.setItem(KEY + '_recipes', JSON.stringify(state.recipes)); renderRecipes(matchedRecipes().slice(0,60)); });
 
 /* show more */
 $('#moreRecipes').addEventListener('click', ()=> {
@@ -635,7 +798,8 @@ function openRecipeDetail(id){
   // ingredients
   const ing = $('#ingList'); ing.innerHTML = '';
   (r.ingredients || []).forEach(i=>{
-    const li = document.createElement('li'); li.textContent = (i.name || i) + (i.qty && typeof i.qty !== 'string' ? ` — ${i.qty}${i.unit? ' '+i.unit : ''}` : (i.qty ? ` — ${i.qty}` : ''));
+    const li = document.createElement('li');
+    li.textContent = (i.name || i) + (i.qty && typeof i.qty !== 'string' ? ` — ${i.qty}${i.unit? ' '+i.unit : ''}` : (i.qty ? ` — ${i.qty}` : ''));
     ing.appendChild(li);
   });
   // steps + attach step timers
@@ -728,14 +892,14 @@ function toggleSaveRecipe(id){
     state.saved.splice(idx,1);
     alert('Recipe removed');
   }
-  saveLS('saved', state.saved);
+  saveState();
   renderSavedList();
   renderRecipes(searchAndFilter({ q:$('#searchInput').value, time:$('#timeFilter').value, diff:$('#diffFilter').value }));
 }
 
 function renderSavedList(){
   const el = $('#savedList'); el.innerHTML = '';
-  if(!state.saved.length){ el.textContent = 'No saved recipes yet'; $('#savedCount').textContent = 0; return; }
+  if(!state.saved || !state.saved.length){ el.textContent = 'No saved recipes yet'; $('#savedCount').textContent = 0; return; }
   state.saved.forEach(id=>{
     const r = findRecipeById(id);
     if(!r) return;
@@ -747,10 +911,10 @@ function renderSavedList(){
     b.addEventListener('click', ()=> {
       const act = b.dataset.action; const id = b.dataset.id;
       if(act === 'open') openRecipeDetail(id);
-      if(act === 'remove'){ const i = state.saved.indexOf(id); if(i>-1){ state.saved.splice(i,1); saveLS('saved', state.saved); renderSavedList(); renderRecipes(matchedRecipes()); } }
+      if(act === 'remove'){ const i = state.saved.indexOf(id); if(i>-1){ state.saved.splice(i,1); saveState(); renderSavedList(); renderRecipes(matchedRecipes()); } }
     });
   });
-  $('#savedCount').textContent = state.saved.length;
+  $('#savedCount').textContent = (state.saved||[]).length;
 }
 
 /* Grocery operations */
@@ -765,28 +929,28 @@ function addMissingToGrocery(id){
       if(!state.grocery.find(g => g.name === nm)) state.grocery.push({name: nm});
     }
   });
-  saveLS('grocery', state.grocery);
+  saveState();
   renderGrocery();
   alert('Missing items added to grocery list');
 }
 
 function renderGrocery(){
   const el = $('#groceryList'); el.innerHTML = '';
-  if(!state.grocery.length){ el.textContent = 'Grocery list is empty'; $('#groceryCount').textContent = 0; return; }
+  if(!state.grocery || !state.grocery.length){ el.textContent = 'Grocery list is empty'; $('#groceryCount').textContent = 0; return; }
   state.grocery.forEach((g, idx)=>{
     const div = document.createElement('div'); div.className='list-item';
     div.innerHTML = `<div>${g.name}</div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
     el.appendChild(div);
   });
   $$('#groceryList button[data-action="remove"]').forEach(b=>{
-    b.addEventListener('click', ()=> { const i = parseInt(b.dataset.idx,10); if(i>-1){ state.grocery.splice(i,1); saveLS('grocery', state.grocery); renderGrocery(); } });
+    b.addEventListener('click', ()=> { const i = parseInt(b.dataset.idx,10); if(i>-1){ state.grocery.splice(i,1); saveState(); renderGrocery(); } });
   });
-  $('#groceryCount').textContent = state.grocery.length;
+  $('#groceryCount').textContent = (state.grocery||[]).length;
 }
 
 /* copy grocery */
 $('#copyGrocery').addEventListener('click', async ()=>{
-  if(!state.grocery.length) return alert('Grocery list is empty');
+  if(!state.grocery || !state.grocery.length) return alert('Grocery list is empty');
   const txt = state.grocery.map(g=>g.name).join('\n');
   try{ await navigator.clipboard.writeText(txt); alert('Grocery copied to clipboard'); } catch(e){ alert('Copy failed — fallback: view list and copy manually'); }
 });
@@ -794,11 +958,12 @@ $('#copyGrocery').addEventListener('click', async ()=>{
 /* clear grocery */
 $('#clearGrocery').addEventListener('click', ()=> {
   if(!confirm('Clear grocery list?')) return;
-  state.grocery = []; saveLS('grocery', state.grocery); renderGrocery();
+  state.grocery = []; saveState(); renderGrocery();
 });
 
 /* ========================
-   Profiles & backup
+   Profiles & backup (user-named snapshots)
+   - these are stored in state.profiles and included in saveState() so they sync to cloud
    ======================== */
 function renderProfiles(){
   const container = $('#profilesContainer'); container.innerHTML = '';
@@ -820,7 +985,7 @@ function renderProfiles(){
         state.saved = JSON.parse(JSON.stringify(p.saved || []));
         state.grocery = JSON.parse(JSON.stringify(p.grocery || []));
         state.favorites = JSON.parse(JSON.stringify(p.favorites || []));
-        persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
+        saveState();
         renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
         alert(`Profile "${name}" applied`);
       } else if(act === 'copy'){
@@ -829,7 +994,7 @@ function renderProfiles(){
       } else if(act === 'delete'){
         if(!confirm(`Delete profile "${name}" permanently?`)) return;
         delete state.profiles[name];
-        saveLS('profiles', state.profiles);
+        saveState();
         renderProfiles();
       }
     });
@@ -846,7 +1011,7 @@ $('#saveProfileBtn').addEventListener('click', ()=> {
     favorites: JSON.parse(JSON.stringify(state.favorites)),
     at: new Date().toISOString()
   };
-  saveLS('profiles', state.profiles);
+  saveState();
   $('#profileName').value = '';
   renderProfiles();
   alert(`Profile "${name}" saved`);
@@ -864,7 +1029,7 @@ $('#restoreFromClipboard').addEventListener('click', ()=> {
   try{
     const obj = JSON.parse(pasted);
     state.pantry = obj.pantry || []; state.saved = obj.saved || []; state.grocery = obj.grocery || []; state.favorites = obj.favorites || [];
-    persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
+    saveState();
     renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
     alert('Profile restored from pasted JSON');
   } catch(e){
@@ -887,7 +1052,7 @@ const INSPOS = [
 ];
 function newInspiration(){ $('#dailyInspo').textContent = INSPOS[Math.floor(Math.random()*INSPOS.length)]; }
 $('#newInspo').addEventListener('click', newInspiration);
-$('#saveInspo').addEventListener('click', ()=> { state.favorites = state.favorites || []; state.favorites.push({text: $('#dailyInspo').textContent, at: new Date().toISOString()}); saveLS('favorites', state.favorites); alert('Inspiration saved'); });
+$('#saveInspo').addEventListener('click', ()=> { state.favorites = state.favorites || []; state.favorites.push({text: $('#dailyInspo').textContent, at: new Date().toISOString()}); saveState(); alert('Inspiration saved'); });
 newInspiration();
 
 /* ========================
@@ -932,7 +1097,12 @@ function initialRender(){
   renderGrocery();
   renderProfiles();
 }
-initialRender();
+
+/* we'll load state on page start (cloud if logged in, else local) */
+(async function(){
+  await loadState();
+  initialRender();
+})();
 
 /* ========================
    Supabase Auth & Profile sync
@@ -945,7 +1115,7 @@ async function updateAuthUI(){
   else { $('#userEmail').textContent = ''; }
 }
 
-/* Auth modal (simple) */
+/* Auth modal (with forgot password & save/load controls) */
 let loginModal = null;
 function openLoginModal(){
   if(!loginModal){
@@ -961,16 +1131,18 @@ function openLoginModal(){
           <button class="btn ghost" id="logoutBtn" style="display:none">Log Out</button>
         </div>
         <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn ghost" id="forgotBtn">Forgot Password?</button>
           <button class="btn" id="saveToDbBtn">Save to cloud</button>
           <button class="btn" id="loadFromDbBtn">Load from cloud</button>
         </div>
-        <div id="authNote" class="small muted" style="margin-top:8px">Profile sync stores pantry, saved recipes, grocery.</div>
+        <div id="authNote" class="small muted" style="margin-top:8px">Profile sync stores pantry, saved recipes, grocery and named profiles.</div>
       </div>
     </div>`;
     document.body.appendChild(loginModal);
 
     // handlers
     loginModal.querySelector('#closeLogin').addEventListener('click', ()=> loginModal.classList.remove('open'));
+
     loginModal.querySelector('#signupBtn').addEventListener('click', async ()=>{
       if(!supabase) return alert('Supabase not configured');
       const email = loginModal.querySelector('#loginEmail').value;
@@ -980,6 +1152,7 @@ function openLoginModal(){
       if(error) alert('Sign up error: ' + error.message);
       else { alert('Check your email to confirm sign up (if enabled).'); updateAuthUI(); }
     });
+
     loginModal.querySelector('#loginBtn').addEventListener('click', async ()=>{
       if(!supabase) return alert('Supabase not configured');
       const email = loginModal.querySelector('#loginEmail').value;
@@ -987,22 +1160,36 @@ function openLoginModal(){
       if(!email || !password) return alert('Enter email & password');
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if(error) alert('Login error: ' + error.message);
-      else { alert('Logged in'); updateAuthUI(); loginModal.classList.remove('open'); }
+      else { alert('Logged in'); updateAuthUI(); loginModal.classList.remove('open'); await loadState(); renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes()); }
     });
+
     loginModal.querySelector('#logoutBtn').addEventListener('click', async ()=>{
       if(!supabase) return alert('Supabase not configured');
       await supabase.auth.signOut();
       alert('Logged out'); updateAuthUI();
     });
+
+    loginModal.querySelector('#forgotBtn').addEventListener('click', async ()=>{
+      if(!supabase) return alert('Supabase not configured');
+      const email = loginModal.querySelector('#loginEmail').value;
+      if(!email) return alert('Enter your email first');
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/reset.html'
+      });
+      if(error) alert('Reset error: ' + error.message);
+      else alert('Password reset email sent — check your inbox');
+    });
+
     loginModal.querySelector('#saveToDbBtn').addEventListener('click', async ()=>{
       if(!supabase) return alert('Supabase not configured');
       const { data } = await supabase.auth.getSession();
       const user = data?.session?.user;
       if(!user) return alert('Not logged in');
-      const payload = { pantry: state.pantry, saved: state.saved, grocery: state.grocery, favorites: state.favorites };
+      const payload = { pantry: state.pantry, saved: state.saved, grocery: state.grocery, favorites: state.favorites, profiles: state.profiles };
       const { error } = await supabase.from('profiles').upsert({ id: user.id, data: payload, updated_at: new Date() });
-      if(error) alert('Save error: ' + error.message); else alert('Saved to cloud');
+      if(error) alert('Save error: ' + error.message); else { alert('Saved to cloud'); localStorage.setItem(KEY_STATE, JSON.stringify(payload)); }
     });
+
     loginModal.querySelector('#loadFromDbBtn').addEventListener('click', async ()=>{
       if(!supabase) return alert('Supabase not configured');
       const { data } = await supabase.auth.getSession();
@@ -1015,7 +1202,8 @@ function openLoginModal(){
         state.saved = profile.data.saved || state.saved;
         state.grocery = profile.data.grocery || state.grocery;
         state.favorites = profile.data.favorites || state.favorites;
-        persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
+        state.profiles = profile.data.profiles || state.profiles;
+        saveState();
         renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
         alert('Loaded from cloud');
       } else alert('No profile data found');
@@ -1032,7 +1220,12 @@ $('#btnOpenLogin').addEventListener('click', ()=> openLoginModal() );
 if(supabase){
   supabase.auth.onAuthStateChange((event, session) => {
     updateAuthUI();
-    // If user logged in we might update UI
+    // when a user logs in, reload their cloud state automatically
+    if(event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED'){
+      loadState().then(()=> {
+        renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
+      });
+    }
   });
   updateAuthUI();
 }
@@ -1057,10 +1250,10 @@ window.jemwayState = state; // expose for debugging
    End of file
    ======================== */
 /*
-  Security & deployment notes:
+  Security notes:
   - Don't commit service_role keys to client-side code.
-  - For production enable RLS in Supabase and restrict table operations via policies.
-  - Consider moving backups, avatar uploads, or heavy storage to server endpoints.
+  - For production enable Row Level Security (RLS) and policies in Supabase to restrict access.
+  - Consider server-side endpoints for heavy operations or backups.
 */
 </script>
 </body>
