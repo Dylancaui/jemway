@@ -32,7 +32,6 @@
     --maxW: 1200px;
   }
 
-  /* Light-mode variables toggled on body.light */
   body.light{
     --bg:#f6f8fb;
     --panel:#ffffff;
@@ -44,77 +43,64 @@
     --shadow: 0 10px 30px rgba(12,18,38,0.06);
   }
 
-  /* ========== Base ========== */
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;padding:0;background:linear-gradient(180deg,var(--bg), #07101a 85%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);-webkit-font-smoothing:antialiased}
   .container{width:100%;max-width:var(--maxW);margin:30px auto;padding:18px;display:grid;grid-template-columns: 1fr 360px;gap:22px}
   @media(max-width:1100px){ .container{grid-template-columns:1fr;padding:12px} }
 
-  /* Topbar */
   .topbar{grid-column:1 / -1;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.03)}
   .brand{display:flex;gap:12px;align-items:center}
   .logo{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:black;font-weight:800;font-size:20px}
   .title h1{margin:0;font-size:16px}
   .title p{margin:0;color:var(--muted);font-size:12px}
 
-  /* Buttons */
   .btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);font-weight:700;cursor:pointer;transition:transform .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease)}
   .btn:hover{transform:translateY(-3px)}
   .btn.primary{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));border:0;color:black}
   .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
   .btn.small{padding:6px 8px;font-size:13px}
-  .btn.danger{background:linear-gradient(90deg,var(--danger),#d94b4b);border:0;color:black}
 
-  /* Cards */
   .card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow);transition:transform .14s var(--ease), opacity .3s}
   .card:hover{transform:translateY(-6px)}
   .panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px}
   .small{font-size:13px;color:var(--muted)}
   .muted{color:var(--muted)}
 
-  /* Layout sections on left column */
   .left-grid{display:grid;grid-template-columns: 1fr;gap:18px}
   @media(min-width:900px){ .left-grid{grid-template-columns: 1fr 1fr; } }
 
-  /* Pantry / timer area */
   .pantry-input-row{display:flex;gap:8px;align-items:center}
   .input, textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px}
   .chip{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-weight:700;cursor:pointer;color:var(--muted)}
 
-  /* recipes list */
   .recipes{display:grid;grid-template-columns:repeat(1,1fr);gap:12px}
   @media(min-width:900px){ .recipes{grid-template-columns:repeat(2,1fr)} }
   .recipe-card{padding:12px;border-radius:10px;background:var(--card-2);border:1px solid rgba(255,255,255,0.02)}
   .recipe-card h4{margin:0 0 8px 0}
   .rmeta{font-size:13px;color:var(--muted)}
 
-  /* right column */
   .sidebar{display:flex;flex-direction:column;gap:18px}
   .list-compact{display:flex;flex-direction:column;gap:8px}
   .list-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
 
-  /* modals */
   .modal{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(3,6,12,0.6);display:none;align-items:center;justify-content:center;z-index:4000;padding:20px}
   .modal.open{display:flex}
   .modal .card{max-width:980px;width:100%;max-height:90vh;overflow:auto}
 
-  /* cook mode big */
   .cook-full{padding:22px;text-align:center}
-
-  /* subtle fade-in utility */
   .fade-in{animation: fadeInUp .45s ease both}
   @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-  /* small helpers */
   .right-actions{display:flex;gap:8px;align-items:center}
   .badge{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:700;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
   .hidden{display:none}
   a.link{color:var(--accent-2);text-decoration:none;font-weight:700}
   .footer{grid-column:1/-1;text-align:center;color:var(--muted);margin-top:18px}
 
-  /* community list tweaks */
-  .community-card { background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); margin-bottom:10px; }
-  .mono { font-family: var(--mono); font-size:13px; color:var(--muted); }
+  /* chat specifics */
+  .chat-preview{height:80px;overflow:hidden;font-size:13px}
+  .chat-list{max-height:220px;overflow-y:auto;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+  .chat-line{margin-bottom:8px;font-size:13px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -136,6 +122,7 @@
           <div id="userEmail" class="small muted" style="min-width:160px;text-align:right"></div>
           <button class="btn ghost" id="btnOpenLogin">Account</button>
           <button class="btn" id="btnTheme">Toggle Theme</button>
+          <button class="btn" id="btnOpenChatSmall">Chat</button>
         </div>
       </div>
     </div>
@@ -279,11 +266,39 @@
         <div id="savedList" class="small muted">No saved recipes yet</div>
       </div>
 
+      <!-- Community Recipes quick UI -->
+      <div class="card">
+        <h4 style="margin:0 0 8px 0">Community Recipes</h4>
+        <div class="small muted">Post recipes for others to use. Edit/delete your own posts.</div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <input id="profileName" class="input" placeholder="Profile name" style="display:none">
+        </div>
+        <div id="communityPreview" style="margin-top:12px"></div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn" id="openCommunity">Open Community</button>
+          <button class="btn" id="seedCommunity">Seed Starter Recipes</button>
+        </div>
+      </div>
+
+      <!-- Chat preview + open -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Global Chat</strong><div class="small muted">Live, short messages — reset every 50</div></div>
+          <div class="badge" id="chatCount">0</div>
+        </div>
+        <div class="sep" style="height:12px"></div>
+        <div id="chatPreview" class="chat-preview small muted">Loading chat...</div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="btn" id="openChat">Open Chat</button>
+          <button class="btn" id="clearLocalChat">Clear Preview</button>
+        </div>
+      </div>
+
       <div class="card">
         <h4 style="margin:0 0 8px 0">Profiles</h4>
         <div class="small muted">Create named profiles (pantry + favorites). Backup copies to clipboard.</div>
         <div style="margin-top:10px;display:flex;gap:8px">
-          <input id="profileName" class="input" placeholder="Profile name">
+          <input id="profileNameInput" class="input" placeholder="Profile name">
           <button class="btn primary" id="saveProfileBtn">Save</button>
         </div>
         <div id="profilesContainer" style="margin-top:12px"></div>
@@ -292,20 +307,6 @@
           <button class="btn" id="restoreFromClipboard">Restore</button>
         </div>
       </div>
-
-      <!-- COMMUNITY RECIPES CARD -->
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong>Community Recipes</strong><div class="small muted">Shared by users — view, post (logged-in), delete your own</div></div>
-          <div class="badge" id="communityCount">-</div>
-        </div>
-        <div style="height:12px"></div>
-        <div style="display:flex;gap:8px">
-          <button class="btn" id="btnViewCommunity">View</button>
-          <button class="btn primary" id="btnNewCommunity">Post</button>
-        </div>
-      </div>
-
     </aside>
 
     <div class="footer muted" style="grid-column:1/-1;margin-top:10px;">
@@ -366,49 +367,26 @@
     </div>
   </div>
 
-  <!-- Community modal -->
-  <div id="communityModal" class="modal" aria-hidden="true">
-    <div class="card">
+  <!-- Chat Modal -->
+  <div id="chatModal" class="modal" aria-hidden="true">
+    <div class="card" style="max-width:720px;width:100%;">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <h3 style="margin:0">Community Recipes</h3>
-          <div class="small muted">Recipes shared by the community. Click a recipe to read full details.</div>
-        </div>
+        <h3 style="margin:0">Global Chat</h3>
         <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn" id="closeCommunityModal">Close</button>
+          <div class="small muted" id="chatStatus">Connected</div>
+          <button class="btn ghost" id="closeChatModal">Close</button>
         </div>
       </div>
 
       <div style="margin-top:12px">
-        <div style="display:flex;gap:8px;margin-bottom:12px">
-          <input id="communitySearch" class="input" placeholder="Search title or ingredient">
-          <button class="btn" id="communityRefresh">Refresh</button>
-          <div style="flex:1"></div>
-          <div class="small muted">Logged-in users can post & delete their own recipes.</div>
+        <div id="chatBox" class="chat-list"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="chatInput" class="input" placeholder="Say something (max 75 chars)" maxlength="75">
+          <button class="btn primary" id="sendChatBtn">Send</button>
         </div>
-        <div id="communityList" class="list-compact"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Post Community modal -->
-  <div id="postCommunityModal" class="modal" aria-hidden="true">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <h3 style="margin:0">Post a Community Recipe</h3>
-          <div class="small muted">Title, ingredients (one per line), and detailed instructions</div>
-        </div>
-        <div><button class="btn" id="closePostCommunity">Close</button></div>
-      </div>
-
-      <div style="margin-top:12px;display:grid;gap:8px">
-        <input id="newCommTitle" class="input" placeholder="Recipe title">
-        <textarea id="newCommIngredients" class="input" rows="4" placeholder="Ingredients — one per line"></textarea>
-        <textarea id="newCommInstructions" class="input" rows="6" placeholder="Step-by-step instructions"></textarea>
-        <div style="display:flex;gap:8px">
-          <button class="btn primary" id="postCommSubmit">Post</button>
-          <button class="btn ghost" id="postCommCancel">Cancel</button>
+        <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+          <div class="small muted">Cooldown: <strong>5s</strong>. Chat shows last <strong>50</strong> messages.</div>
+          <div class="small muted"><span id="chatCountModal">0</span> messages</div>
         </div>
       </div>
     </div>
@@ -416,15 +394,56 @@
 
 <script>
 /* =================================================================================
-   Jemway — Full merged script with Community Recipes
-   - Dual-mode persistence (Supabase profiles <-> localStorage)
-   - Community recipes: view, post (logged-in), delete own
-   - Forgot password, timers, search, profiles, etc.
+   Full Jemway — combined final script
+   - Includes Supabase auth + profiles + community recipes + live chat
+   - Uses your provided Supabase URL/ANON from earlier in the conversation.
    ================================================================================= */
 
-/* ========================
-   Supabase configuration (from your earlier paste)
-   ======================== */
+/*
+  IMPORTANT DB SQL (run these raw in Supabase SQL editor if you haven't):
+  ---------------------------------------------------------------------
+  -- community_recipes table
+  create table if not exists community_recipes (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid references auth.users(id) on delete cascade,
+    title text,
+    ingredients jsonb,
+    instructions text,
+    created_at timestamptz default now()
+  );
+
+  alter table community_recipes enable row level security;
+
+  create policy "Public read community_recipes"
+    on community_recipes for select using (true);
+
+  create policy "Owners can insert community_recipes"
+    on community_recipes for insert with check (auth.uid() = user_id);
+
+  create policy "Owners can delete own community_recipes"
+    on community_recipes for delete using (auth.uid() = user_id);
+
+  -- chat_messages table (chat rules: 75 chars)
+  create table if not exists chat_messages (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid references auth.users(id) on delete cascade,
+    content text not null check (char_length(content) <= 75),
+    created_at timestamptz default now()
+  );
+
+  alter table chat_messages enable row level security;
+
+  create policy "Anyone can read chat"
+    on chat_messages for select using (true);
+
+  create policy "Users can send chat"
+    on chat_messages for insert with check (auth.uid() = user_id);
+
+  -- Note: if you want server-side pruning (deleting old messages), create a service function
+  -- or a DB policy/routine that allows a trusted role/service to delete old rows.
+  ---------------------------------------------------------------------
+*/
+
 const SUPABASE_URL = "https://bpdyjhiwfslvgwruoxcy.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZHlqaGl3ZnNsdmd3cnVveGN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwNjc1NTgsImV4cCI6MjA3MzY0MzU1OH0.qOLLMGQDKv_o2UC7LJY86zCYG9pL3ya7mh6yUikS4dw";
 
@@ -437,197 +456,46 @@ try {
 }
 
 /* ========================
-   Utilities & storage keys
+   Utilities & storage
    ======================== */
 const KEY = 'jemway_pro_v2';
-const KEY_STATE = KEY + '_state'; // guest fallback
-
+const saveLS = (k,v)=>{ try{ localStorage.setItem(KEY+'_'+k, JSON.stringify(v)); }catch(e){} };
+const loadLS = (k, fallback)=>{ try{ const v=localStorage.getItem(KEY+'_'+k); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } };
 const $ = (sel, root=document)=> root.querySelector(sel);
 const $$ = (sel, root=document)=> Array.from((root||document).querySelectorAll(sel));
 function humanTime(sec){ const m=Math.floor(sec/60).toString().padStart(2,'0'); const s=Math.floor(sec%60).toString().padStart(2,'0'); return `${m}:${s}`; }
 function normalize(str){ return (str||'').toString().trim().toLowerCase(); }
-function escapeHTML(str){ return (str||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>"']/g, (s)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[s]); }
 
 /* ========================
-   App state (initial read from localStorage as fallback)
+   App state
    ======================== */
 const state = {
-  pantry: JSON.parse(localStorage.getItem(KEY + '_pantry') || '[]'),
-  recipes: JSON.parse(localStorage.getItem(KEY + '_recipes') || '[]'),
-  saved: JSON.parse(localStorage.getItem(KEY + '_saved') || '[]'),
-  grocery: JSON.parse(localStorage.getItem(KEY + '_grocery') || '[]'),
-  favorites: JSON.parse(localStorage.getItem(KEY + '_favorites') || '[]'),
-  profiles: JSON.parse(localStorage.getItem(KEY + '_profiles') || '{}'),
-  lessonIndex: JSON.parse(localStorage.getItem(KEY + '_lessonIndex') || '0'),
-  community: []
+  pantry: loadLS('pantry', []),
+  recipes: loadLS('recipes', []),
+  saved: loadLS('saved', []),
+  grocery: loadLS('grocery', []),
+  favorites: loadLS('favorites', []),
+  profiles: loadLS('profiles', {}),
+  lessonIndex: loadLS('lessonIndex', 0),
+  chatMessages: [] // loaded live
 };
-
-let currentUser = null;
-
-/* ========================
-   Dual-mode persistence functions
-   ======================== */
-
-async function saveState(){ // non-blocking usage OK
-  const payload = {
-    pantry: state.pantry,
-    saved: state.saved,
-    grocery: state.grocery,
-    favorites: state.favorites,
-    profiles: state.profiles
-  };
-
-  if(!supabase) {
-    localStorage.setItem(KEY_STATE, JSON.stringify(payload));
-    localStorage.setItem(KEY + '_pantry', JSON.stringify(state.pantry));
-    localStorage.setItem(KEY + '_saved', JSON.stringify(state.saved));
-    localStorage.setItem(KEY + '_grocery', JSON.stringify(state.grocery));
-    localStorage.setItem(KEY + '_favorites', JSON.stringify(state.favorites));
-    localStorage.setItem(KEY + '_profiles', JSON.stringify(state.profiles));
-    return;
-  }
-
-  try {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const user = sessionData?.session?.user || null;
-    if(user){
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({ id: user.id, data: payload, updated_at: new Date() });
-      if(error) console.error('Supabase saveState error:', error);
-      // still keep local copy for offline fallback
-      localStorage.setItem(KEY_STATE, JSON.stringify(payload));
-      localStorage.setItem(KEY + '_pantry', JSON.stringify(state.pantry));
-      localStorage.setItem(KEY + '_saved', JSON.stringify(state.saved));
-      localStorage.setItem(KEY + '_grocery', JSON.stringify(state.grocery));
-      localStorage.setItem(KEY + '_favorites', JSON.stringify(state.favorites));
-      localStorage.setItem(KEY + '_profiles', JSON.stringify(state.profiles));
-    } else {
-      localStorage.setItem(KEY_STATE, JSON.stringify(payload));
-      localStorage.setItem(KEY + '_pantry', JSON.stringify(state.pantry));
-      localStorage.setItem(KEY + '_saved', JSON.stringify(state.saved));
-      localStorage.setItem(KEY + '_grocery', JSON.stringify(state.grocery));
-      localStorage.setItem(KEY + '_favorites', JSON.stringify(state.favorites));
-      localStorage.setItem(KEY + '_profiles', JSON.stringify(state.profiles));
-    }
-  } catch (e){
-    console.error('saveState failed', e);
-    localStorage.setItem(KEY_STATE, JSON.stringify(payload));
-  }
-}
-
-async function loadState(){
-  try {
-    if(supabase){
-      const { data: sessionData } = await supabase.auth.getSession();
-      const user = sessionData?.session?.user || null;
-      if(user){
-        currentUser = user;
-        const { data: profile, error } = await supabase.from('profiles').select('data').eq('id', user.id).single();
-        if(profile && profile.data){
-          state.pantry = profile.data.pantry || [];
-          state.saved = profile.data.saved || [];
-          state.grocery = profile.data.grocery || [];
-          state.favorites = profile.data.favorites || [];
-          state.profiles = profile.data.profiles || {};
-          localStorage.setItem(KEY_STATE, JSON.stringify(profile.data));
-          localStorage.setItem(KEY + '_pantry', JSON.stringify(state.pantry));
-          localStorage.setItem(KEY + '_saved', JSON.stringify(state.saved));
-          localStorage.setItem(KEY + '_grocery', JSON.stringify(state.grocery));
-          localStorage.setItem(KEY + '_favorites', JSON.stringify(state.favorites));
-          localStorage.setItem(KEY + '_profiles', JSON.stringify(state.profiles));
-          return;
-        } else {
-          // no cloud data — push local if present
-          const raw = localStorage.getItem(KEY_STATE);
-          if(raw){
-            try {
-              const localPayload = JSON.parse(raw);
-              await supabase.from('profiles').upsert({ id: user.id, data: localPayload, updated_at: new Date() });
-              state.pantry = localPayload.pantry || state.pantry;
-              state.saved = localPayload.saved || state.saved;
-              state.grocery = localPayload.grocery || state.grocery;
-              state.favorites = localPayload.favorites || state.favorites;
-              state.profiles = localPayload.profiles || state.profiles;
-              return;
-            } catch(e){
-              console.warn('invalid local payload when pushing to cloud', e);
-            }
-          }
-        }
-      } else {
-        currentUser = null;
-      }
-    }
-  } catch(e){
-    console.warn('loadState encountered error', e);
-  }
-
-  // fallback -- local only
-  try {
-    const raw = localStorage.getItem(KEY_STATE);
-    if(raw){
-      const obj = JSON.parse(raw);
-      state.pantry = obj.pantry || state.pantry;
-      state.saved = obj.saved || state.saved;
-      state.grocery = obj.grocery || state.grocery;
-      state.favorites = obj.favorites || state.favorites;
-      state.profiles = obj.profiles || state.profiles;
-    } else {
-      state.pantry = JSON.parse(localStorage.getItem(KEY + '_pantry') || JSON.stringify(state.pantry));
-      state.saved = JSON.parse(localStorage.getItem(KEY + '_saved') || JSON.stringify(state.saved));
-      state.grocery = JSON.parse(localStorage.getItem(KEY + '_grocery') || JSON.stringify(state.grocery));
-      state.favorites = JSON.parse(localStorage.getItem(KEY + '_favorites') || JSON.stringify(state.favorites));
-      state.profiles = JSON.parse(localStorage.getItem(KEY + '_profiles') || JSON.stringify(state.profiles));
-    }
-  } catch (e){
-    console.warn('Failed to load from localStorage', e);
-  }
-}
 
 /* ========================
    Seed recipes (curated + generator)
    ======================== */
 const breakfastManual = [
-  { id:'bf-001', category:'Breakfast', title:'Fluffy Pancakes', ingredients:[
-      {name:'all-purpose flour',qty:200,unit:'g'},
-      {name:'milk',qty:300,unit:'ml'},
-      {name:'egg',qty:1,unit:'pc'},
-      {name:'baking powder',qty:2,unit:'tsp'},
-      {name:'salt',qty:0.5,unit:'tsp'},
-      {name:'butter',qty:1,unit:'tbsp'}
-    ], steps:[
-    "In a medium bowl whisk together the flour, baking powder, salt and 2 tbsp sugar.",
-    "In another bowl whisk milk, egg and melted butter until combined.",
-    "Pour wet into dry and stir until just combined — a few lumps are fine. Do not overmix.",
-    "Heat a nonstick skillet over medium heat and lightly butter it.",
-    "Pour 1/4 cup batter per pancake. Cook 2–3 minutes until bubbles form and edges look set, flip and cook 1–2 more minutes until golden.",
-    "Serve topped with butter and maple syrup or fresh fruit."
+  { id:'bf-001', category:'Breakfast', title:'Fluffy Pancakes', ingredients:[{name:'flour',qty:200,unit:'g'},{name:'milk',qty:300,unit:'ml'},{name:'egg',qty:1,unit:'pc'},{name:'baking powder',qty:2,unit:'tsp'},{name:'salt',qty:0.5,unit:'tsp'}], steps:[
+    "In a bowl combine flour, baking powder, salt and sugar.",
+    "Mix milk and egg; fold into dry mixture until just combined.",
+    "Cook on a hot skillet 1-2 minutes per side until golden."
   ], serves:4, time:25, difficulty:'medium' },
-
-  { id:'bf-002', category:'Breakfast', title:'Avocado Toast', ingredients:[
-      {name:'bread',qty:2,unit:'slices'},
-      {name:'ripe avocado',qty:1,unit:'pc'},
-      {name:'salt',qty:0.25,unit:'tsp'},
-      {name:'lemon',qty:0.5,unit:'pc'},
-      {name:'olive oil',qty:1,unit:'tsp'}
-    ], steps:[
-    "Toast bread until golden and crisp.",
-    "Mash avocado with salt and a squeeze of lemon juice until slightly chunky.",
-    "Spread avocado on toast, drizzle with olive oil and finish with cracked pepper or chili flakes."
+  { id:'bf-002', category:'Breakfast', title:'Avocado Toast', ingredients:[{name:'bread',qty:2,unit:'slices'},{name:'avocado',qty:1,unit:'pc'},{name:'salt',qty:0.25,unit:'tsp'}], steps:[
+    "Toast the bread.",
+    "Mash avocado with salt and spread on toast."
   ], serves:1, time:8, difficulty:'easy' },
-
-  { id:'bf-003', category:'Breakfast', title:'Classic French Toast', ingredients:[
-      {name:'bread',qty:4,unit:'slices'},
-      {name:'egg',qty:2,unit:'pcs'},
-      {name:'milk',qty:120,unit:'ml'},
-      {name:'cinnamon',qty:0.5,unit:'tsp'},
-      {name:'butter',qty:1,unit:'tbsp'}
-    ], steps:[
-    "Whisk eggs, milk and cinnamon in a shallow bowl.",
-    "Dip each bread slice 15–20 seconds per side to soak but not fall apart.",
-    "Heat a skillet over medium and melt butter. Fry bread 1–2 minutes per side until golden and crisp.",
-    "Serve with powdered sugar, syrup or fruit."
+  { id:'bf-003', category:'Breakfast', title:'Classic French Toast', ingredients:[{name:'bread',qty:4,unit:'slices'},{name:'egg',qty:2,unit:'pcs'},{name:'milk',qty:100,unit:'ml'},{name:'cinnamon',qty:0.5,unit:'tsp'}], steps:[
+    "Whisk eggs, milk and cinnamon; soak bread; fry until golden."
   ], serves:2, time:12, difficulty:'easy' }
 ];
 
@@ -657,23 +525,21 @@ function generateOtherRecipes(count=220){
     ingredients.push({name:'salt', qty:'to taste', unit:''});
     ingredients.push({name:'black pepper', qty:'to taste', unit:''});
     const steps=[];
-    steps.push(`Prep: rinse and pat dry the ${protein}. Chop ${v1}${v2? ' and ' + v2: ''} into bite-sized pieces. Preheat equipment as needed.`);
+    steps.push(`Prepare: rinse and pat dry the ${protein}. Chop ${v1}${v2? ' and ' + v2: ''} into pieces.`);
     if(method==='roast'){
-      steps.push(`Toss ${protein} and vegetables with ${pan}, salt and pepper. Spread in one layer on a baking sheet.`);
-      steps.push(`Roast in a preheated oven at 200°C (400°F) for ${Math.max(15, Math.round(timeMin*0.9))} minutes until cooked and edges caramelize.`);
+      steps.push(`Preheat oven to 200°C. Toss ${protein} and vegetables with ${pan}, salt and pepper. Roast for ${Math.max(15, Math.round(timeMin*0.9))} minutes.`);
     } else if(method==='stir-fry'){
-      steps.push(`Heat a large skillet or wok over high heat. Add ${pan}. Stir-fry ${protein} until nearly cooked, remove, then stir-fry vegetables until crisp-tender.`);
-      steps.push(`Return ${protein} to pan, add a splash of soy sauce or your preferred sauce, toss until glazed and cooked through.`);
+      steps.push(`Heat a skillet over high heat. Add ${pan}. Stir-fry ${protein} then vegetables until cooked. Add sauce and toss.`);
     } else if(method==='grill'){
-      steps.push(`Preheat grill to medium-high. Brush ${protein} with ${pan} and season. Grill until cooked through, flipping halfway (time depends on thickness).`);
+      steps.push(`Preheat grill. Brush with ${pan} and grill ${protein} until cooked through.`);
     } else if(method==='bake'){
-      steps.push(`Combine ingredients in an ovenproof dish, season, and bake at 180°C (350°F) for about ${timeMin} minutes until set and golden.`);
+      steps.push(`Bake in a 180°C oven for ${timeMin} minutes until cooked.`);
     } else if(method==='simmer'){
-      steps.push(`Sear ${protein} briefly; add liquids and aromatics, then simmer gently for ${timeMin} minutes until tender and flavors meld.`);
+      steps.push(`Simmer ${protein} in a pot with liquids and aromatics for ${timeMin} minutes.`);
     } else {
-      steps.push(`Cook using ${method} until tender and flavors meld, adjusting time to reach doneness.`);
+      steps.push(`Cook using ${method} until tender and flavors meld.`);
     }
-    steps.push('Finish: taste and adjust salt/acid (lemon, vinegar). Serve warm garnished with fresh herbs.');
+    steps.push('Plate and garnish with herbs or lemon.');
     out.push({ id:`gen-${i+1}`, category:cat, title:`${method.charAt(0).toUpperCase()+method.slice(1)} ${protein} with ${v1}`, ingredients, steps, tags:[cat.toLowerCase(), method], serves:serve, time:timeMin, difficulty:diff });
   }
   return out;
@@ -682,17 +548,17 @@ function generateOtherRecipes(count=220){
 /* initialize recipes if missing */
 if(!state.recipes || state.recipes.length < 100){
   state.recipes = breakfastManual.concat(generateOtherRecipes(220));
-  localStorage.setItem(KEY + '_recipes', JSON.stringify(state.recipes)); // keep recipes local only
+  saveLS('recipes', state.recipes);
 }
 
 /* ========================
    Pantry functions & UI
    ======================== */
-function persistPantry(){ saveState(); }
+function persistPantry(){ saveLS('pantry', state.pantry); }
 function renderPantry(){
   const el = $('#pantryList');
   el.innerHTML = '';
-  if(!state.pantry || !state.pantry.length){
+  if(!state.pantry.length){
     el.innerHTML = '<div class="small muted">Pantry is empty. Add items to get suggestions.</div>';
     $('#pantryPreview').textContent = 'No items yet — add a few staples.';
     $('#pantryCount').textContent = 0;
@@ -701,7 +567,7 @@ function renderPantry(){
   }
   state.pantry.forEach((it, idx)=>{
     const node = document.createElement('div'); node.className='list-item';
-    node.innerHTML = `<div><strong>${escapeHTML(it.display || it.name)}</strong><div class="small muted">${it.qty ? (escapeHTML(it.qty + (it.unit ? ' ' + it.unit : ''))) : ''}</div></div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
+    node.innerHTML = `<div><strong>${it.display || it.name}</strong><div class="small muted">${it.qty ? (it.qty + (it.unit ? ' ' + it.unit : '')) : ''}</div></div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
     el.appendChild(node);
   });
   $$('#pantryList button[data-action="remove"]').forEach(b=>{
@@ -781,16 +647,16 @@ function searchAndFilter({q='', time='any', diff='any'}){
 /* pretty render recipes */
 function renderRecipes(list){
   const out = $('#recipesList'); out.innerHTML = '';
-  if(!list || !list.length){ out.innerHTML = '<div class="small muted">No recipes found. Add pantry items or load sample pantry.</div>'; $('#matchCount').textContent = 0; $('#showingCount').textContent = 0; return; }
+  if(!list.length){ out.innerHTML = '<div class="small muted">No recipes found. Add pantry items or load sample pantry.</div>'; $('#matchCount').textContent = 0; $('#showingCount').textContent = 0; return; }
   list.slice(0,60).forEach(r=>{
     const percent = Math.round((r.score||0)*100);
     const card = document.createElement('div'); card.className='recipe-card fade-in';
     card.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="flex:1">
-          <h4 style="margin:0">${escapeHTML(r.title)}</h4>
-          <div class="rmeta">${escapeHTML(r.category || (r.tags && r.tags[0]) || 'General')} • ${r.time} min • Serves: ${r.serves || '-'} • ${r.difficulty || '-'}</div>
-          <div style="margin-top:8px" class="small muted">Missing: ${(r.missing||[]).slice(0,4).map(escapeHTML).join(', ') || '—'}</div>
+          <h4 style="margin:0">${escapeHtml(r.title)}</h4>
+          <div class="rmeta">${r.category || (r.tags && r.tags[0]) || 'General'} • ${r.time} min • Serves: ${r.serves || '-'} • ${r.difficulty || '-'}</div>
+          <div style="margin-top:8px" class="small muted">Missing: ${(r.missing||[]).slice(0,4).join(', ') || '—'}</div>
         </div>
         <div style="margin-left:12px;text-align:right">
           <div class="badge">${percent}%</div>
@@ -827,7 +693,7 @@ $('#runSearch').addEventListener('click', ()=> {
 });
 $('#searchInput').addEventListener('keypress', (e)=>{ if(e.key==='Enter') $('#runSearch').click(); });
 $('#globalSearch').addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ $('#searchInput').value = $('#globalSearch').value; $('#runSearch').click(); }});
-$('#shuffleRecipes').addEventListener('click', ()=> { state.recipes = state.recipes.sort(()=>Math.random()-0.5); localStorage.setItem(KEY + '_recipes', JSON.stringify(state.recipes)); renderRecipes(matchedRecipes().slice(0,60)); });
+$('#shuffleRecipes').addEventListener('click', ()=> { state.recipes = state.recipes.sort(()=>Math.random()-0.5); saveLS('recipes', state.recipes); renderRecipes(matchedRecipes().slice(0,60)); });
 
 /* show more */
 $('#moreRecipes').addEventListener('click', ()=> {
@@ -860,7 +726,7 @@ function openRecipeDetail(id){
   const steps = $('#stepList'); steps.innerHTML = '';
   (r.steps||[]).forEach((s, idx)=>{
     const li = document.createElement('li');
-    li.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:flex-start"><div>${escapeHTML(s)}</div><div><button class="btn small" data-step="${idx}" data-action="start-step">Start timer</button></div></div>`;
+    li.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:flex-start"><div>${escapeHtml(s)}</div><div><button class="btn small" data-step="${idx}" data-action="start-step">Start timer</button></div></div>`;
     steps.appendChild(li);
   });
   // substitutions
@@ -868,7 +734,7 @@ function openRecipeDetail(id){
   (r.ingredients||[]).forEach(i=>{
     const name = typeof i === 'string' ? i : i.name;
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td style="padding:8px 6px">${escapeHTML(name)}</td><td style="padding:8px 6px">${escapeHTML(findSubstitute(name))}</td>`;
+    tr.innerHTML = `<td style="padding:8px 6px">${escapeHtml(name)}</td><td style="padding:8px 6px">${escapeHtml(findSubstitute(name))}</td>`;
     subs.appendChild(tr);
   });
 
@@ -885,7 +751,6 @@ function openRecipeDetail(id){
 }
 
 $('#closeRecipeModal').addEventListener('click', ()=> { $('#recipeModal').classList.remove('open'); $('#recipeModal').setAttribute('aria-hidden','true'); });
-
 $('#backToList').addEventListener('click', ()=> { $('#recipeModal').classList.remove('open'); $('#recipeModal').setAttribute('aria-hidden','true'); window.scrollTo({top:0, behavior:'smooth'}); });
 
 $('#enterCookMode').addEventListener('click', ()=> {
@@ -894,7 +759,7 @@ $('#enterCookMode').addEventListener('click', ()=> {
   const container = $('#cookSteps'); container.innerHTML = '';
   (currentRecipe.steps||[]).forEach((s, idx)=>{
     const div = document.createElement('div'); div.className='step';
-    div.innerHTML = `<h4>Step ${idx+1}</h4><p>${escapeHTML(s)}</p><div style="margin-top:8px"><button class="btn primary" data-idx="${idx}" data-action="step-start">Start Timer</button></div>`;
+    div.innerHTML = `<h4>Step ${idx+1}</h4><p>${escapeHtml(s)}</p><div style="margin-top:8px"><button class="btn primary" data-idx="${idx}" data-action="step-start">Start Timer</button></div>`;
     container.appendChild(div);
   });
   // attach timers
@@ -946,29 +811,29 @@ function toggleSaveRecipe(id){
     state.saved.splice(idx,1);
     alert('Recipe removed');
   }
-  saveState();
+  saveLS('saved', state.saved);
   renderSavedList();
   renderRecipes(searchAndFilter({ q:$('#searchInput').value, time:$('#timeFilter').value, diff:$('#diffFilter').value }));
 }
 
 function renderSavedList(){
   const el = $('#savedList'); el.innerHTML = '';
-  if(!state.saved || !state.saved.length){ el.textContent = 'No saved recipes yet'; $('#savedCount').textContent = 0; return; }
+  if(!state.saved.length){ el.textContent = 'No saved recipes yet'; $('#savedCount').textContent = 0; return; }
   state.saved.forEach(id=>{
     const r = findRecipeById(id);
     if(!r) return;
     const d = document.createElement('div'); d.className='list-item';
-    d.innerHTML = `<div>${escapeHTML(r.title)} <div class="small muted">• ${r.time} min</div></div><div><button class="btn small" data-id="${r.id}" data-action="open">Open</button> <button class="btn small" data-id="${r.id}" data-action="remove">Remove</button></div>`;
+    d.innerHTML = `<div>${escapeHtml(r.title)} <div class="small muted">• ${r.time} min</div></div><div><button class="btn small" data-id="${r.id}" data-action="open">Open</button> <button class="btn small" data-id="${r.id}" data-action="remove">Remove</button></div>`;
     el.appendChild(d);
   });
   $$('#savedList button').forEach(b=>{
     b.addEventListener('click', ()=> {
       const act = b.dataset.action; const id = b.dataset.id;
       if(act === 'open') openRecipeDetail(id);
-      if(act === 'remove'){ const i = state.saved.indexOf(id); if(i>-1){ state.saved.splice(i,1); saveState(); renderSavedList(); renderRecipes(matchedRecipes()); } }
+      if(act === 'remove'){ const i = state.saved.indexOf(id); if(i>-1){ state.saved.splice(i,1); saveLS('saved', state.saved); renderSavedList(); renderRecipes(matchedRecipes()); } }
     });
   });
-  $('#savedCount').textContent = (state.saved||[]).length;
+  $('#savedCount').textContent = state.saved.length;
 }
 
 /* Grocery operations */
@@ -983,28 +848,28 @@ function addMissingToGrocery(id){
       if(!state.grocery.find(g => g.name === nm)) state.grocery.push({name: nm});
     }
   });
-  saveState();
+  saveLS('grocery', state.grocery);
   renderGrocery();
   alert('Missing items added to grocery list');
 }
 
 function renderGrocery(){
   const el = $('#groceryList'); el.innerHTML = '';
-  if(!state.grocery || !state.grocery.length){ el.textContent = 'Grocery list is empty'; $('#groceryCount').textContent = 0; return; }
+  if(!state.grocery.length){ el.textContent = 'Grocery list is empty'; $('#groceryCount').textContent = 0; return; }
   state.grocery.forEach((g, idx)=>{
     const div = document.createElement('div'); div.className='list-item';
-    div.innerHTML = `<div>${escapeHTML(g.name)}</div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
+    div.innerHTML = `<div>${g.name}</div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
     el.appendChild(div);
   });
   $$('#groceryList button[data-action="remove"]').forEach(b=>{
-    b.addEventListener('click', ()=> { const i = parseInt(b.dataset.idx,10); if(i>-1){ state.grocery.splice(i,1); saveState(); renderGrocery(); } });
+    b.addEventListener('click', ()=> { const i = parseInt(b.dataset.idx,10); if(i>-1){ state.grocery.splice(i,1); saveLS('grocery', state.grocery); renderGrocery(); } });
   });
-  $('#groceryCount').textContent = (state.grocery||[]).length;
+  $('#groceryCount').textContent = state.grocery.length;
 }
 
 /* copy grocery */
 $('#copyGrocery').addEventListener('click', async ()=>{
-  if(!state.grocery || !state.grocery.length) return alert('Grocery list is empty');
+  if(!state.grocery.length) return alert('Grocery list is empty');
   const txt = state.grocery.map(g=>g.name).join('\n');
   try{ await navigator.clipboard.writeText(txt); alert('Grocery copied to clipboard'); } catch(e){ alert('Copy failed — fallback: view list and copy manually'); }
 });
@@ -1012,11 +877,11 @@ $('#copyGrocery').addEventListener('click', async ()=>{
 /* clear grocery */
 $('#clearGrocery').addEventListener('click', ()=> {
   if(!confirm('Clear grocery list?')) return;
-  state.grocery = []; saveState(); renderGrocery();
+  state.grocery = []; saveLS('grocery', state.grocery); renderGrocery();
 });
 
 /* ========================
-   Profiles & backup (user-named snapshots)
+   Profiles & backup
    ======================== */
 function renderProfiles(){
   const container = $('#profilesContainer'); container.innerHTML = '';
@@ -1025,7 +890,7 @@ function renderProfiles(){
   names.forEach(name=>{
     const p = state.profiles[name];
     const row = document.createElement('div'); row.className='list-item';
-    row.innerHTML = `<div><strong>${escapeHTML(name)}</strong><div class="small muted">${(p.pantry||[]).length} pantry • ${(p.saved||[]).length} saved</div></div><div><button class="btn small" data-name="${escapeHTML(name)}" data-action="apply">Apply</button> <button class="btn small" data-name="${escapeHTML(name)}" data-action="copy">Copy</button> <button class="btn small" data-name="${escapeHTML(name)}" data-action="delete">Delete</button></div>`;
+    row.innerHTML = `<div><strong>${escapeHtml(name)}</strong><div class="small muted">${(p.pantry||[]).length} pantry • ${(p.saved||[]).length} saved</div></div><div><button class="btn small" data-name="${escapeHtml(name)}" data-action="apply">Apply</button> <button class="btn small" data-name="${escapeHtml(name)}" data-action="copy">Copy</button> <button class="btn small" data-name="${escapeHtml(name)}" data-action="delete">Delete</button></div>`;
     container.appendChild(row);
   });
   $$('#profilesContainer button').forEach(b=>{
@@ -1038,7 +903,7 @@ function renderProfiles(){
         state.saved = JSON.parse(JSON.stringify(p.saved || []));
         state.grocery = JSON.parse(JSON.stringify(p.grocery || []));
         state.favorites = JSON.parse(JSON.stringify(p.favorites || []));
-        saveState();
+        persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
         renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
         alert(`Profile "${name}" applied`);
       } else if(act === 'copy'){
@@ -1047,7 +912,7 @@ function renderProfiles(){
       } else if(act === 'delete'){
         if(!confirm(`Delete profile "${name}" permanently?`)) return;
         delete state.profiles[name];
-        saveState();
+        saveLS('profiles', state.profiles);
         renderProfiles();
       }
     });
@@ -1055,7 +920,7 @@ function renderProfiles(){
 }
 
 $('#saveProfileBtn').addEventListener('click', ()=> {
-  const name = ($('#profileName').value || '').trim();
+  const name = ($('#profileNameInput').value || '').trim();
   if(!name) return alert('Enter a profile name');
   state.profiles[name] = {
     pantry: JSON.parse(JSON.stringify(state.pantry)),
@@ -1064,8 +929,8 @@ $('#saveProfileBtn').addEventListener('click', ()=> {
     favorites: JSON.parse(JSON.stringify(state.favorites)),
     at: new Date().toISOString()
   };
-  saveState();
-  $('#profileName').value = '';
+  saveLS('profiles', state.profiles);
+  $('#profileNameInput').value = '';
   renderProfiles();
   alert(`Profile "${name}" saved`);
 });
@@ -1082,7 +947,7 @@ $('#restoreFromClipboard').addEventListener('click', ()=> {
   try{
     const obj = JSON.parse(pasted);
     state.pantry = obj.pantry || []; state.saved = obj.saved || []; state.grocery = obj.grocery || []; state.favorites = obj.favorites || [];
-    saveState();
+    persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
     renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
     alert('Profile restored from pasted JSON');
   } catch(e){
@@ -1105,7 +970,7 @@ const INSPOS = [
 ];
 function newInspiration(){ $('#dailyInspo').textContent = INSPOS[Math.floor(Math.random()*INSPOS.length)]; }
 $('#newInspo').addEventListener('click', newInspiration);
-$('#saveInspo').addEventListener('click', ()=> { state.favorites = state.favorites || []; state.favorites.push({text: $('#dailyInspo').textContent, at: new Date().toISOString()}); saveState(); alert('Inspiration saved'); });
+$('#saveInspo').addEventListener('click', ()=> { state.favorites = state.favorites || []; state.favorites.push({text: $('#dailyInspo').textContent, at: new Date().toISOString()}); saveLS('favorites', state.favorites); alert('Inspiration saved'); });
 newInspiration();
 
 /* ========================
@@ -1141,121 +1006,6 @@ function startStepTimer(sec){
 }
 
 /* ========================
-   Community Recipes (Supabase-backed)
-   - View (everyone), Post (logged-in), Delete (owner)
-   ======================== */
-
-async function loadCommunityRecipes(){
-  if(!supabase) { $('#communityList').innerHTML = '<div class="small muted">Community features require Supabase (unavailable).</div>'; return; }
-  try {
-    const { data, error } = await supabase
-      .from('community_recipes')
-      .select('id, user_id, title, ingredients, instructions, created_at')
-      .order('created_at', { ascending: false });
-    if(error) {
-      console.warn('Failed to load community recipes', error);
-      $('#communityList').innerHTML = '<div class="small muted">Failed to load community recipes.</div>';
-      return;
-    }
-    state.community = data || [];
-    renderCommunityList();
-  } catch(e){
-    console.warn('loadCommunityRecipes error', e);
-    $('#communityList').innerHTML = '<div class="small muted">Failed to load community recipes.</div>';
-  }
-}
-
-function renderCommunityList(){
-  const container = $('#communityList');
-  container.innerHTML = '';
-  $('#communityCount').textContent = state.community.length;
-  if(!state.community.length){
-    container.innerHTML = '<div class="small muted">No community recipes yet. Be the first to post!</div>';
-    return;
-  }
-
-  state.community.forEach(r=>{
-    const card = document.createElement('div');
-    card.className = 'community-card';
-    const isOwner = currentUser && currentUser.id === r.user_id;
-    // ingredients as list
-    const ingHTML = (r.ingredients || []).map(i=>`<li>${escapeHTML(i)}</li>`).join('');
-    card.innerHTML = `
-      <div style="display:flex;justify-content:space-between;gap:12px">
-        <div style="flex:1">
-          <strong>${escapeHTML(r.title)}</strong>
-          <div class="small muted" style="margin-top:6px">Posted ${new Date(r.created_at).toLocaleString()}${isOwner ? ' • you' : ''}</div>
-          <div style="margin-top:8px"><strong>Ingredients</strong><ul class="small muted" style="margin:6px 0 0 16px">${ingHTML}</ul></div>
-          <div style="margin-top:8px"><strong>Instructions</strong><div class="small muted" style="margin-top:6px;white-space:pre-wrap">${escapeHTML(r.instructions || '')}</div></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
-          ${isOwner ? `<button class="btn danger btn-delete-community" data-id="${r.id}">Delete</button>` : ''}
-        </div>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-
-  // wire delete buttons
-  $$('.btn-delete-community').forEach(b=>{
-    b.addEventListener('click', async ()=> {
-      const id = b.dataset.id;
-      if(!confirm('Delete this community recipe? This cannot be undone.')) return;
-      try {
-        const { error } = await supabase.from('community_recipes').delete().eq('id', id);
-        if(error) return alert('Delete failed: ' + error.message);
-        await loadCommunityRecipes();
-        alert('Recipe deleted');
-      } catch(e){
-        alert('Delete failed');
-        console.error(e);
-      }
-    });
-  });
-}
-
-/* Open/close community modals handlers */
-$('#btnViewCommunity').addEventListener('click', async ()=> {
-  $('#communityModal').classList.add('open');
-  await loadCommunityRecipes();
-});
-$('#closeCommunityModal').addEventListener('click', ()=> { $('#communityModal').classList.remove('open'); });
-$('#communityRefresh').addEventListener('click', ()=> loadCommunityRecipes());
-
-/* Post community recipe modal */
-$('#btnNewCommunity').addEventListener('click', async ()=> {
-  if(!currentUser) {
-    // show login prompt modal
-    openLoginModal();
-    return;
-  }
-  $('#postCommunityModal').classList.add('open');
-});
-$('#closePostCommunity').addEventListener('click', ()=> { $('#postCommunityModal').classList.remove('open'); });
-$('#postCommCancel').addEventListener('click', ()=> { $('#postCommunityModal').classList.remove('open'); });
-
-$('#postCommSubmit').addEventListener('click', async ()=> {
-  if(!currentUser) return alert('Please log in to post a recipe');
-  const title = ($('#newCommTitle').value || '').trim();
-  const ingredients = ($('#newCommIngredients').value || '').split('\n').map(s=>s.trim()).filter(Boolean);
-  const instructions = ($('#newCommInstructions').value || '').trim();
-  if(!title || !ingredients.length || !instructions) return alert('Fill all fields (title, ingredients, instructions)');
-  try {
-    const { error } = await supabase.from('community_recipes').insert([{ user_id: currentUser.id, title, ingredients, instructions }]);
-    if(error) return alert('Post failed: ' + error.message);
-    $('#newCommTitle').value = '';
-    $('#newCommIngredients').value = '';
-    $('#newCommInstructions').value = '';
-    $('#postCommunityModal').classList.remove('open');
-    await loadCommunityRecipes();
-    alert('Recipe posted to community');
-  } catch(e){
-    console.error('postCommunity error', e);
-    alert('Post failed');
-  }
-});
-
-/* ========================
    Initialization UI
    ======================== */
 function initialRender(){
@@ -1264,29 +1014,22 @@ function initialRender(){
   renderSavedList();
   renderGrocery();
   renderProfiles();
+  renderCommunityPreview();
 }
-
-/* load state then initial render & community */
-(async function(){
-  await loadState();
-  initialRender();
-  // attempt to fetch community recipes even for guests (reads are allowed if table policy permits)
-  try{ await loadCommunityRecipes(); }catch(e){}
-})();
+initialRender();
 
 /* ========================
    Supabase Auth & Profile sync
    ======================== */
 async function updateAuthUI(){
-  if(!supabase) { $('#userEmail').textContent = ''; currentUser = null; return; }
+  if(!supabase) { $('#userEmail').textContent = ''; return; }
   const { data } = await supabase.auth.getSession();
   const user = data?.session?.user || null;
-  currentUser = user;
   if(user){ $('#userEmail').textContent = user.email || user.id; }
   else { $('#userEmail').textContent = ''; }
 }
 
-/* Auth modal (with forgot password & save/load controls) */
+/* Auth modal (simple) */
 let loginModal = null;
 function openLoginModal(){
   if(!loginModal){
@@ -1302,18 +1045,19 @@ function openLoginModal(){
           <button class="btn ghost" id="logoutBtn" style="display:none">Log Out</button>
         </div>
         <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn ghost" id="forgotBtn">Forgot Password?</button>
           <button class="btn" id="saveToDbBtn">Save to cloud</button>
           <button class="btn" id="loadFromDbBtn">Load from cloud</button>
         </div>
-        <div id="authNote" class="small muted" style="margin-top:8px">Profile sync stores pantry, saved recipes, grocery and named profiles.</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn" id="forgotBtn">Forgot Password</button>
+        </div>
+        <div id="authNote" class="small muted" style="margin-top:8px">Profile sync stores pantry, saved recipes, grocery.</div>
       </div>
     </div>`;
     document.body.appendChild(loginModal);
 
     // handlers
     loginModal.querySelector('#closeLogin').addEventListener('click', ()=> loginModal.classList.remove('open'));
-
     loginModal.querySelector('#signupBtn').addEventListener('click', async ()=>{
       if(!supabase) return alert('Supabase not configured');
       const email = loginModal.querySelector('#loginEmail').value;
@@ -1323,7 +1067,6 @@ function openLoginModal(){
       if(error) alert('Sign up error: ' + error.message);
       else { alert('Check your email to confirm sign up (if enabled).'); updateAuthUI(); }
     });
-
     loginModal.querySelector('#loginBtn').addEventListener('click', async ()=>{
       if(!supabase) return alert('Supabase not configured');
       const email = loginModal.querySelector('#loginEmail').value;
@@ -1331,36 +1074,22 @@ function openLoginModal(){
       if(!email || !password) return alert('Enter email & password');
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if(error) alert('Login error: ' + error.message);
-      else { alert('Logged in'); updateAuthUI(); loginModal.classList.remove('open'); await loadState(); renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes()); await loadCommunityRecipes(); }
+      else { alert('Logged in'); updateAuthUI(); loginModal.classList.remove('open'); }
     });
-
     loginModal.querySelector('#logoutBtn').addEventListener('click', async ()=>{
       if(!supabase) return alert('Supabase not configured');
       await supabase.auth.signOut();
       alert('Logged out'); updateAuthUI();
     });
-
-    loginModal.querySelector('#forgotBtn').addEventListener('click', async ()=>{
-      if(!supabase) return alert('Supabase not configured');
-      const email = loginModal.querySelector('#loginEmail').value;
-      if(!email) return alert('Enter your email first');
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/reset.html'
-      });
-      if(error) alert('Reset error: ' + error.message);
-      else alert('Password reset email sent — check your inbox');
-    });
-
     loginModal.querySelector('#saveToDbBtn').addEventListener('click', async ()=>{
       if(!supabase) return alert('Supabase not configured');
       const { data } = await supabase.auth.getSession();
       const user = data?.session?.user;
       if(!user) return alert('Not logged in');
-      const payload = { pantry: state.pantry, saved: state.saved, grocery: state.grocery, favorites: state.favorites, profiles: state.profiles };
+      const payload = { pantry: state.pantry, saved: state.saved, grocery: state.grocery, favorites: state.favorites };
       const { error } = await supabase.from('profiles').upsert({ id: user.id, data: payload, updated_at: new Date() });
-      if(error) alert('Save error: ' + error.message); else { alert('Saved to cloud'); localStorage.setItem(KEY_STATE, JSON.stringify(payload)); }
+      if(error) alert('Save error: ' + error.message); else alert('Saved to cloud');
     });
-
     loginModal.querySelector('#loadFromDbBtn').addEventListener('click', async ()=>{
       if(!supabase) return alert('Supabase not configured');
       const { data } = await supabase.auth.getSession();
@@ -1373,11 +1102,17 @@ function openLoginModal(){
         state.saved = profile.data.saved || state.saved;
         state.grocery = profile.data.grocery || state.grocery;
         state.favorites = profile.data.favorites || state.favorites;
-        state.profiles = profile.data.profiles || state.profiles;
-        saveState();
+        persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
         renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
         alert('Loaded from cloud');
       } else alert('No profile data found');
+    });
+
+    loginModal.querySelector('#forgotBtn').addEventListener('click', async ()=>{
+      const email = loginModal.querySelector('#loginEmail').value;
+      if(!email) return alert('Enter your email address to receive a reset link.');
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+      if(error) alert('Reset error: ' + error.message); else alert('Check your email for a password reset link.');
     });
   }
   loginModal.classList.add('open');
@@ -1391,21 +1126,257 @@ $('#btnOpenLogin').addEventListener('click', ()=> openLoginModal() );
 if(supabase){
   supabase.auth.onAuthStateChange((event, session) => {
     updateAuthUI();
-    // When a user signs in, reload cloud state and community recipes
-    if(event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED'){
-      loadState().then(()=> {
-        renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
-      });
-      loadCommunityRecipes();
-    }
-    // When signed out, clear currentUser and update UI
-    if(event === 'SIGNED_OUT'){
-      currentUser = null;
-      updateAuthUI();
-    }
+    // If user logged in we might update UI
   });
   updateAuthUI();
 }
+
+/* ========================
+   Community recipes (full UI)
+   ======================== */
+function renderCommunityPreview(){
+  $('#communityPreview').innerHTML = 'Loading...';
+  loadCommunityRecipes().then(list=>{
+    const html = (list||[]).slice(0,3).map(r=>`<div style="margin-bottom:8px"><strong>${escapeHtml(r.title)}</strong><div class="small muted">${new Date(r.created_at).toLocaleString()}</div></div>`).join('');
+    $('#communityPreview').innerHTML = html || '<div class="small muted">No community recipes yet</div>';
+  }).catch(()=>{ $('#communityPreview').innerHTML = '<div class="small muted">Unable to load</div>'; });
+}
+
+async function loadCommunityRecipes(){
+  if(!supabase) throw new Error('Supabase not configured');
+  const { data, error } = await supabase.from('community_recipes').select('*').order('created_at',{ascending:false}).limit(200);
+  if(error) { console.error('loadCommunityRecipes:', error); return []; }
+  return data || [];
+}
+
+/* open community modal page — we will reuse recipeModal for details or open a simple UI */
+document.getElementById('openCommunity').addEventListener('click', async ()=>{
+  // show a quick community page in a modal
+  const communityModal = document.createElement('div'); communityModal.className='modal';
+  communityModal.innerHTML = `<div class="card" style="max-width:900px"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Community Recipes</h3><button class="btn ghost" id="closeComm">Close</button></div>
+    <div style="margin-top:12px;display:grid;grid-template-columns:1fr 420px;gap:12px">
+      <div>
+        <div id="commList" style="max-height:60vh;overflow:auto"></div>
+      </div>
+      <div>
+        <h4>Post a Recipe</h4>
+        <input id="commTitle" class="input" placeholder="Title">
+        <input id="commIngredients" class="input" placeholder="Ingredients (comma separated)">
+        <textarea id="commInstructions" class="input" placeholder="Instructions"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn primary" id="commPostBtn">Post</button>
+          <button class="btn" id="commRefreshBtn">Refresh</button>
+        </div>
+        <div class="small muted" style="margin-top:8px">Only logged in users can post. You may delete your own posts.</div>
+      </div>
+    </div></div>`;
+  document.body.appendChild(communityModal);
+  communityModal.classList.add('open');
+  communityModal.querySelector('#closeComm').addEventListener('click', ()=> communityModal.remove());
+  communityModal.querySelector('#commRefreshBtn').addEventListener('click', async ()=> { await fillCommList(); });
+  communityModal.querySelector('#commPostBtn').addEventListener('click', async ()=>{
+    const title = communityModal.querySelector('#commTitle').value.trim();
+    const ingredients = communityModal.querySelector('#commIngredients').value.split(',').map(s=>s.trim()).filter(Boolean);
+    const instructions = communityModal.querySelector('#commInstructions').value.trim();
+    if(!title || !instructions) return alert('Title and instructions required');
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user;
+    if(!user) return alert('Login required');
+    const { error } = await supabase.from('community_recipes').insert({ user_id: user.id, title, ingredients, instructions });
+    if(error) return alert('Post failed: ' + error.message);
+    communityModal.querySelector('#commTitle').value='';
+    communityModal.querySelector('#commIngredients').value='';
+    communityModal.querySelector('#commInstructions').value='';
+    await fillCommList();
+  });
+
+  async function fillCommList(){
+    const list = await loadCommunityRecipes();
+    const container = communityModal.querySelector('#commList'); container.innerHTML = '';
+    (list||[]).forEach(r=>{
+      const row = document.createElement('div'); row.className='card';
+      row.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${escapeHtml(r.title)}</strong><div class="small muted">${new Date(r.created_at).toLocaleString()}</div></div></div>
+        <div style="margin-top:8px"><strong>Ingredients</strong><div class="small muted">${(r.ingredients||[]).join(', ')}</div></div>
+        <div style="margin-top:8px"><strong>Instructions</strong><div class="small muted">${escapeHtml(r.instructions)}</div></div>`;
+      // attach delete if owner
+      communityModal.querySelector('#commList');
+      (async ()=>{
+        const { data } = await supabase.auth.getSession();
+        const user = data?.session?.user;
+        if(user && r.user_id === user.id){
+          const del = document.createElement('button'); del.className='btn'; del.textContent='Delete';
+          del.addEventListener('click', async ()=> {
+            if(!confirm('Delete this recipe?')) return;
+            const { error } = await supabase.from('community_recipes').delete().eq('id', r.id);
+            if(error) alert('Delete failed: ' + error.message);
+            else { alert('Deleted'); fillCommList(); renderCommunityPreview(); }
+          });
+          row.appendChild(del);
+        }
+      })();
+      container.appendChild(row);
+    });
+  }
+
+  await fillCommList();
+  renderCommunityPreview();
+});
+
+/* seed starter community recipes (for first-run UX) */
+$('#seedCommunity').addEventListener('click', async ()=>{
+  if(!confirm('Seed a few sample community recipes?')) return;
+  const samples = [
+    { title:'Simple Tomato Sauce', ingredients:['canned tomatoes','garlic','olive oil','salt'], instructions:'Sauté garlic in olive oil, add canned tomatoes, simmer 15m, season.' },
+    { title:'Lemon Herb Rice', ingredients:['rice','lemon','butter','parsley'], instructions:'Cook rice, fold in butter, lemon zest and chopped parsley.' }
+  ];
+  const { data } = await supabase.auth.getSession();
+  const user = data?.session?.user;
+  // If not logged in, insert with null user_id (or require login)
+  for(const s of samples){
+    await supabase.from('community_recipes').insert({ user_id: user ? user.id : null, title: s.title, ingredients: s.ingredients, instructions: s.instructions });
+  }
+  renderCommunityPreview();
+});
+
+/* ========================
+   Live Chat (global)
+   - 75 char limit, 5s cooldown, resets/truncates at 50 messages
+   ======================== */
+const CHAT_MAX = 50;
+const CHAT_COOLDOWN_MS = 5000;
+const CHAT_MAX_CHARS = 75;
+const CHAT_BAD_WORDS = ['damn','shit','fuck','bitch']; // extend as you like (client filter only)
+
+function filterChatText(txt){
+  if(!txt) return '';
+  let out = txt;
+  CHAT_BAD_WORDS.forEach(w=>{
+    const re = new RegExp(w,'ig');
+    out = out.replace(re, '***');
+  });
+  // trim to CHAT_MAX_CHARS
+  return out.slice(0, CHAT_MAX_CHARS);
+}
+
+function renderChatUI(){
+  const box = $('#chatBox');
+  if(!box) return;
+  box.innerHTML = '';
+  state.chatMessages.forEach(m=>{
+    const ts = new Date(m.created_at);
+    const line = document.createElement('div');
+    line.className = 'chat-line';
+    const shortUser = (m.user_id || 'guest').slice(0,8);
+    line.innerHTML = `<span class="small muted">${ts.toLocaleTimeString()}</span> <strong>${escapeHtml(shortUser)}</strong>: ${escapeHtml(filterChatText(m.content))}`;
+    box.appendChild(line);
+  });
+  box.scrollTop = box.scrollHeight;
+  $('#chatCount').textContent = state.chatMessages.length;
+  $('#chatCountModal').textContent = state.chatMessages.length;
+  // preview
+  const prev = $('#chatPreview');
+  if(prev){
+    const last = state.chatMessages.slice(-3).map(m => `<div>${escapeHtml((m.content||'').slice(0,40))}</div>`).join('');
+    prev.innerHTML = last || '<div class="small muted">No messages yet</div>';
+  }
+}
+
+/* load last CHAT_MAX messages */
+async function loadChatInitial(){
+  if(!supabase) return;
+  try{
+    const { data, error } = await supabase.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(CHAT_MAX);
+    if(error){ console.warn('loadChatInitial error', error); return; }
+    state.chatMessages = data || [];
+    renderChatUI();
+  } catch(e){ console.error(e); }
+}
+
+/* attempt to prune oldest messages in DB when over the limit
+   Note: this will fail if your RLS doesn't permit deletes for the current user.
+   If it fails, the UI still keeps only the last CHAT_MAX messages.
+*/
+async function pruneChatIfNeeded(){
+  if(!supabase) return;
+  try{
+    const { data: all, error } = await supabase.from('chat_messages').select('id, created_at').order('created_at',{ascending:true});
+    if(error){ console.warn('pruneChatIfNeeded - select error', error); return; }
+    if(!all || all.length <= CHAT_MAX) return;
+    const extra = all.length - CHAT_MAX;
+    const toDelete = all.slice(0, extra).map(r => r.id);
+    // try delete; may fail depending on RLS/policies
+    const { error: delErr } = await supabase.from('chat_messages').delete().in('id', toDelete);
+    if(delErr){ console.warn('pruneChatIfNeeded - delete failed (needs server role or RLS):', delErr.message); }
+    // refresh the local list (attempt)
+    const { data, error: selErr } = await supabase.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(CHAT_MAX);
+    if(!selErr) state.chatMessages = data || [];
+    else console.warn('pruneChatIfNeeded - select after delete failed', selErr);
+    renderChatUI();
+  } catch(e){ console.error('pruneChatIfNeeded', e); }
+}
+
+let lastChatSentAt = 0;
+async function sendChatMessage(){
+  if(!supabase) return alert('Supabase not configured');
+  const now = Date.now();
+  if(now - lastChatSentAt < CHAT_COOLDOWN_MS) return alert('Please wait before sending another message (5s cooldown)');
+  const input = $('#chatInput');
+  if(!input) return;
+  let txt = input.value.trim();
+  if(!txt) return;
+  txt = filterChatText(txt);
+  if(txt.length === 0) return alert('Message empty after filtering');
+  // enforce length (defensive)
+  if(txt.length > CHAT_MAX_CHARS) txt = txt.slice(0, CHAT_MAX_CHARS);
+  const { data } = await supabase.auth.getSession();
+  const user = data?.session?.user;
+  if(!user) return alert('You must be logged in to chat');
+  // insert
+  const { error } = await supabase.from('chat_messages').insert({ user_id: user.id, content: txt });
+  if(error){ console.error('sendChatMessage insert error', error); alert('Send failed: ' + error.message); return;}
+  // optimistic UI update will come from realtime subscription, but we update local quickly:
+  lastChatSentAt = now;
+  input.value = '';
+  // attempt prune (async)
+  setTimeout(()=> pruneChatIfNeeded(), 400);
+}
+
+/* realtime subscription: listen for new messages and update UI */
+let chatSubscription = null;
+function subscribeChatRealtime(){
+  if(!supabase) return;
+  try{
+    // unsubscribe previous if any
+    if(chatSubscription && chatSubscription.unsubscribe) chatSubscription.unsubscribe();
+  } catch(e){}
+  chatSubscription = supabase
+    .channel('public:chat_messages')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
+      state.chatMessages.push(payload.new);
+      // if exceeding max in-memory, shift
+      if(state.chatMessages.length > CHAT_MAX) state.chatMessages.shift();
+      renderChatUI();
+    })
+    .subscribe();
+}
+
+/* UI bindings for chat modal & buttons */
+$('#openChat').addEventListener('click', ()=> { $('#chatModal').classList.add('open'); $('#chatModal').setAttribute('aria-hidden','false'); $('#chatInput').focus(); });
+$('#btnOpenChatSmall').addEventListener('click', ()=> { $('#chatModal').classList.add('open'); $('#chatModal').setAttribute('aria-hidden','false'); $('#chatInput').focus(); });
+$('#closeChatModal').addEventListener('click', ()=> { $('#chatModal').classList.remove('open'); $('#chatModal').setAttribute('aria-hidden','true'); });
+$('#sendChatBtn').addEventListener('click', sendChatMessage);
+$('#chatInput').addEventListener('keypress', (e)=>{ if(e.key==='Enter') sendChatMessage(); });
+$('#clearLocalChat').addEventListener('click', ()=> { state.chatMessages = []; renderChatUI(); });
+
+/* start chat */
+loadChatInitial();
+subscribeChatRealtime();
+
+/* periodically ensure UI sync and attempt prune when necessary */
+setInterval(()=> {
+  // refresh preview count
+  $('#chatCount').textContent = state.chatMessages.length;
+}, 2000);
 
 /* ========================
    Misc UI wiring & final render
@@ -1417,6 +1388,9 @@ renderSavedList();
 renderGrocery();
 renderRecipes(matchedRecipes().slice(0, Math.min(matchedRecipes().length, 40)));
 
+/* community preview initial render */
+renderCommunityPreview();
+
 /* theme toggle */
 $('#btnTheme').addEventListener('click', ()=> { document.body.classList.toggle('light'); });
 
@@ -1425,34 +1399,16 @@ window.jemwayState = state; // expose for debugging
 
 /* ========================
    End of file
+   Notes:
+   - If prune (delete) calls fail, that means your DB policies currently disallow client deletes.
+     You can:
+       a) create a background function/cron on a server with a service role to prune old messages;
+       b) relax RLS to allow deletes from a specific role; or
+       c) keep client-only truncation (UI shows only last 50).
+   - Make sure community_recipes and chat_messages tables are created in Supabase (SQL at top).
+   - Don't commit your service_role key to client-side code.
+   - For production, enable RLS properly and write policies to keep users limited to allowed operations.
    ======================== */
-/*
-  Supabase DB note (run in SQL editor):
-
-  create table if not exists community_recipes (
-    id uuid primary key default gen_random_uuid(),
-    user_id uuid references auth.users(id) on delete cascade,
-    title text not null,
-    ingredients text[],
-    instructions text,
-    created_at timestamptz default now()
-  );
-
-  Recommended RLS (run if you enable RLS):
-
-  alter table community_recipes enable row level security;
-
-  create policy "Anyone can view" on community_recipes
-    for select using (true);
-
-  create policy "Users can insert own" on community_recipes
-    for insert with check (auth.uid() = user_id);
-
-  create policy "Users can delete own" on community_recipes
-    for delete using (auth.uid() = user_id);
-
-  (Also ensure anon role has SELECT on community_recipes if you want guests to read.)
-*/
 </script>
 </body>
 </html>
