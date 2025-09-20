@@ -1410,5 +1410,90 @@ window.jemwayState = state; // expose for debugging
    - For production, enable RLS properly and write policies to keep users limited to allowed operations.
    ======================== */
 </script>
-</body>
+<!-- Ultra-Premium Futuristic Logo Intro -->
+<style>
+  #introScreen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    overflow: hidden;
+    perspective: 2000px;
+  }
+
+  #logoWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-style: preserve-3d;
+  }
+
+  .fragment {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 12rem;
+    color: #00d1b2;
+    opacity: 0;
+    transform: translate3d(0,0,-500px) rotateX(90deg);
+    display: inline-block;
+    margin: 0 0.2rem;
+  }
+
+  #siteName {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 3rem;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(50px);
+    margin-top: 1rem;
+    letter-spacing: 0.2rem;
+  }
+</style>
+
+<div id="introScreen">
+  <div id="logoWrapper">
+    <div id="logoFragments">
+      <span class="fragment">J</span>
+      <span class="fragment">E</span>
+      <span class="fragment">M</span>
+      <span class="fragment">W</span>
+      <span class="fragment">A</span>
+      <span class="fragment">Y</span>
+    </div>
+    <div id="siteName">Culinary Companion</div>
+  </div>
+</div>
+
+<script>
+  const intro = document.getElementById('introScreen');
+  const fragments = document.querySelectorAll('.fragment');
+  const name = document.getElementById('siteName');
+
+  // Animate logo fragments sequentially
+  fragments.forEach((frag, i) => {
+    setTimeout(() => {
+      frag.style.transition = 'transform 1.2s cubic-bezier(.25,.8,.25,1), opacity 1.2s ease';
+      frag.style.transform = 'translate3d(0,0,0) rotateX(0deg)';
+      frag.style.opacity = 1;
+    }, i * 200);
+  });
+
+  // Animate site name fade-in after logo
+  setTimeout(() => {
+    name.style.transition = 'transform 1.2s ease, opacity 1.2s ease';
+    name.style.transform = 'translateY(0)';
+    name.style.opacity = 1;
+  }, fragments.length * 200 + 800);
+
+  // Fade out the intro and reveal the site
+  setTimeout(() => {
+    intro.style.transition = 'opacity 1.5s ease';
+    intro.style.opacity = 0;
+    setTimeout(() => intro.remove(), 1500);
+  }, fragments.length * 200 + 2800);
+</script></body>
 </html>
