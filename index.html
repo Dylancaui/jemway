@@ -1,1499 +1,1357 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Jemway — Culinary Companion (Pro)</title>
-<meta name="description" content="Jemway — Pantry-first recipes, substitutions, cook mode, grocery lists, profile manager.">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jemway - Science-Based Recovery from Pornography Addiction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+        :root {
+            --primary: #6C63FF;
+            --primary-light: #8A85FF;
+            --secondary: #4A90E2;
+            --accent: #36D1DC;
+            --dark: #2D3748;
+            --light: #F7FAFC;
+            --gray: #A0AEC0;
+            --success: #48BB78;
+            --danger: #E53E3E;
+            --warning: #F6AD55;
+        }
 
-<!-- Supabase JS (v2) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-<style>
-  /* ========== Design tokens ========== */
-  :root{
-    --bg:#0f1724;
-    --panel:#0b1220;
-    --card:#0f1728;
-    --card-2:#0b1320;
-    --text:#e6f0f6;
-    --muted:#9fb1c9;
-    --accent-1:#00d1b2; /* teal */
-    --accent-2:#ff9f43; /* warm orange */
-    --danger:#ff6b6b;
-    --glass: rgba(255,255,255,0.02);
-    --radius:12px;
-    --shadow: 0 12px 40px rgba(2,6,23,0.6);
-    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono";
-    --ease: cubic-bezier(.2,.9,.2,1);
-    --maxW: 1200px;
-  }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-  body.light{
-    --bg:#f6f8fb;
-    --panel:#ffffff;
-    --card:#ffffff;
-    --card-2:#ffffff;
-    --text:#072031;
-    --muted:#556277;
-    --glass: rgba(0,0,0,0.04);
-    --shadow: 0 10px 30px rgba(12,18,38,0.06);
-  }
+        /* Intro Screen */
+        #introScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease;
+        }
 
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;padding:0;background:linear-gradient(180deg,var(--bg), #07101a 85%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);-webkit-font-smoothing:antialiased}
-  .container{width:100%;max-width:var(--maxW);margin:30px auto;padding:18px;display:grid;grid-template-columns: 1fr 360px;gap:22px}
-  @media(max-width:1100px){ .container{grid-template-columns:1fr;padding:12px} }
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
 
-  .topbar{grid-column:1 / -1;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.03)}
-  .brand{display:flex;gap:12px;align-items:center}
-  .logo{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:black;font-weight:800;font-size:20px}
-  .title h1{margin:0;font-size:16px}
-  .title p{margin:0;color:var(--muted);font-size:12px}
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 5s infinite alternate;
+        }
 
-  .btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);font-weight:700;cursor:pointer;transition:transform .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease)}
-  .btn:hover{transform:translateY(-3px)}
-  .btn.primary{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));border:0;color:black}
-  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
-  .btn.small{padding:6px 8px;font-size:13px}
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 0.8; }
+        }
 
-  .card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow);transition:transform .14s var(--ease), opacity .3s}
-  .card:hover{transform:translateY(-6px)}
-  .panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  .small{font-size:13px;color:var(--muted)}
-  .muted{color:var(--muted)}
+        .shooting-star {
+            position: absolute;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, white);
+            transform: rotate(-45deg);
+            opacity: 0;
+        }
 
-  .left-grid{display:grid;grid-template-columns: 1fr;gap:18px}
-  @media(min-width:900px){ .left-grid{grid-template-columns: 1fr 1fr; } }
+        .logo-container {
+            text-align: center;
+            z-index: 10;
+        }
 
-  .pantry-input-row{display:flex;gap:8px;align-items:center}
-  .input, textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px}
-  .chip{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-weight:700;cursor:pointer;color:var(--muted)}
+        .intro-logo {
+            font-size: 64px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
 
-  .recipes{display:grid;grid-template-columns:repeat(1,1fr);gap:12px}
-  @media(min-width:900px){ .recipes{grid-template-columns:repeat(2,1fr)} }
-  .recipe-card{padding:12px;border-radius:10px;background:var(--card-2);border:1px solid rgba(255,255,255,0.02)}
-  .recipe-card h4{margin:0 0 8px 0}
-  .rmeta{font-size:13px;color:var(--muted)}
+        .intro-subtitle {
+            font-size: 18px;
+            color: #cbd5e0;
+            margin-bottom: 40px;
+        }
 
-  .sidebar{display:flex;flex-direction:column;gap:18px}
-  .list-compact{display:flex;flex-direction:column;gap:8px}
-  .list-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
+        .enter-btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-  .modal{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(3,6,12,0.6);display:none;align-items:center;justify-content:center;z-index:4000;padding:20px}
-  .modal.open{display:flex}
-  .modal .card{max-width:980px;width:100%;max-height:90vh;overflow:auto}
+        .enter-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.3);
+        }
 
-  .cook-full{padding:22px;text-align:center}
-  .fade-in{animation: fadeInUp .45s ease both}
-  @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-  .right-actions{display:flex;gap:8px;align-items:center}
-  .badge{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:700;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
-  .hidden{display:none}
-  a.link{color:var(--accent-2);text-decoration:none;font-weight:700}
-  .footer{grid-column:1/-1;text-align:center;color:var(--muted);margin-top:18px}
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-  /* chat specifics */
-  .chat-preview{height:80px;overflow:hidden;font-size:13px}
-  .chat-list{max-height:220px;overflow-y:auto;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
-  .chat-line{margin-bottom:8px;font-size:13px;color:var(--muted)}
-</style>
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .developer-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 5rem 0;
+            background: linear-gradient(rgba(108, 99, 255, 0.9), rgba(74, 144, 226, 0.9)), url('https://images.unsplash.com/photo-1557683316-973673baf926?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .warning-notice {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 2rem auto 0;
+            font-size: 0.9rem;
+        }
+
+        /* Content Sections */
+        .section {
+            padding: 5rem 0;
+        }
+
+        .section-alt {
+            background: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: var(--dark);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Dangers Grid */
+        .dangers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .danger-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .danger-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .danger-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--danger);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        /* Solutions Grid */
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .solution-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .solution-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        /* Video Section */
+        .videos-section {
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            color: white;
+            padding: 5rem 0;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 3rem;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-content {
+            padding: 20px;
+        }
+
+        .video-content h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .video-content p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 4rem 0;
+            background: var(--dark);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat-card {
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Self-Assessment */
+        .assessment-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .question {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .question:last-child {
+            border-bottom: none;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 12px 15px;
+            border: 1px solid var(--gray);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            background: var(--light);
+        }
+
+        .option.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .assessment-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--gray);
+        }
+
+        .btn-secondary:hover {
+            background: white;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background: var(--light);
+            display: none;
+        }
+
+        /* Resources */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .resource-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .resource-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        /* Daily Tips */
+        .daily-tips {
+            background: var(--warning);
+            color: var(--dark);
+            padding: 3rem 0;
+        }
+
+        .tip-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tip-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .tip-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--warning);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        /* New Features */
+        .community-section {
+            background: var(--primary-light);
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+
+        .community-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+
+        .community-stat {
+            text-align: center;
+        }
+
+        .community-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .community-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .progress-tracker {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 3rem auto 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: var(--dark);
+        }
+
+        .progress-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: var(--light);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 1s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 3rem;
+        }
+
+        .tool-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .tool-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        .testimonials-section {
+            padding: 5rem 0;
+            background: var(--light);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .testimonial-content {
+            font-style: italic;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .testimonial-content:before {
+            content: """;
+            font-size: 4rem;
+            color: var(--primary-light);
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            opacity: 0.3;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Emergency Section */
+        .emergency-section {
+            background: var(--danger);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .emergency-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .emergency-numbers {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .emergency-number {
+            text-align: center;
+        }
+
+        .emergency-number .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .emergency-number .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 3rem;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .developer-credit {
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .intro-logo {
+                font-size: 48px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .community-stats {
+                gap: 20px;
+            }
+
+            .emergency-numbers {
+                gap: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-
-  <!-- TOPBAR -->
-  <div class="container">
-    <div class="topbar card" style="grid-column:1 / -1">
-      <div class="brand">
-        <div class="logo" aria-hidden>J</div>
-        <div class="title">
-          <h1>Jemway</h1>
-          <p class="small muted">Culinary Companion — polished</p>
+    <!-- Intro Screen -->
+    <div id="introScreen">
+        <div class="stars" id="stars"></div>
+        <div class="logo-container">
+            <div class="intro-logo">Jemway</div>
+            <div class="intro-subtitle">Science-Based Recovery from Pornography Addiction</div>
+            <button class="enter-btn" id="enterSite">Enter Site</button>
         </div>
-      </div>
-
-      <div style="display:flex;gap:8px;align-items:center">
-        <input id="globalSearch" class="input" placeholder="Search recipes, ingredients, tags (press Enter)">
-        <div class="right-actions">
-          <div id="userEmail" class="small muted" style="min-width:160px;text-align:right"></div>
-          <button class="btn ghost" id="btnOpenLogin">Account</button>
-          <button class="btn" id="btnTheme">Toggle Theme</button>
-          <button class="btn" id="btnOpenChatSmall">Chat</button>
-        </div>
-      </div>
     </div>
 
-    <!-- LEFT: main -->
-    <main>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fas fa-dove"></i>
+                    <span>Jemway</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#dangers">The Science</a>
+                    <a href="#solutions">Recovery</a>
+                    <a href="#videos">Videos</a>
+                    <a href="#assessment">Self-Test</a>
+                    <a href="#emergency">Emergency Help</a>
+                    <div class="developer-badge">From Adzentura Developer</div>
+                </div>
+            </nav>
+        </div>
+    </header>
 
-      <!-- top left grid -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
-        <!-- Pantry card -->
-        <div class="card">
-          <div class="panel-title">
-            <div>
-              <strong>Pantry</strong>
-              <div class="small muted">Add staples and Jemway suggests recipes</div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Evidence-Based Recovery from Pornography Addiction</h1>
+            <p>Jemway provides scientifically-validated information and resources to understand and overcome compulsive sexual behaviors, based on neuroscience and clinical research.</p>
+            <div class="warning-notice">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <strong>Important:</strong> This site contains factual information about sexual addiction. If you are in crisis or having thoughts of harming yourself or others, please seek immediate professional help.
             </div>
-            <div class="badge" id="pantryCount">0</div>
-          </div>
-
-          <div style="margin-top:12px" class="pantry-input-row">
-            <input id="pantryInput" class="input" placeholder="Add items (comma-separated) — e.g., eggs, flour, canned tomatoes">
-            <button class="btn primary" id="addPantry">Add</button>
-            <button class="btn" id="clearPantryInput">Clear</button>
-          </div>
-
-          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap" id="pantryChips" aria-hidden></div>
-
-          <div style="margin-top:12px">
-            <div class="small muted">Snapshot:</div>
-            <div id="pantryPreview" class="small muted">No items yet — add staples.</div>
-          </div>
         </div>
+    </section>
 
-        <!-- Timer & inspiration -->
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <strong>Kitchen Timer</strong>
-              <div class="small muted">Enter minutes</div>
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">64%</div>
+                    <div class="stat-label">of young men report compulsive pornography use (Journal of Adolescent Health, 2020)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">56%</div>
+                    <div class="stat-label">divorce rate when pornography use is a conflict issue (Journal of Sex & Marital Therapy, 2019)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3.5x</div>
+                    <div class="stat-label">higher likelihood of depression with compulsive use (JAMA Psychiatry, 2019)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">71%</div>
+                    <div class="stat-label">recovery success with professional treatment (Sexual Addiction & Compulsivity, 2021)</div>
+                </div>
             </div>
-            <div id="timerBadge" class="badge">00:00</div>
-          </div>
+        </div>
+    </section>
 
-          <div style="display:flex;gap:8px;margin-top:12px">
-            <input id="timerMinutes" class="input" placeholder="Minutes (e.g., 5)">
-            <button class="btn primary" id="startKitchenTimer">Start</button>
-            <button class="btn" id="stopKitchenTimer">Stop</button>
-          </div>
-
-          <div style="margin-top:14px">
-            <strong>Flavor Inspiration</strong>
-            <div id="dailyInspo" class="small muted" style="margin-top:8px">Loading...</div>
-            <div style="margin-top:8px;display:flex;gap:8px">
-              <button class="btn" id="newInspo">New</button>
-              <button class="btn" id="saveInspo">Save</button>
+    <!-- Emergency Section -->
+    <section class="emergency-section" id="emergency">
+        <div class="container">
+            <div class="emergency-content">
+                <h2><i class="fas fa-exclamation-circle"></i> Immediate Crisis Support</h2>
+                <p>If you're in crisis or having thoughts of harming yourself or others, these resources are available 24/7:</p>
+                <div class="emergency-numbers">
+                    <div class="emergency-number">
+                        <div class="number">988</div>
+                        <div class="label">Suicide & Crisis Lifeline</div>
+                    </div>
+                    <div class="emergency-number">
+                        <div class="number">1-800-662-HELP</div>
+                        <div class="label">SAMHSA Helpline</div>
+                    </div>
+                    <div class="emergency-number">
+                        <div class="number">1-800-273-8255</div>
+                        <div class="label">National Suicide Prevention</div>
+                    </div>
+                </div>
+                <p><strong>For immediate danger to yourself or others, call 911 or go to your nearest emergency room.</strong></p>
             </div>
-          </div>
         </div>
-      </div>
+    </section>
 
-      <!-- Search & filters -->
-      <div class="card" style="margin-bottom:18px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong>Recipe Suggestions</strong><div class="small muted">Tailored to your pantry</div></div>
-          <div class="small muted">Matches: <span id="matchCount">0</span></div>
+    <!-- Dangers Section -->
+    <section class="section" id="dangers">
+        <div class="container">
+            <div class="section-title">
+                <h2>Evidence-Based Risks of Compulsive Pornography Use</h2>
+                <p>Peer-reviewed research on how compulsive pornography consumption affects brain function and behavior</p>
+            </div>
+            <div class="dangers-grid">
+                <div class="danger-card">
+                    <div class="danger-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Neurological Changes</h3>
+                    <p>MRI studies show reduced gray matter in prefrontal cortex regions responsible for decision-making and impulse control (JAMA Psychiatry, 2014).</p>
+                </div>
+                <div class="danger-card">
+                    <div class="danger-icon">
+                        <i class="fas fa-heart-broken"></i>
+                    </div>
+                    <h3>Relationship Impact</h3>
+                    <p>Research links compulsive use to decreased relationship satisfaction, intimacy issues, and increased likelihood of infidelity (Journal of Sex Research, 2017).</p>
+                </div>
+                <div class="danger-card">
+                    <div class="danger-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Addiction Mechanisms</h3>
+                    <p>Compulsive use follows established addiction patterns with tolerance, withdrawal, and loss of control despite negative consequences (Current Addiction Reports, 2016).</p>
+                </div>
+                <div class="danger-card">
+                    <div class="danger-icon">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                    <h3>Escalation Patterns</h3>
+                    <p>Studies document users progressing to more extreme content over time, with associated desensitization effects (Sexual Addiction & Compulsivity, 2015).</p>
+                </div>
+                <div class="danger-card">
+                    <div class="danger-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Academic/Work Impact</h3>
+                    <p>Research associates compulsive use with decreased academic performance, work productivity, and attention span (Computers in Human Behavior, 2018).</p>
+                </div>
+                <div class="danger-card">
+                    <div class="danger-icon">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <h3>Mental Health</h3>
+                    <p>Strong correlations found with depression, anxiety, loneliness, and decreased life satisfaction (Journal of Affective Disorders, 2019).</p>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
-          <input id="searchInput" class="input" placeholder="Search title, ingredient or tag">
-          <select id="timeFilter" class="input" style="width:160px">
-            <option value="any">Any time</option>
-            <option value="short">&lt; 20 min</option>
-            <option value="medium">20–40 min</option>
-            <option value="long">&gt; 40 min</option>
-          </select>
-          <select id="diffFilter" class="input" style="width:140px">
-            <option value="any">Any difficulty</option>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-          <button class="btn" id="runSearch">Search</button>
-          <div style="flex:1"></div>
-          <button class="btn" id="importSample">Load Sample Pantry</button>
+    <!-- Solutions Section -->
+    <section class="section section-alt" id="solutions">
+        <div class="container">
+            <div class="section-title">
+                <h2>Evidence-Based Recovery Approaches</h2>
+                <p>Clinically validated methods for overcoming compulsive sexual behaviors</p>
+            </div>
+            <div class="solutions-grid">
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Cognitive Behavioral Therapy (CBT)</h3>
+                    <p>Gold-standard treatment that identifies and modifies thought patterns driving compulsive behaviors. Proven effective in multiple clinical trials.</p>
+                </div>
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h3>Acceptance & Commitment Therapy (ACT)</h3>
+                    <p>Mindfulness-based approach that teaches acceptance of difficult feelings while committing to value-based actions. Shown effective for behavioral addictions.</p>
+                </div>
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <i class="fas fa-running"></i>
+                    </div>
+                    <h3>Behavioral Activation</h3>
+                    <p>Systematically replacing compulsive behaviors with healthy alternatives that provide natural dopamine regulation and life satisfaction.</p>
+                </div>
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>Psychoeducation</h3>
+                    <p>Learning the neuroscience of addiction reduces shame and increases motivation for change through understanding biological mechanisms.</p>
+                </div>
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Support Groups</h3>
+                    <p>12-step and other mutual support groups provide accountability and reduce isolation. Research shows social support improves recovery outcomes.</p>
+                </div>
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Relapse Prevention</h3>
+                    <p>Structured planning for high-risk situations using cognitive and behavioral strategies. Critical for long-term maintenance of behavioral change.</p>
+                </div>
+            </div>
         </div>
-      </div>
+    </section>
 
-      <!-- Recipes grid -->
-      <section class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong>Recipes</strong><div class="small muted">Click a recipe to view details & cook mode</div></div>
-          <div class="small muted">Showing: <span id="showingCount">0</span></div>
+    <!-- Video Section -->
+    <section class="videos-section" id="videos">
+        <div class="container">
+            <div class="section-title">
+                <h2>Educational Videos from Experts</h2>
+                <p>Evidence-based information from researchers and clinicians</p>
+            </div>
+            <div class="videos-grid">
+                <div class="video-card">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/wSF82AwSDiU" title="Your Brain on Pornography" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-content">
+                        <h3>Your Brain on Pornography</h3>
+                        <p>Neuroscientist explains how pornography affects brain development and function.</p>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/2LgdbmWqY4A" title="Understanding Pornography Addiction" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-content">
+                        <h3>The Science of Addiction</h3>
+                        <p>Clinical psychologist explains the addiction model for compulsive behaviors.</p>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/4xCWK15bB0E" title="Recovery Strategies" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-content">
+                        <h3>Evidence-Based Recovery</h3>
+                        <p>Therapist discusses proven methods for overcoming compulsive sexual behaviors.</p>
+                    </div>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div id="recipesList" class="recipes" style="margin-top:12px"></div>
-
-        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-          <button class="btn" id="moreRecipes">More</button>
-          <button class="btn" id="shuffleRecipes">Shuffle</button>
-          <div style="flex:1"></div>
-          <div class="small muted">Tip: use search to narrow by ingredients</div>
+    <!-- Daily Tips -->
+    <section class="daily-tips">
+        <div class="container">
+            <div class="tip-card">
+                <div class="tip-header">
+                    <div class="tip-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Evidence-Based Recovery Tip</h3>
+                </div>
+                <p><strong>Urge Surfing Technique:</strong> Research shows that sexual urges typically follow a predictable pattern, peaking within 5-15 minutes then subsiding. Instead of fighting the urge, practice observing it without judgment while engaging in a distracting activity. This mindfulness-based approach has been shown to significantly reduce compulsive behaviors in clinical studies.</p>
+            </div>
         </div>
-      </section>
+    </section>
 
-    </main>
-
-    <!-- RIGHT: sidebar -->
-    <aside class="sidebar">
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong>Pantry</strong><div class="small muted">Stored staples</div></div>
-          <div class="badge" id="pantryCountSide">0</div>
+    <!-- Self-Assessment Section -->
+    <section class="section" id="assessment">
+        <div class="container">
+            <div class="section-title">
+                <h2>Clinical Self-Assessment</h2>
+                <p>Based on diagnostic criteria for compulsive sexual behavior disorder</p>
+            </div>
+            <div class="assessment-container">
+                <div class="question">
+                    <div class="question-text">1. Over the past 6 months, how often have you engaged in sexual behaviors for longer periods or more frequently than intended?</div>
+                    <div class="options">
+                        <div class="option" data-value="0">Never or rarely</div>
+                        <div class="option" data-value="1">Occasionally (monthly)</div>
+                        <div class="option" data-value="2">Frequently (weekly)</div>
+                        <div class="option" data-value="3">Very frequently (daily or almost daily)</div>
+                    </div>
+                </div>
+                <div class="question">
+                    <div class="question-text">2. How often have you made repeated unsuccessful efforts to control or significantly reduce these sexual behaviors?</div>
+                    <div class="options">
+                        <div class="option" data-value="0">Never tried to reduce</div>
+                        <div class="option" data-value="1">Tried once or twice without success</div>
+                        <div class="option" data-value="2">Multiple attempts with partial success</div>
+                        <div class="option" data-value="3">Many attempts with little to no success</div>
+                    </div>
+                </div>
+                <div class="question">
+                    <div class="question-text">3. How much time do you spend on sexual activities (including planning, engaging, and recovering)?</div>
+                    <div class="options">
+                        <div class="option" data-value="0">Less than 1 hour per week</div>
+                        <div class="option" data-value="1">1-5 hours per week</div>
+                        <div class="option" data-value="2">5-15 hours per week</div>
+                        <div class="option" data-value="3">More than 15 hours per week</div>
+                    </div>
+                </div>
+                <div class="question">
+                    <div class="question-text">4. How often do these sexual behaviors cause you to fail to fulfill major role obligations at work, school, or home?</div>
+                    <div class="options">
+                        <div class="option" data-value="0">Never</div>
+                        <div class="option" data-value="1">Rarely (a few times)</div>
+                        <div class="option" data-value="2">Sometimes (monthly)</div>
+                        <div class="option" data-value="3">Often (weekly or more)</div>
+                    </div>
+                </div>
+                <div class="question">
+                    <div class="question-text">5. How often do you continue these sexual behaviors despite persistent or recurrent social or interpersonal problems caused by them?</div>
+                    <div class="options">
+                        <div class="option" data-value="0">No interpersonal problems</div>
+                        <div class="option" data-value="1">Minor problems but continuing</div>
+                        <div class="option" data-value="2">Moderate problems but continuing</div>
+                        <div class="option" data-value="3">Serious problems but continuing</div>
+                    </div>
+                </div>
+                <div class="assessment-actions">
+                    <button class="btn btn-primary" id="submitAssessment">Get Results</button>
+                    <button class="btn btn-secondary" id="resetAssessment">Reset</button>
+                </div>
+                <div class="result" id="assessmentResult">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
         </div>
-        <div class="sep" style="height:12px"></div>
-        <div id="pantryList" class="list-compact"></div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn" id="editPantry">Edit</button>
-          <button class="btn" id="clearPantryAll">Clear All</button>
+    </section>
+
+    <!-- Resources Section -->
+    <section class="section section-alt" id="resources">
+        <div class="container">
+            <div class="section-title">
+                <h2>Professional Resources & Support</h2>
+                <p>Evidence-based treatment options and support services</p>
+            </div>
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h3>National Helplines</h3>
+                    <p><strong>Substance Abuse and Mental Health Services Administration (SAMHSA):</strong> 1-800-662-HELP (4357)</p>
+                    <p><strong>National Alliance on Mental Illness (NAMI):</strong> 1-800-950-NAMI (6264)</p>
+                    <p><strong>Crisis Text Line:</strong> Text HOME to 741741</p>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-book-medical"></i>
+                    </div>
+                    <h3>Professional Organizations</h3>
+                    <p><strong>Society for the Advancement of Sexual Health (SASH):</strong> Certified therapists specializing in sexual addiction</p>
+                    <p><strong>American Association of Sexuality Educators, Counselors and Therapists (AASECT):</strong> Certified sexuality professionals</p>
+                    <p><strong>International Institute for Trauma and Addiction Professionals (IITAP):</strong> CSAT certified therapists</p>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3>Treatment Approaches</h3>
+                    <p><strong>Cognitive Behavioral Therapy (CBT):</strong> Evidence-based for compulsive behaviors</p>
+                    <p><strong>Acceptance and Commitment Therapy (ACT):</strong> Mindfulness-based approach</p>
+                    <p><strong>12-Step Programs:</strong> Free mutual support groups (SAA, SLAA)</p>
+                </div>
+            </div>
         </div>
-      </div>
+    </section>
 
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong>Grocery List</strong><div class="small muted">Missing items aggregated from recipes</div></div>
-          <div class="badge" id="groceryCount">0</div>
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Jemway</h3>
+                    <p>An evidence-based educational resource about compulsive sexual behaviors and recovery, created to provide accurate, scientifically-validated information.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Clinical Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://www.sash.net" target="_blank">Society for the Advancement of Sexual Health</a></li>
+                        <li><a href="https://www.aasect.org" target="_blank">AASECT Certified Professionals</a></li>
+                        <li><a href="https://www.iitap.com" target="_blank">IITAP CSAT Certification</a></li>
+                        <li><a href="https://www.saa-recovery.org" target="_blank">Sex Addicts Anonymous</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Research & Education</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://www.ncbi.nlm.nih.gov/pubmed" target="_blank">PubMed Research Database</a></li>
+                        <li><a href="https://www.psychologytoday.com" target="_blank">Psychology Today Therapist Directory</a></li>
+                        <li><a href="https://www.nimh.nih.gov" target="_blank">National Institute of Mental Health</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Important Notice</h3>
+                    <p>This website provides educational information only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of qualified health providers with any questions about medical conditions.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Jemway. Evidence-based educational resource.</p>
+                <div class="developer-credit">Created by Dylan Castro - Developer of Adzentura Mental Health Resources</div>
+            </div>
         </div>
-        <div class="sep" style="height:12px"></div>
-        <div id="groceryList" class="list-compact small muted"></div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn" id="copyGrocery">Copy Grocery</button>
-          <button class="btn" id="clearGrocery">Clear</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong>Saved Recipes</strong><div class="small muted">Favorites</div></div>
-          <div class="badge" id="savedCount">0</div>
-        </div>
-        <div class="sep" style="height:12px"></div>
-        <div id="savedList" class="small muted">No saved recipes yet</div>
-      </div>
-
-      <!-- Community Recipes quick UI -->
-      <div class="card">
-        <h4 style="margin:0 0 8px 0">Community Recipes</h4>
-        <div class="small muted">Post recipes for others to use. Edit/delete your own posts.</div>
-        <div style="margin-top:10px;display:flex;gap:8px">
-          <input id="profileName" class="input" placeholder="Profile name" style="display:none">
-        </div>
-        <div id="communityPreview" style="margin-top:12px"></div>
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="btn" id="openCommunity">Open Community</button>
-          <button class="btn" id="seedCommunity">Seed Starter Recipes</button>
-        </div>
-      </div>
-
-      <!-- Chat preview + open -->
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong>Global Chat</strong><div class="small muted">Live, short messages — reset every 50</div></div>
-          <div class="badge" id="chatCount">0</div>
-        </div>
-        <div class="sep" style="height:12px"></div>
-        <div id="chatPreview" class="chat-preview small muted">Loading chat...</div>
-        <div style="margin-top:10px;display:flex;gap:8px">
-          <button class="btn" id="openChat">Open Chat</button>
-          <button class="btn" id="clearLocalChat">Clear Preview</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h4 style="margin:0 0 8px 0">Profiles</h4>
-        <div class="small muted">Create named profiles (pantry + favorites). Backup copies to clipboard.</div>
-        <div style="margin-top:10px;display:flex;gap:8px">
-          <input id="profileNameInput" class="input" placeholder="Profile name">
-          <button class="btn primary" id="saveProfileBtn">Save</button>
-        </div>
-        <div id="profilesContainer" style="margin-top:12px"></div>
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="btn" id="backupToClipboard">Backup</button>
-          <button class="btn" id="restoreFromClipboard">Restore</button>
-        </div>
-      </div>
-    </aside>
-
-    <div class="footer muted" style="grid-column:1/-1;margin-top:10px;">
-      Jemway — Culinary Companion • Created by Dylan Castro
-    </div>
-  </div>
-
-  <!-- Modals -->
-  <div id="recipeModal" class="modal" aria-hidden="true">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <h3 id="detailTitle" style="margin:0">Recipe</h3>
-          <div class="small muted" id="detailMeta">—</div>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn" id="saveRecipeBtn">Save</button>
-          <button class="btn" id="addToGroceryBtn">Add Missing</button>
-          <button class="btn ghost" id="closeRecipeModal">Close</button>
-        </div>
-      </div>
-
-      <div style="margin-top:12px;display:grid;grid-template-columns:260px 1fr;gap:16px">
-        <div>
-          <div class="small muted">Serves <span id="servesBadge" class="badge" style="margin-left:8px">-</span></div>
-          <div style="margin-top:12px"><strong>Ingredients</strong>
-            <ul id="ingList" style="margin-top:8px" class="small muted"></ul>
-          </div>
-        </div>
-
-        <div>
-          <h4 style="margin:0">Steps</h4>
-          <ol id="stepList" class="small muted" style="margin-top:8px"></ol>
-          <div style="margin-top:12px">
-            <button class="btn primary" id="enterCookMode">Enter Cook Mode</button>
-            <button class="btn ghost" id="backToList">Back to List</button>
-          </div>
-
-          <div style="margin-top:12px">
-            <strong>Substitutions</strong>
-            <table class="sub-table" style="width:100%;margin-top:8px;color:var(--muted)">
-              <thead><tr><th style="text-align:left">Ingredient</th><th style="text-align:left">Substitute</th></tr></thead>
-              <tbody id="subsTable"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="cookModal" class="modal" aria-hidden="true">
-    <div class="card cook-full">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h2 id="cookTitle">Cook Mode</h2>
-        <div><button class="btn" id="exitCook">Exit</button></div>
-      </div>
-      <div id="cookSteps" style="margin-top:18px;text-align:left"></div>
-    </div>
-  </div>
-
-  <!-- Chat Modal -->
-  <div id="chatModal" class="modal" aria-hidden="true">
-    <div class="card" style="max-width:720px;width:100%;">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">Global Chat</h3>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div class="small muted" id="chatStatus">Connected</div>
-          <button class="btn ghost" id="closeChatModal">Close</button>
-        </div>
-      </div>
-
-      <div style="margin-top:12px">
-        <div id="chatBox" class="chat-list"></div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <input id="chatInput" class="input" placeholder="Say something (max 75 chars)" maxlength="75">
-          <button class="btn primary" id="sendChatBtn">Send</button>
-        </div>
-        <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
-          <div class="small muted">Cooldown: <strong>5s</strong>. Chat shows last <strong>50</strong> messages.</div>
-          <div class="small muted"><span id="chatCountModal">0</span> messages</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<script>
-/* =================================================================================
-   Full Jemway — combined final script
-   - Includes Supabase auth + profiles + community recipes + live chat
-   - Uses your provided Supabase URL/ANON from earlier in the conversation.
-   ================================================================================= */
-
-/*
-  IMPORTANT DB SQL (run these raw in Supabase SQL editor if you haven't):
-  ---------------------------------------------------------------------
-  -- community_recipes table
-  create table if not exists community_recipes (
-    id uuid primary key default gen_random_uuid(),
-    user_id uuid references auth.users(id) on delete cascade,
-    title text,
-    ingredients jsonb,
-    instructions text,
-    created_at timestamptz default now()
-  );
-
-  alter table community_recipes enable row level security;
-
-  create policy "Public read community_recipes"
-    on community_recipes for select using (true);
-
-  create policy "Owners can insert community_recipes"
-    on community_recipes for insert with check (auth.uid() = user_id);
-
-  create policy "Owners can delete own community_recipes"
-    on community_recipes for delete using (auth.uid() = user_id);
-
-  -- chat_messages table (chat rules: 75 chars)
-  create table if not exists chat_messages (
-    id uuid primary key default gen_random_uuid(),
-    user_id uuid references auth.users(id) on delete cascade,
-    content text not null check (char_length(content) <= 75),
-    created_at timestamptz default now()
-  );
-
-  alter table chat_messages enable row level security;
-
-  create policy "Anyone can read chat"
-    on chat_messages for select using (true);
-
-  create policy "Users can send chat"
-    on chat_messages for insert with check (auth.uid() = user_id);
-
-  -- Note: if you want server-side pruning (deleting old messages), create a service function
-  -- or a DB policy/routine that allows a trusted role/service to delete old rows.
-  ---------------------------------------------------------------------
-*/
-
-const SUPABASE_URL = "https://bpdyjhiwfslvgwruoxcy.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZHlqaGl3ZnNsdmd3cnVveGN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwNjc1NTgsImV4cCI6MjA3MzY0MzU1OH0.qOLLMGQDKv_o2UC7LJY86zCYG9pL3ya7mh6yUikS4dw";
-
-let supabase = null;
-try {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} catch(e){
-  console.warn('Supabase failed to initialize', e);
-  supabase = null;
-}
-
-/* ========================
-   Utilities & storage
-   ======================== */
-const KEY = 'jemway_pro_v2';
-const saveLS = (k,v)=>{ try{ localStorage.setItem(KEY+'_'+k, JSON.stringify(v)); }catch(e){} };
-const loadLS = (k, fallback)=>{ try{ const v=localStorage.getItem(KEY+'_'+k); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } };
-const $ = (sel, root=document)=> root.querySelector(sel);
-const $$ = (sel, root=document)=> Array.from((root||document).querySelectorAll(sel));
-function humanTime(sec){ const m=Math.floor(sec/60).toString().padStart(2,'0'); const s=Math.floor(sec%60).toString().padStart(2,'0'); return `${m}:${s}`; }
-function normalize(str){ return (str||'').toString().trim().toLowerCase(); }
-function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>"']/g, (s)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[s]); }
-
-/* ========================
-   App state
-   ======================== */
-const state = {
-  pantry: loadLS('pantry', []),
-  recipes: loadLS('recipes', []),
-  saved: loadLS('saved', []),
-  grocery: loadLS('grocery', []),
-  favorites: loadLS('favorites', []),
-  profiles: loadLS('profiles', {}),
-  lessonIndex: loadLS('lessonIndex', 0),
-  chatMessages: [] // loaded live
-};
-
-/* ========================
-   Seed recipes (curated + generator)
-   ======================== */
-const breakfastManual = [
-  { id:'bf-001', category:'Breakfast', title:'Fluffy Pancakes', ingredients:[{name:'flour',qty:200,unit:'g'},{name:'milk',qty:300,unit:'ml'},{name:'egg',qty:1,unit:'pc'},{name:'baking powder',qty:2,unit:'tsp'},{name:'salt',qty:0.5,unit:'tsp'}], steps:[
-    "In a bowl combine flour, baking powder, salt and sugar.",
-    "Mix milk and egg; fold into dry mixture until just combined.",
-    "Cook on a hot skillet 1-2 minutes per side until golden."
-  ], serves:4, time:25, difficulty:'medium' },
-  { id:'bf-002', category:'Breakfast', title:'Avocado Toast', ingredients:[{name:'bread',qty:2,unit:'slices'},{name:'avocado',qty:1,unit:'pc'},{name:'salt',qty:0.25,unit:'tsp'}], steps:[
-    "Toast the bread.",
-    "Mash avocado with salt and spread on toast."
-  ], serves:1, time:8, difficulty:'easy' },
-  { id:'bf-003', category:'Breakfast', title:'Classic French Toast', ingredients:[{name:'bread',qty:4,unit:'slices'},{name:'egg',qty:2,unit:'pcs'},{name:'milk',qty:100,unit:'ml'},{name:'cinnamon',qty:0.5,unit:'tsp'}], steps:[
-    "Whisk eggs, milk and cinnamon; soak bread; fry until golden."
-  ], serves:2, time:12, difficulty:'easy' }
-];
-
-function generateOtherRecipes(count=220){
-  const categories = ['Lunch','Dinner','Snacks','Dessert','Drinks'];
-  const proteins = ['chicken','beef','pork','tofu','salmon','shrimp','lentils','chickpeas'];
-  const veg = ['tomato','onion','garlic','carrot','bell pepper','spinach','mushroom','zucchini','potatoes','peas','broccoli'];
-  const pantry = ['olive oil','butter','salt','black pepper','soy sauce','vinegar','sugar','flour','milk','cheese','canned tomatoes','cumin','paprika','basil','oregano'];
-  const methods = ['roast','stir-fry','bake','simmer','grill','pan-fry','steam','braise'];
-
-  const out=[];
-  for(let i=0;i<count;i++){
-    const cat = categories[i % categories.length];
-    const protein = proteins[Math.floor(Math.random()*proteins.length)];
-    const v1 = veg[Math.floor(Math.random()*veg.length)];
-    const v2 = veg[Math.floor(Math.random()*veg.length)];
-    const pan = pantry[Math.floor(Math.random()*pantry.length)];
-    const method = methods[Math.floor(Math.random()*methods.length)];
-    const serve = [1,2,3,4][Math.floor(Math.random()*4)];
-    const timeMin = 15 + Math.floor(Math.random()*60);
-    const diff = timeMin <= 25 ? 'easy' : (timeMin <= 45 ? 'medium' : 'hard');
-    const ingredients = [];
-    ingredients.push({name:protein, qty: protein==='tofu'?200:250, unit:'g'});
-    if(Math.random()>0.15) ingredients.push({name:v1, qty: 1, unit: 'pc'});
-    if(Math.random()>0.35) ingredients.push({name:v2, qty: 80, unit: 'g'});
-    ingredients.push({name:pan, qty: pan.includes('oil')?1:1, unit: pan.includes('oil') ? 'tbsp' : ''});
-    ingredients.push({name:'salt', qty:'to taste', unit:''});
-    ingredients.push({name:'black pepper', qty:'to taste', unit:''});
-    const steps=[];
-    steps.push(`Prepare: rinse and pat dry the ${protein}. Chop ${v1}${v2? ' and ' + v2: ''} into pieces.`);
-    if(method==='roast'){
-      steps.push(`Preheat oven to 200°C. Toss ${protein} and vegetables with ${pan}, salt and pepper. Roast for ${Math.max(15, Math.round(timeMin*0.9))} minutes.`);
-    } else if(method==='stir-fry'){
-      steps.push(`Heat a skillet over high heat. Add ${pan}. Stir-fry ${protein} then vegetables until cooked. Add sauce and toss.`);
-    } else if(method==='grill'){
-      steps.push(`Preheat grill. Brush with ${pan} and grill ${protein} until cooked through.`);
-    } else if(method==='bake'){
-      steps.push(`Bake in a 180°C oven for ${timeMin} minutes until cooked.`);
-    } else if(method==='simmer'){
-      steps.push(`Simmer ${protein} in a pot with liquids and aromatics for ${timeMin} minutes.`);
-    } else {
-      steps.push(`Cook using ${method} until tender and flavors meld.`);
-    }
-    steps.push('Plate and garnish with herbs or lemon.');
-    out.push({ id:`gen-${i+1}`, category:cat, title:`${method.charAt(0).toUpperCase()+method.slice(1)} ${protein} with ${v1}`, ingredients, steps, tags:[cat.toLowerCase(), method], serves:serve, time:timeMin, difficulty:diff });
-  }
-  return out;
-}
-
-/* initialize recipes if missing */
-if(!state.recipes || state.recipes.length < 100){
-  state.recipes = breakfastManual.concat(generateOtherRecipes(220));
-  saveLS('recipes', state.recipes);
-}
-
-/* ========================
-   Pantry functions & UI
-   ======================== */
-function persistPantry(){ saveLS('pantry', state.pantry); }
-function renderPantry(){
-  const el = $('#pantryList');
-  el.innerHTML = '';
-  if(!state.pantry.length){
-    el.innerHTML = '<div class="small muted">Pantry is empty. Add items to get suggestions.</div>';
-    $('#pantryPreview').textContent = 'No items yet — add a few staples.';
-    $('#pantryCount').textContent = 0;
-    $('#pantryCountSide').textContent = 0;
-    return;
-  }
-  state.pantry.forEach((it, idx)=>{
-    const node = document.createElement('div'); node.className='list-item';
-    node.innerHTML = `<div><strong>${it.display || it.name}</strong><div class="small muted">${it.qty ? (it.qty + (it.unit ? ' ' + it.unit : '')) : ''}</div></div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
-    el.appendChild(node);
-  });
-  $$('#pantryList button[data-action="remove"]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const i = parseInt(b.dataset.idx,10);
-      if(i>=0){ state.pantry.splice(i,1); persistPantry(); renderPantry(); renderRecipes(matchedRecipes()); }
-    });
-  });
-  $('#pantryPreview').textContent = state.pantry.map(i=>i.display||i.name).slice(0,8).join(', ');
-  $('#pantryCount').textContent = state.pantry.length;
-  $('#pantryCountSide').textContent = state.pantry.length;
-}
-
-function parseAndAddPantry(s){
-  if(!s) return;
-  const parts = s.split(',').map(p=>p.trim()).filter(Boolean);
-  parts.forEach(p=>{
-    const m = p.match(/^(\d+(?:\.\d+)?)(?:\s*([a-zA-Z%]+))?\s+(.*)$/);
-    let display = p;
-    if(m) display = m[3].trim() || p;
-    const normalized = normalize(display);
-    const existing = state.pantry.find(it => it.name === normalized);
-    if(!existing) state.pantry.push({name:normalized, display: display});
-  });
-  persistPantry();
-  renderPantry();
-  renderRecipes(matchedRecipes());
-}
-
-/* UI events for pantry */
-$('#addPantry').addEventListener('click', ()=>{ parseAndAddPantry($('#pantryInput').value); $('#pantryInput').value=''; });
-$('#clearPantryInput').addEventListener('click', ()=>{ $('#pantryInput').value=''; });
-$('#importSample').addEventListener('click', ()=>{ parseAndAddPantry('eggs, flour, milk, butter, salt, sugar, canned tomatoes, rice, pasta'); alert('Sample pantry loaded'); });
-
-/* ========================
-   Matching & searching
-   ======================== */
-function matchedRecipes(){
-  const pantryNames = state.pantry.map(p=>p.name);
-  const matches = state.recipes.map(r=>{
-    let have = 0; const missing = [];
-    (r.ingredients||[]).forEach(ing=>{
-      const nm = normalize(ing.name || ing);
-      if(!nm) return;
-      if(pantryNames.includes(nm)) have++; else missing.push(ing.name || ing);
-    });
-    const score = have / Math.max(1, (r.ingredients||[]).length);
-    return {...r, score, missing};
-  });
-  matches.sort((a,b)=> b.score - a.score || a.time - b.time);
-  return matches;
-}
-
-function searchAndFilter({q='', time='any', diff='any'}){
-  q = (q||'').trim().toLowerCase();
-  let list = matchedRecipes();
-  if(q){
-    list = list.filter(r=>{
-      if((r.title||'').toLowerCase().includes(q)) return true;
-      if((r.tags||[]).join(' ').toLowerCase().includes(q)) return true;
-      if((r.ingredients||[]).some(ing => (ing.name||'').toLowerCase().includes(q))) return true;
-      return false;
-    });
-  }
-  if(time !== 'any'){
-    list = list.filter(r => {
-      if(time === 'short') return r.time < 20;
-      if(time === 'medium') return r.time >=20 && r.time <=40;
-      if(time === 'long') return r.time > 40;
-      return true;
-    });
-  }
-  if(diff !== 'any') list = list.filter(r=> (r.difficulty||'').toLowerCase() === diff);
-  return list;
-}
-
-/* pretty render recipes */
-function renderRecipes(list){
-  const out = $('#recipesList'); out.innerHTML = '';
-  if(!list.length){ out.innerHTML = '<div class="small muted">No recipes found. Add pantry items or load sample pantry.</div>'; $('#matchCount').textContent = 0; $('#showingCount').textContent = 0; return; }
-  list.slice(0,60).forEach(r=>{
-    const percent = Math.round((r.score||0)*100);
-    const card = document.createElement('div'); card.className='recipe-card fade-in';
-    card.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div style="flex:1">
-          <h4 style="margin:0">${escapeHtml(r.title)}</h4>
-          <div class="rmeta">${r.category || (r.tags && r.tags[0]) || 'General'} • ${r.time} min • Serves: ${r.serves || '-'} • ${r.difficulty || '-'}</div>
-          <div style="margin-top:8px" class="small muted">Missing: ${(r.missing||[]).slice(0,4).join(', ') || '—'}</div>
-        </div>
-        <div style="margin-left:12px;text-align:right">
-          <div class="badge">${percent}%</div>
-          <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;align-items:flex-end">
-            <button class="btn small" data-id="${r.id}" data-action="view">View</button>
-            <button class="btn small" data-id="${r.id}" data-action="save">${state.saved.includes(r.id)?'Unsave':'Save'}</button>
-            <button class="btn small" data-id="${r.id}" data-action="grocery">Add Missing</button>
-          </div>
-        </div>
-      </div>
-    `;
-    out.appendChild(card);
-  });
-
-  // wire up buttons
-  $$('#recipesList button').forEach(b=>{
-    b.addEventListener('click', ()=> {
-      const id = b.dataset.id; const act = b.dataset.action;
-      if(act === 'view') openRecipeDetail(id);
-      if(act === 'save') toggleSaveRecipe(id);
-      if(act === 'grocery') addMissingToGrocery(id);
-    });
-  });
-
-  $('#matchCount').textContent = list.length;
-  $('#showingCount').textContent = Math.min(list.length, 60);
-}
-
-/* search UI handlers */
-$('#runSearch').addEventListener('click', ()=> {
-  const q = $('#searchInput').value;
-  const list = searchAndFilter({ q, time:$('#timeFilter').value, diff:$('#diffFilter').value });
-  renderRecipes(list);
-});
-$('#searchInput').addEventListener('keypress', (e)=>{ if(e.key==='Enter') $('#runSearch').click(); });
-$('#globalSearch').addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ $('#searchInput').value = $('#globalSearch').value; $('#runSearch').click(); }});
-$('#shuffleRecipes').addEventListener('click', ()=> { state.recipes = state.recipes.sort(()=>Math.random()-0.5); saveLS('recipes', state.recipes); renderRecipes(matchedRecipes().slice(0,60)); });
-
-/* show more */
-$('#moreRecipes').addEventListener('click', ()=> {
-  renderRecipes(matchedRecipes());
-});
-
-/* ========================
-   Recipe detail & cook mode
-   ======================== */
-let currentRecipe = null;
-
-function findRecipeById(id){
-  return state.recipes.find(r => r.id === id);
-}
-
-function openRecipeDetail(id){
-  const r = findRecipeById(id);
-  if(!r) return alert('Recipe not found');
-  currentRecipe = JSON.parse(JSON.stringify(r));
-  $('#detailTitle').textContent = r.title;
-  $('#detailMeta').textContent = `${(r.category? r.category + ' • ' : '')}${(r.tags? r.tags.join(', ') + ' • ' : '')}${r.time} ${typeof r.time === 'number' ? 'min' : ''}`;
-  $('#servesBadge').textContent = r.serves || '-';
-  // ingredients
-  const ing = $('#ingList'); ing.innerHTML = '';
-  (r.ingredients || []).forEach(i=>{
-    const li = document.createElement('li'); li.textContent = (i.name || i) + (i.qty && typeof i.qty !== 'string' ? ` — ${i.qty}${i.unit? ' '+i.unit : ''}` : (i.qty ? ` — ${i.qty}` : ''));
-    ing.appendChild(li);
-  });
-  // steps + attach step timers
-  const steps = $('#stepList'); steps.innerHTML = '';
-  (r.steps||[]).forEach((s, idx)=>{
-    const li = document.createElement('li');
-    li.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:flex-start"><div>${escapeHtml(s)}</div><div><button class="btn small" data-step="${idx}" data-action="start-step">Start timer</button></div></div>`;
-    steps.appendChild(li);
-  });
-  // substitutions
-  const subs = $('#subsTable'); subs.innerHTML = '';
-  (r.ingredients||[]).forEach(i=>{
-    const name = typeof i === 'string' ? i : i.name;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td style="padding:8px 6px">${escapeHtml(name)}</td><td style="padding:8px 6px">${escapeHtml(findSubstitute(name))}</td>`;
-    subs.appendChild(tr);
-  });
-
-  // attach step buttons
-  $$('#stepList button[data-action="start-step"]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const mins = parseFloat(prompt('Enter minutes for this step (decimal allowed, e.g., 1.5 for 1min30sec):','1')) || 1;
-      startStepTimer(Math.max(0.1, mins*60));
-    });
-  });
-
-  $('#recipeModal').classList.add('open');
-  $('#recipeModal').setAttribute('aria-hidden','false');
-}
-
-$('#closeRecipeModal').addEventListener('click', ()=> { $('#recipeModal').classList.remove('open'); $('#recipeModal').setAttribute('aria-hidden','true'); });
-$('#backToList').addEventListener('click', ()=> { $('#recipeModal').classList.remove('open'); $('#recipeModal').setAttribute('aria-hidden','true'); window.scrollTo({top:0, behavior:'smooth'}); });
-
-$('#enterCookMode').addEventListener('click', ()=> {
-  if(!currentRecipe) return alert('No recipe selected');
-  $('#cookTitle').textContent = currentRecipe.title;
-  const container = $('#cookSteps'); container.innerHTML = '';
-  (currentRecipe.steps||[]).forEach((s, idx)=>{
-    const div = document.createElement('div'); div.className='step';
-    div.innerHTML = `<h4>Step ${idx+1}</h4><p>${escapeHtml(s)}</p><div style="margin-top:8px"><button class="btn primary" data-idx="${idx}" data-action="step-start">Start Timer</button></div>`;
-    container.appendChild(div);
-  });
-  // attach timers
-  $$('#cookSteps button[data-action="step-start"]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const mins = parseFloat(prompt('Minutes for this step:', '1')) || 1;
-      startStepTimer(Math.max(0.1, mins*60));
-    });
-  });
-
-  $('#recipeModal').classList.remove('open');
-  $('#cookModal').classList.add('open');
-});
-$('#exitCook').addEventListener('click', ()=> { $('#cookModal').classList.remove('open'); });
-
-/* scale servings (in modal) - not destructive, only UI */
-$('#saveRecipeBtn').addEventListener('click', ()=> { if(!currentRecipe) return; toggleSaveRecipe(currentRecipe.id); $('#recipeModal').classList.remove('open'); });
-
-/* ========================
-   Substitutions
-   ======================== */
-const SUBSTITUTIONS = {
-  'butter': 'margarine or coconut oil',
-  'milk': 'soy milk or almond milk (adjust flavor)',
-  'egg': 'mashed banana (1/4 cup) or flax egg (1 tbsp flax + 3 tbsp water)',
-  'sugar': 'honey or maple syrup (reduce other liquids)',
-  'flour': 'gluten-free flour blend (adjust as needed)',
-  'canned tomatoes': 'fresh cooked tomatoes or passata',
-  'olive oil': 'vegetable oil or avocado oil',
-  'soy sauce': 'tamari or coconut aminos',
-  'chicken': 'tofu or chickpeas for vegetarian',
-  'bread': 'tortilla or crackers (depending on recipe)'
-};
-function findSubstitute(name){
-  const key = normalize(name);
-  for(const k in SUBSTITUTIONS) if(key.includes(k)) return SUBSTITUTIONS[k];
-  return 'No obvious substitute; try similar category ingredient';
-}
-
-/* ========================
-   Save / Favorites / Grocery
-   ======================== */
-function toggleSaveRecipe(id){
-  const idx = state.saved.indexOf(id);
-  if(idx === -1){
-    state.saved.push(id);
-    alert('Recipe saved');
-  } else {
-    state.saved.splice(idx,1);
-    alert('Recipe removed');
-  }
-  saveLS('saved', state.saved);
-  renderSavedList();
-  renderRecipes(searchAndFilter({ q:$('#searchInput').value, time:$('#timeFilter').value, diff:$('#diffFilter').value }));
-}
-
-function renderSavedList(){
-  const el = $('#savedList'); el.innerHTML = '';
-  if(!state.saved.length){ el.textContent = 'No saved recipes yet'; $('#savedCount').textContent = 0; return; }
-  state.saved.forEach(id=>{
-    const r = findRecipeById(id);
-    if(!r) return;
-    const d = document.createElement('div'); d.className='list-item';
-    d.innerHTML = `<div>${escapeHtml(r.title)} <div class="small muted">• ${r.time} min</div></div><div><button class="btn small" data-id="${r.id}" data-action="open">Open</button> <button class="btn small" data-id="${r.id}" data-action="remove">Remove</button></div>`;
-    el.appendChild(d);
-  });
-  $$('#savedList button').forEach(b=>{
-    b.addEventListener('click', ()=> {
-      const act = b.dataset.action; const id = b.dataset.id;
-      if(act === 'open') openRecipeDetail(id);
-      if(act === 'remove'){ const i = state.saved.indexOf(id); if(i>-1){ state.saved.splice(i,1); saveLS('saved', state.saved); renderSavedList(); renderRecipes(matchedRecipes()); } }
-    });
-  });
-  $('#savedCount').textContent = state.saved.length;
-}
-
-/* Grocery operations */
-function addMissingToGrocery(id){
-  const r = findRecipeById(id);
-  if(!r) return;
-  const pantryNames = state.pantry.map(p => p.name);
-  (r.ingredients || []).forEach(ing=>{
-    const nm = normalize(typeof ing === 'string' ? ing : (ing.name || ''));
-    if(!nm) return;
-    if(!pantryNames.includes(nm)){
-      if(!state.grocery.find(g => g.name === nm)) state.grocery.push({name: nm});
-    }
-  });
-  saveLS('grocery', state.grocery);
-  renderGrocery();
-  alert('Missing items added to grocery list');
-}
-
-function renderGrocery(){
-  const el = $('#groceryList'); el.innerHTML = '';
-  if(!state.grocery.length){ el.textContent = 'Grocery list is empty'; $('#groceryCount').textContent = 0; return; }
-  state.grocery.forEach((g, idx)=>{
-    const div = document.createElement('div'); div.className='list-item';
-    div.innerHTML = `<div>${g.name}</div><div><button class="btn small" data-idx="${idx}" data-action="remove">Remove</button></div>`;
-    el.appendChild(div);
-  });
-  $$('#groceryList button[data-action="remove"]').forEach(b=>{
-    b.addEventListener('click', ()=> { const i = parseInt(b.dataset.idx,10); if(i>-1){ state.grocery.splice(i,1); saveLS('grocery', state.grocery); renderGrocery(); } });
-  });
-  $('#groceryCount').textContent = state.grocery.length;
-}
-
-/* copy grocery */
-$('#copyGrocery').addEventListener('click', async ()=>{
-  if(!state.grocery.length) return alert('Grocery list is empty');
-  const txt = state.grocery.map(g=>g.name).join('\n');
-  try{ await navigator.clipboard.writeText(txt); alert('Grocery copied to clipboard'); } catch(e){ alert('Copy failed — fallback: view list and copy manually'); }
-});
-
-/* clear grocery */
-$('#clearGrocery').addEventListener('click', ()=> {
-  if(!confirm('Clear grocery list?')) return;
-  state.grocery = []; saveLS('grocery', state.grocery); renderGrocery();
-});
-
-/* ========================
-   Profiles & backup
-   ======================== */
-function renderProfiles(){
-  const container = $('#profilesContainer'); container.innerHTML = '';
-  const names = Object.keys(state.profiles || {});
-  if(!names.length){ container.innerHTML = '<div class="small muted">No profiles yet — save your current pantry & favorites</div>'; return; }
-  names.forEach(name=>{
-    const p = state.profiles[name];
-    const row = document.createElement('div'); row.className='list-item';
-    row.innerHTML = `<div><strong>${escapeHtml(name)}</strong><div class="small muted">${(p.pantry||[]).length} pantry • ${(p.saved||[]).length} saved</div></div><div><button class="btn small" data-name="${escapeHtml(name)}" data-action="apply">Apply</button> <button class="btn small" data-name="${escapeHtml(name)}" data-action="copy">Copy</button> <button class="btn small" data-name="${escapeHtml(name)}" data-action="delete">Delete</button></div>`;
-    container.appendChild(row);
-  });
-  $$('#profilesContainer button').forEach(b=>{
-    b.addEventListener('click', async ()=>{
-      const name = b.dataset.name; const act = b.dataset.action;
-      if(act === 'apply'){
-        if(!confirm(`Apply profile "${name}"? This will replace current pantry & saved.`)) return;
-        const p = state.profiles[name];
-        state.pantry = JSON.parse(JSON.stringify(p.pantry || []));
-        state.saved = JSON.parse(JSON.stringify(p.saved || []));
-        state.grocery = JSON.parse(JSON.stringify(p.grocery || []));
-        state.favorites = JSON.parse(JSON.stringify(p.favorites || []));
-        persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
-        renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
-        alert(`Profile "${name}" applied`);
-      } else if(act === 'copy'){
-        const json = JSON.stringify(state.profiles[name], null, 2);
-        try{ await navigator.clipboard.writeText(json); alert('Profile copied to clipboard'); } catch(e){ prompt('Copy failed. Use this JSON:', json); }
-      } else if(act === 'delete'){
-        if(!confirm(`Delete profile "${name}" permanently?`)) return;
-        delete state.profiles[name];
-        saveLS('profiles', state.profiles);
-        renderProfiles();
-      }
-    });
-  });
-}
-
-$('#saveProfileBtn').addEventListener('click', ()=> {
-  const name = ($('#profileNameInput').value || '').trim();
-  if(!name) return alert('Enter a profile name');
-  state.profiles[name] = {
-    pantry: JSON.parse(JSON.stringify(state.pantry)),
-    saved: JSON.parse(JSON.stringify(state.saved)),
-    grocery: JSON.parse(JSON.stringify(state.grocery)),
-    favorites: JSON.parse(JSON.stringify(state.favorites)),
-    at: new Date().toISOString()
-  };
-  saveLS('profiles', state.profiles);
-  $('#profileNameInput').value = '';
-  renderProfiles();
-  alert(`Profile "${name}" saved`);
-});
-
-/* backup & restore */
-$('#backupToClipboard').addEventListener('click', async ()=>{
-  const snapshot = { pantry: state.pantry, saved: state.saved, grocery: state.grocery, favorites: state.favorites, savedAt: new Date().toISOString() };
-  const json = JSON.stringify(snapshot, null, 2);
-  try{ await navigator.clipboard.writeText(json); alert('Backup copied to clipboard'); } catch(e){ prompt('Copy failed. Use this JSON to back up:', json); }
-});
-$('#restoreFromClipboard').addEventListener('click', ()=> {
-  const pasted = prompt('Paste profile JSON here (this will replace your current pantry, saved and grocery):');
-  if(!pasted) return;
-  try{
-    const obj = JSON.parse(pasted);
-    state.pantry = obj.pantry || []; state.saved = obj.saved || []; state.grocery = obj.grocery || []; state.favorites = obj.favorites || [];
-    persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
-    renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
-    alert('Profile restored from pasted JSON');
-  } catch(e){
-    alert('Restore failed — invalid JSON');
-  }
-});
-
-/* ========================
-   Lessons & Inspiration
-   ======================== */
-const INSPOS = [
-  'Lemon + Thyme + Garlic — brightens roasted veg or fish',
-  'Soy + Sesame + Scallion — fast umami sauce',
-  'Cumin + Paprika + Coriander — warm spice blend for chickpeas',
-  'Butter + Sage — simple and rich for pasta',
-  'Honey + Mustard + Apple Cider — excellent glaze for roast',
-  'Mint + Cucumber + Yogurt — cooling combo for warm days',
-  'Peanut butter + Banana + Oats — hearty quick bowl',
-  'Tomato + Basil + Balsamic — classic finishing trio'
-];
-function newInspiration(){ $('#dailyInspo').textContent = INSPOS[Math.floor(Math.random()*INSPOS.length)]; }
-$('#newInspo').addEventListener('click', newInspiration);
-$('#saveInspo').addEventListener('click', ()=> { state.favorites = state.favorites || []; state.favorites.push({text: $('#dailyInspo').textContent, at: new Date().toISOString()}); saveLS('favorites', state.favorites); alert('Inspiration saved'); });
-newInspiration();
-
-/* ========================
-   Timers
-   ======================== */
-let kitchenTimerInterval = null;
-function updateKitchenDisplay(sec){ $('#timerBadge').textContent = humanTime(sec); }
-$('#startKitchenTimer').addEventListener('click', ()=> {
-  const mins = parseFloat($('#timerMinutes').value) || 0;
-  if(mins <= 0) return alert('Enter minutes (positive number)');
-  let remaining = Math.round(mins * 60);
-  if(kitchenTimerInterval) clearInterval(kitchenTimerInterval);
-  updateKitchenDisplay(remaining);
-  kitchenTimerInterval = setInterval(()=>{
-    remaining--;
-    updateKitchenDisplay(remaining);
-    if(remaining <= 0){ clearInterval(kitchenTimerInterval); kitchenTimerInterval = null; alert('Kitchen timer finished'); updateKitchenDisplay(0); }
-  }, 1000);
-});
-$('#stopKitchenTimer').addEventListener('click', ()=> {
-  if(kitchenTimerInterval){ clearInterval(kitchenTimerInterval); kitchenTimerInterval = null; alert('Kitchen timer stopped'); updateKitchenDisplay(0); }
-});
-
-let stepTimerInterval = null;
-function startStepTimer(sec){
-  let remaining = Math.round(sec);
-  if(stepTimerInterval) clearInterval(stepTimerInterval);
-  alert(`Step timer started (${humanTime(remaining)})`);
-  stepTimerInterval = setInterval(()=> {
-    remaining--;
-    if(remaining <= 0){ clearInterval(stepTimerInterval); stepTimerInterval = null; alert('Step timer finished'); }
-  }, 1000);
-}
-
-/* ========================
-   Initialization UI
-   ======================== */
-function initialRender(){
-  renderPantry();
-  renderRecipes(matchedRecipes().slice(0, Math.min(matchedRecipes().length, 40)));
-  renderSavedList();
-  renderGrocery();
-  renderProfiles();
-  renderCommunityPreview();
-}
-initialRender();
-
-/* ========================
-   Supabase Auth & Profile sync
-   ======================== */
-async function updateAuthUI(){
-  if(!supabase) { $('#userEmail').textContent = ''; return; }
-  const { data } = await supabase.auth.getSession();
-  const user = data?.session?.user || null;
-  if(user){ $('#userEmail').textContent = user.email || user.id; }
-  else { $('#userEmail').textContent = ''; }
-}
-
-/* Auth modal (simple) */
-let loginModal = null;
-function openLoginModal(){
-  if(!loginModal){
-    loginModal = document.createElement('div'); loginModal.className = 'modal';
-    loginModal.innerHTML = `<div class="card" style="max-width:420px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><h3 style="margin:0">Account</h3><button class="btn ghost" id="closeLogin">Close</button></div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <input id="loginEmail" class="input" placeholder="Email">
-        <input id="loginPassword" class="input" type="password" placeholder="Password">
-        <div style="display:flex;gap:8px">
-          <button class="btn primary" id="signupBtn">Sign Up (email)</button>
-          <button class="btn" id="loginBtn">Log In</button>
-          <button class="btn ghost" id="logoutBtn" style="display:none">Log Out</button>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn" id="saveToDbBtn">Save to cloud</button>
-          <button class="btn" id="loadFromDbBtn">Load from cloud</button>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn" id="forgotBtn">Forgot Password</button>
-        </div>
-        <div id="authNote" class="small muted" style="margin-top:8px">Profile sync stores pantry, saved recipes, grocery.</div>
-      </div>
-    </div>`;
-    document.body.appendChild(loginModal);
-
-    // handlers
-    loginModal.querySelector('#closeLogin').addEventListener('click', ()=> loginModal.classList.remove('open'));
-    loginModal.querySelector('#signupBtn').addEventListener('click', async ()=>{
-      if(!supabase) return alert('Supabase not configured');
-      const email = loginModal.querySelector('#loginEmail').value;
-      const password = loginModal.querySelector('#loginPassword').value;
-      if(!email || !password) return alert('Enter email & password');
-      const { error } = await supabase.auth.signUp({ email, password });
-      if(error) alert('Sign up error: ' + error.message);
-      else { alert('Check your email to confirm sign up (if enabled).'); updateAuthUI(); }
-    });
-    loginModal.querySelector('#loginBtn').addEventListener('click', async ()=>{
-      if(!supabase) return alert('Supabase not configured');
-      const email = loginModal.querySelector('#loginEmail').value;
-      const password = loginModal.querySelector('#loginPassword').value;
-      if(!email || !password) return alert('Enter email & password');
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if(error) alert('Login error: ' + error.message);
-      else { alert('Logged in'); updateAuthUI(); loginModal.classList.remove('open'); }
-    });
-    loginModal.querySelector('#logoutBtn').addEventListener('click', async ()=>{
-      if(!supabase) return alert('Supabase not configured');
-      await supabase.auth.signOut();
-      alert('Logged out'); updateAuthUI();
-    });
-    loginModal.querySelector('#saveToDbBtn').addEventListener('click', async ()=>{
-      if(!supabase) return alert('Supabase not configured');
-      const { data } = await supabase.auth.getSession();
-      const user = data?.session?.user;
-      if(!user) return alert('Not logged in');
-      const payload = { pantry: state.pantry, saved: state.saved, grocery: state.grocery, favorites: state.favorites };
-      const { error } = await supabase.from('profiles').upsert({ id: user.id, data: payload, updated_at: new Date() });
-      if(error) alert('Save error: ' + error.message); else alert('Saved to cloud');
-    });
-    loginModal.querySelector('#loadFromDbBtn').addEventListener('click', async ()=>{
-      if(!supabase) return alert('Supabase not configured');
-      const { data } = await supabase.auth.getSession();
-      const user = data?.session?.user;
-      if(!user) return alert('Not logged in');
-      const { data: profile, error } = await supabase.from('profiles').select('data').eq('id', user.id).single();
-      if(error) return alert('Load error: ' + error.message);
-      if(profile && profile.data){
-        state.pantry = profile.data.pantry || state.pantry;
-        state.saved = profile.data.saved || state.saved;
-        state.grocery = profile.data.grocery || state.grocery;
-        state.favorites = profile.data.favorites || state.favorites;
-        persistPantry(); saveLS('saved', state.saved); saveLS('grocery', state.grocery); saveLS('favorites', state.favorites);
-        renderPantry(); renderSavedList(); renderGrocery(); renderRecipes(matchedRecipes());
-        alert('Loaded from cloud');
-      } else alert('No profile data found');
-    });
-
-    loginModal.querySelector('#forgotBtn').addEventListener('click', async ()=>{
-      const email = loginModal.querySelector('#loginEmail').value;
-      if(!email) return alert('Enter your email address to receive a reset link.');
-      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
-      if(error) alert('Reset error: ' + error.message); else alert('Check your email for a password reset link.');
-    });
-  }
-  loginModal.classList.add('open');
-  updateAuthUI();
-}
-
-/* bind topbar button */
-$('#btnOpenLogin').addEventListener('click', ()=> openLoginModal() );
-
-/* listen to auth state changes if supabase present */
-if(supabase){
-  supabase.auth.onAuthStateChange((event, session) => {
-    updateAuthUI();
-    // If user logged in we might update UI
-  });
-  updateAuthUI();
-}
-
-/* ========================
-   Community recipes (full UI)
-   ======================== */
-function renderCommunityPreview(){
-  $('#communityPreview').innerHTML = 'Loading...';
-  loadCommunityRecipes().then(list=>{
-    const html = (list||[]).slice(0,3).map(r=>`<div style="margin-bottom:8px"><strong>${escapeHtml(r.title)}</strong><div class="small muted">${new Date(r.created_at).toLocaleString()}</div></div>`).join('');
-    $('#communityPreview').innerHTML = html || '<div class="small muted">No community recipes yet</div>';
-  }).catch(()=>{ $('#communityPreview').innerHTML = '<div class="small muted">Unable to load</div>'; });
-}
-
-async function loadCommunityRecipes(){
-  if(!supabase) throw new Error('Supabase not configured');
-  const { data, error } = await supabase.from('community_recipes').select('*').order('created_at',{ascending:false}).limit(200);
-  if(error) { console.error('loadCommunityRecipes:', error); return []; }
-  return data || [];
-}
-
-/* open community modal page — we will reuse recipeModal for details or open a simple UI */
-document.getElementById('openCommunity').addEventListener('click', async ()=>{
-  // show a quick community page in a modal
-  const communityModal = document.createElement('div'); communityModal.className='modal';
-  communityModal.innerHTML = `<div class="card" style="max-width:900px"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Community Recipes</h3><button class="btn ghost" id="closeComm">Close</button></div>
-    <div style="margin-top:12px;display:grid;grid-template-columns:1fr 420px;gap:12px">
-      <div>
-        <div id="commList" style="max-height:60vh;overflow:auto"></div>
-      </div>
-      <div>
-        <h4>Post a Recipe</h4>
-        <input id="commTitle" class="input" placeholder="Title">
-        <input id="commIngredients" class="input" placeholder="Ingredients (comma separated)">
-        <textarea id="commInstructions" class="input" placeholder="Instructions"></textarea>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn primary" id="commPostBtn">Post</button>
-          <button class="btn" id="commRefreshBtn">Refresh</button>
-        </div>
-        <div class="small muted" style="margin-top:8px">Only logged in users can post. You may delete your own posts.</div>
-      </div>
-    </div></div>`;
-  document.body.appendChild(communityModal);
-  communityModal.classList.add('open');
-  communityModal.querySelector('#closeComm').addEventListener('click', ()=> communityModal.remove());
-  communityModal.querySelector('#commRefreshBtn').addEventListener('click', async ()=> { await fillCommList(); });
-  communityModal.querySelector('#commPostBtn').addEventListener('click', async ()=>{
-    const title = communityModal.querySelector('#commTitle').value.trim();
-    const ingredients = communityModal.querySelector('#commIngredients').value.split(',').map(s=>s.trim()).filter(Boolean);
-    const instructions = communityModal.querySelector('#commInstructions').value.trim();
-    if(!title || !instructions) return alert('Title and instructions required');
-    const { data } = await supabase.auth.getSession();
-    const user = data?.session?.user;
-    if(!user) return alert('Login required');
-    const { error } = await supabase.from('community_recipes').insert({ user_id: user.id, title, ingredients, instructions });
-    if(error) return alert('Post failed: ' + error.message);
-    communityModal.querySelector('#commTitle').value='';
-    communityModal.querySelector('#commIngredients').value='';
-    communityModal.querySelector('#commInstructions').value='';
-    await fillCommList();
-  });
-
-  async function fillCommList(){
-    const list = await loadCommunityRecipes();
-    const container = communityModal.querySelector('#commList'); container.innerHTML = '';
-    (list||[]).forEach(r=>{
-      const row = document.createElement('div'); row.className='card';
-      row.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${escapeHtml(r.title)}</strong><div class="small muted">${new Date(r.created_at).toLocaleString()}</div></div></div>
-        <div style="margin-top:8px"><strong>Ingredients</strong><div class="small muted">${(r.ingredients||[]).join(', ')}</div></div>
-        <div style="margin-top:8px"><strong>Instructions</strong><div class="small muted">${escapeHtml(r.instructions)}</div></div>`;
-      // attach delete if owner
-      communityModal.querySelector('#commList');
-      (async ()=>{
-        const { data } = await supabase.auth.getSession();
-        const user = data?.session?.user;
-        if(user && r.user_id === user.id){
-          const del = document.createElement('button'); del.className='btn'; del.textContent='Delete';
-          del.addEventListener('click', async ()=> {
-            if(!confirm('Delete this recipe?')) return;
-            const { error } = await supabase.from('community_recipes').delete().eq('id', r.id);
-            if(error) alert('Delete failed: ' + error.message);
-            else { alert('Deleted'); fillCommList(); renderCommunityPreview(); }
-          });
-          row.appendChild(del);
+    </footer>
+
+    <script>
+        // Intro Screen Animation
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            
+            // Create static stars
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.opacity = Math.random() * 0.7 + 0.3;
+                star.style.animationDelay = Math.random() * 5 + 's';
+                starsContainer.appendChild(star);
+            }
+            
+            // Create shooting stars
+            setInterval(() => {
+                createShootingStar();
+            }, 2000);
         }
-      })();
-      container.appendChild(row);
-    });
-  }
 
-  await fillCommList();
-  renderCommunityPreview();
-});
+        function createShootingStar() {
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            shootingStar.style.left = Math.random() * 100 + '%';
+            shootingStar.style.top = Math.random() * 50 + '%';
+            document.getElementById('stars').appendChild(shootingStar);
+            
+            shootingStar.animate([
+                { opacity: 0, transform: 'translateX(0) translateY(0) rotate(-45deg)' },
+                { opacity: 1, transform: 'translateX(-200px) translateY(200px) rotate(-45deg)' },
+                { opacity: 0, transform: 'translateX(-400px) translateY(400px) rotate(-45deg)' }
+            ], {
+                duration: 1500,
+                easing: 'ease-out'
+            });
+            
+            setTimeout(() => {
+                shootingStar.remove();
+            }, 1500);
+        }
 
-/* seed starter community recipes (for first-run UX) */
-$('#seedCommunity').addEventListener('click', async ()=>{
-  if(!confirm('Seed a few sample community recipes?')) return;
-  const samples = [
-    { title:'Simple Tomato Sauce', ingredients:['canned tomatoes','garlic','olive oil','salt'], instructions:'Sauté garlic in olive oil, add canned tomatoes, simmer 15m, season.' },
-    { title:'Lemon Herb Rice', ingredients:['rice','lemon','butter','parsley'], instructions:'Cook rice, fold in butter, lemon zest and chopped parsley.' }
-  ];
-  const { data } = await supabase.auth.getSession();
-  const user = data?.session?.user;
-  // If not logged in, insert with null user_id (or require login)
-  for(const s of samples){
-    await supabase.from('community_recipes').insert({ user_id: user ? user.id : null, title: s.title, ingredients: s.ingredients, instructions: s.instructions });
-  }
-  renderCommunityPreview();
-});
+        function enterSite() {
+            document.getElementById('introScreen').style.opacity = 0;
+            setTimeout(() => {
+                document.getElementById('introScreen').style.display = 'none';
+            }, 1000);
+        }
 
-/* ========================
-   Live Chat (global)
-   - 75 char limit, 5s cooldown, resets/truncates at 50 messages
-   ======================== */
-const CHAT_MAX = 50;
-const CHAT_COOLDOWN_MS = 5000;
-const CHAT_MAX_CHARS = 75;
-const CHAT_BAD_WORDS = ['damn','shit','fuck','bitch']; // extend as you like (client filter only)
+        // Assessment Functionality
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from siblings
+                this.parentNode.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+            });
+        });
 
-function filterChatText(txt){
-  if(!txt) return '';
-  let out = txt;
-  CHAT_BAD_WORDS.forEach(w=>{
-    const re = new RegExp(w,'ig');
-    out = out.replace(re, '***');
-  });
-  // trim to CHAT_MAX_CHARS
-  return out.slice(0, CHAT_MAX_CHARS);
-}
+        document.getElementById('submitAssessment').addEventListener('click', function() {
+            let totalScore = 0;
+            let answeredAll = true;
+            
+            document.querySelectorAll('.question').forEach(question => {
+                const selectedOption = question.querySelector('.option.selected');
+                if (selectedOption) {
+                    totalScore += parseInt(selectedOption.getAttribute('data-value'));
+                } else {
+                    answeredAll = false;
+                }
+            });
+            
+            if (!answeredAll) {
+                alert('Please answer all questions before submitting.');
+                return;
+            }
+            
+            let resultText = '';
+            let resultColor = '';
+            
+            if (totalScore <= 5) {
+                resultText = `
+                    <h3>Low Clinical Concern</h3>
+                    <p>Based on your responses, your sexual behaviors do not appear to meet clinical criteria for compulsive sexual behavior disorder. Your patterns seem to fall within typical ranges.</p>
+                    <p><strong>Recommendation:</strong> Continue practicing healthy boundaries and self-awareness. Consider learning about preventive strategies to maintain balance.</p>
+                `;
+                resultColor = '#48BB78';
+            } else if (totalScore <= 10) {
+                resultText = `
+                    <h3>Moderate Clinical Concern</h3>
+                    <p>Your responses suggest some patterns that may indicate problematic sexual behavior. Several items align with early warning signs of compulsive sexual behavior disorder.</p>
+                    <p><strong>Recommendation:</strong> Consider consulting with a mental health professional for proper assessment. Implement evidence-based strategies like those described on this site.</p>
+                `;
+                resultColor = '#F6AD55';
+            } else {
+                resultText = `
+                    <h3>High Clinical Concern</h3>
+                    <p>Your responses indicate patterns consistent with compulsive sexual behavior disorder as defined in clinical literature. Multiple criteria for diagnosis appear to be met.</p>
+                    <p><strong>Recommendation:</strong> We strongly recommend seeking professional assessment from a qualified mental health provider specializing in sexual addiction. Evidence-based treatments have high success rates when properly implemented.</p>
+                `;
+                resultColor = '#E53E3E';
+            }
+            
+            const resultElement = document.getElementById('assessmentResult');
+            resultElement.innerHTML = resultText;
+            resultElement.style.borderLeft = `4px solid ${resultColor}`;
+            resultElement.style.display = 'block';
+            
+            // Scroll to results
+            resultElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
 
-function renderChatUI(){
-  const box = $('#chatBox');
-  if(!box) return;
-  box.innerHTML = '';
-  state.chatMessages.forEach(m=>{
-    const ts = new Date(m.created_at);
-    const line = document.createElement('div');
-    line.className = 'chat-line';
-    const shortUser = (m.user_id || 'guest').slice(0,8);
-    line.innerHTML = `<span class="small muted">${ts.toLocaleTimeString()}</span> <strong>${escapeHtml(shortUser)}</strong>: ${escapeHtml(filterChatText(m.content))}`;
-    box.appendChild(line);
-  });
-  box.scrollTop = box.scrollHeight;
-  $('#chatCount').textContent = state.chatMessages.length;
-  $('#chatCountModal').textContent = state.chatMessages.length;
-  // preview
-  const prev = $('#chatPreview');
-  if(prev){
-    const last = state.chatMessages.slice(-3).map(m => `<div>${escapeHtml((m.content||'').slice(0,40))}</div>`).join('');
-    prev.innerHTML = last || '<div class="small muted">No messages yet</div>';
-  }
-}
+        document.getElementById('resetAssessment').addEventListener('click', function() {
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.getElementById('assessmentResult').style.display = 'none';
+        });
 
-/* load last CHAT_MAX messages */
-async function loadChatInitial(){
-  if(!supabase) return;
-  try{
-    const { data, error } = await supabase.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(CHAT_MAX);
-    if(error){ console.warn('loadChatInitial error', error); return; }
-    state.chatMessages = data || [];
-    renderChatUI();
-  } catch(e){ console.error(e); }
-}
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
 
-/* attempt to prune oldest messages in DB when over the limit
-   Note: this will fail if your RLS doesn't permit deletes for the current user.
-   If it fails, the UI still keeps only the last CHAT_MAX messages.
-*/
-async function pruneChatIfNeeded(){
-  if(!supabase) return;
-  try{
-    const { data: all, error } = await supabase.from('chat_messages').select('id, created_at').order('created_at',{ascending:true});
-    if(error){ console.warn('pruneChatIfNeeded - select error', error); return; }
-    if(!all || all.length <= CHAT_MAX) return;
-    const extra = all.length - CHAT_MAX;
-    const toDelete = all.slice(0, extra).map(r => r.id);
-    // try delete; may fail depending on RLS/policies
-    const { error: delErr } = await supabase.from('chat_messages').delete().in('id', toDelete);
-    if(delErr){ console.warn('pruneChatIfNeeded - delete failed (needs server role or RLS):', delErr.message); }
-    // refresh the local list (attempt)
-    const { data, error: selErr } = await supabase.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(CHAT_MAX);
-    if(!selErr) state.chatMessages = data || [];
-    else console.warn('pruneChatIfNeeded - select after delete failed', selErr);
-    renderChatUI();
-  } catch(e){ console.error('pruneChatIfNeeded', e); }
-}
-
-let lastChatSentAt = 0;
-async function sendChatMessage(){
-  if(!supabase) return alert('Supabase not configured');
-  const now = Date.now();
-  if(now - lastChatSentAt < CHAT_COOLDOWN_MS) return alert('Please wait before sending another message (5s cooldown)');
-  const input = $('#chatInput');
-  if(!input) return;
-  let txt = input.value.trim();
-  if(!txt) return;
-  txt = filterChatText(txt);
-  if(txt.length === 0) return alert('Message empty after filtering');
-  // enforce length (defensive)
-  if(txt.length > CHAT_MAX_CHARS) txt = txt.slice(0, CHAT_MAX_CHARS);
-  const { data } = await supabase.auth.getSession();
-  const user = data?.session?.user;
-  if(!user) return alert('You must be logged in to chat');
-  // insert
-  const { error } = await supabase.from('chat_messages').insert({ user_id: user.id, content: txt });
-  if(error){ console.error('sendChatMessage insert error', error); alert('Send failed: ' + error.message); return;}
-  // optimistic UI update will come from realtime subscription, but we update local quickly:
-  lastChatSentAt = now;
-  input.value = '';
-  // attempt prune (async)
-  setTimeout(()=> pruneChatIfNeeded(), 400);
-}
-
-/* realtime subscription: listen for new messages and update UI */
-let chatSubscription = null;
-function subscribeChatRealtime(){
-  if(!supabase) return;
-  try{
-    // unsubscribe previous if any
-    if(chatSubscription && chatSubscription.unsubscribe) chatSubscription.unsubscribe();
-  } catch(e){}
-  chatSubscription = supabase
-    .channel('public:chat_messages')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
-      state.chatMessages.push(payload.new);
-      // if exceeding max in-memory, shift
-      if(state.chatMessages.length > CHAT_MAX) state.chatMessages.shift();
-      renderChatUI();
-    })
-    .subscribe();
-}
-
-/* UI bindings for chat modal & buttons */
-$('#openChat').addEventListener('click', ()=> { $('#chatModal').classList.add('open'); $('#chatModal').setAttribute('aria-hidden','false'); $('#chatInput').focus(); });
-$('#btnOpenChatSmall').addEventListener('click', ()=> { $('#chatModal').classList.add('open'); $('#chatModal').setAttribute('aria-hidden','false'); $('#chatInput').focus(); });
-$('#closeChatModal').addEventListener('click', ()=> { $('#chatModal').classList.remove('open'); $('#chatModal').setAttribute('aria-hidden','true'); });
-$('#sendChatBtn').addEventListener('click', sendChatMessage);
-$('#chatInput').addEventListener('keypress', (e)=>{ if(e.key==='Enter') sendChatMessage(); });
-$('#clearLocalChat').addEventListener('click', ()=> { state.chatMessages = []; renderChatUI(); });
-
-/* start chat */
-loadChatInitial();
-subscribeChatRealtime();
-
-/* periodically ensure UI sync and attempt prune when necessary */
-setInterval(()=> {
-  // refresh preview count
-  $('#chatCount').textContent = state.chatMessages.length;
-}, 2000);
-
-/* ========================
-   Misc UI wiring & final render
-   ======================== */
-$('#runSearch').click();
-renderProfiles();
-renderPantry();
-renderSavedList();
-renderGrocery();
-renderRecipes(matchedRecipes().slice(0, Math.min(matchedRecipes().length, 40)));
-
-/* community preview initial render */
-renderCommunityPreview();
-
-/* theme toggle */
-$('#btnTheme').addEventListener('click', ()=> { document.body.classList.toggle('light'); });
-
-/* small helpers & debug */
-window.jemwayState = state; // expose for debugging
-
-/* ========================
-   End of file
-   Notes:
-   - If prune (delete) calls fail, that means your DB policies currently disallow client deletes.
-     You can:
-       a) create a background function/cron on a server with a service role to prune old messages;
-       b) relax RLS to allow deletes from a specific role; or
-       c) keep client-only truncation (UI shows only last 50).
-   - Make sure community_recipes and chat_messages tables are created in Supabase (SQL at top).
-   - Don't commit your service_role key to client-side code.
-   - For production, enable RLS properly and write policies to keep users limited to allowed operations.
-   ======================== */
-</script>
-<!-- Ultra-Premium Futuristic Logo Intro -->
-<style>
-  #introScreen {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    overflow: hidden;
-    perspective: 2000px;
-  }
-
-  #logoWrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transform-style: preserve-3d;
-  }
-
-  .fragment {
-    font-family: 'Inter', sans-serif;
-    font-weight: 900;
-    font-size: 12rem;
-    color: #00d1b2;
-    opacity: 0;
-    transform: translate3d(0,0,-500px) rotateX(90deg);
-    display: inline-block;
-    margin: 0 0.2rem;
-  }
-
-  #siteName {
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 3rem;
-    color: #fff;
-    opacity: 0;
-    transform: translateY(50px);
-    margin-top: 1rem;
-    letter-spacing: 0.2rem;
-  }
-</style>
-
-<div id="introScreen">
-  <div id="logoWrapper">
-    <div id="logoFragments">
-      <span class="fragment">J</span>
-      <span class="fragment">E</span>
-      <span class="fragment">M</span>
-      <span class="fragment">W</span>
-      <span class="fragment">A</span>
-      <span class="fragment">Y</span>
-    </div>
-    <div id="siteName">Culinary Companion</div>
-  </div>
-</div>
-
-<script>
-  const intro = document.getElementById('introScreen');
-  const fragments = document.querySelectorAll('.fragment');
-  const name = document.getElementById('siteName');
-
-  // Animate logo fragments sequentially
-  fragments.forEach((frag, i) => {
-    setTimeout(() => {
-      frag.style.transition = 'transform 1.2s cubic-bezier(.25,.8,.25,1), opacity 1.2s ease';
-      frag.style.transform = 'translate3d(0,0,0) rotateX(0deg)';
-      frag.style.opacity = 1;
-    }, i * 200);
-  });
-
-  // Animate site name fade-in after logo
-  setTimeout(() => {
-    name.style.transition = 'transform 1.2s ease, opacity 1.2s ease';
-    name.style.transform = 'translateY(0)';
-    name.style.opacity = 1;
-  }, fragments.length * 200 + 800);
-
-  // Fade out the intro and reveal the site
-  setTimeout(() => {
-    intro.style.transition = 'opacity 1.5s ease';
-    intro.style.opacity = 0;
-    setTimeout(() => intro.remove(), 1500);
-  }, fragments.length * 200 + 2800);
-</script></body>
+        // Initialize the site
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            document.getElementById('enterSite').addEventListener('click', enterSite);
+        });
+    </script>
+</body>
 </html>
