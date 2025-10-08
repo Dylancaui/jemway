@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jemway - Science-Based Recovery from Pornography Addiction</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Under Construction</title>
     <style>
         * {
             margin: 0;
@@ -12,1346 +11,212 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        :root {
-            --primary: #6C63FF;
-            --primary-light: #8A85FF;
-            --secondary: #4A90E2;
-            --accent: #36D1DC;
-            --dark: #2D3748;
-            --light: #F7FAFC;
-            --gray: #A0AEC0;
-            --success: #48BB78;
-            --danger: #E53E3E;
-            --warning: #F6AD55;
-        }
-
+        
         body {
-            background-color: var(--light);
-            color: var(--dark);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Intro Screen */
-        #introScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
-            transition: opacity 1s ease;
+            padding: 20px;
         }
-
-        .stars {
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            text-align: center;
+            padding: 40px 30px;
+        }
+        
+        .construction-container {
+            margin: 30px 0;
+            position: relative;
+            height: 200px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px dashed #bdc3c7;
+        }
+        
+        .construction-scene {
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
         }
-
-        .star {
+        
+        .crane {
             position: absolute;
-            background-color: white;
-            border-radius: 50%;
-            opacity: 0;
-            animation: twinkle 5s infinite alternate;
-        }
-
-        @keyframes twinkle {
-            0% { opacity: 0.2; }
-            100% { opacity: 0.8; }
-        }
-
-        .shooting-star {
-            position: absolute;
-            width: 100px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, white);
-            transform: rotate(-45deg);
-            opacity: 0;
-        }
-
-        .logo-container {
-            text-align: center;
+            left: 20%;
+            bottom: 0;
+            width: 80px;
+            height: 150px;
             z-index: 10;
         }
-
-        .intro-logo {
-            font-size: 64px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-
-        .intro-subtitle {
-            font-size: 18px;
-            color: #cbd5e0;
-            margin-bottom: 40px;
-        }
-
-        .enter-btn {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .enter-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.3);
-        }
-
-        /* Header Styles */
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 1rem 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        .logo i {
-            font-size: 2rem;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 25px;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            padding: 5px 10px;
-            border-radius: 4px;
-        }
-
-        .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .developer-badge {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 5rem 0;
-            background: linear-gradient(rgba(108, 99, 255, 0.9), rgba(74, 144, 226, 0.9)), url('https://images.unsplash.com/photo-1557683316-973673baf926?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 700px;
-            margin: 0 auto 2rem;
-        }
-
-        .warning-notice {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            max-width: 600px;
-            margin: 2rem auto 0;
-            font-size: 0.9rem;
-        }
-
-        /* Content Sections */
-        .section {
-            padding: 5rem 0;
-        }
-
-        .section-alt {
-            background: white;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .section-title h2 {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .section-title p {
-            color: var(--dark);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Dangers Grid */
-        .dangers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .danger-card {
-            background: var(--light);
-            border-radius: 10px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .danger-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .danger-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--danger);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 1.8rem;
-        }
-
-        /* Solutions Grid */
-        .solutions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .solution-card {
-            background: var(--light);
-            border-radius: 10px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .solution-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--success);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 1.8rem;
-        }
-
-        /* Video Section */
-        .videos-section {
-            background: linear-gradient(135deg, var(--primary-light), var(--accent));
-            color: white;
-            padding: 5rem 0;
-        }
-
-        .videos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-top: 3rem;
-        }
-
-        .video-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .video-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .video-container {
-            position: relative;
-            width: 100%;
-            height: 0;
-            padding-bottom: 56.25%;
-        }
-
-        .video-container iframe {
+        
+        .crane-base {
+            width: 20px;
+            height: 150px;
+            background-color: #34495e;
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
+            left: 30px;
+            bottom: 0;
         }
-
-        .video-content {
-            padding: 20px;
-        }
-
-        .video-content h3 {
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-        }
-
-        .video-content p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        /* Stats Section */
-        .stats-section {
-            padding: 4rem 0;
-            background: var(--dark);
-            color: white;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            text-align: center;
-        }
-
-        .stat-card {
-            padding: 20px;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--accent);
-        }
-
-        .stat-label {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-
-        /* Self-Assessment */
-        .assessment-container {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .question {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--gray);
-        }
-
-        .question:last-child {
-            border-bottom: none;
-        }
-
-        .question-text {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .option {
-            padding: 12px 15px;
-            border: 1px solid var(--gray);
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .option:hover {
-            background: var(--light);
-        }
-
-        .option.selected {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .assessment-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            font-size: 1rem;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: var(--light);
-            color: var(--dark);
-            border: 1px solid var(--gray);
-        }
-
-        .btn-secondary:hover {
-            background: white;
-        }
-
-        .result {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 10px;
-            background: var(--light);
-            display: none;
-        }
-
-        /* Resources */
-        .resources-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .resource-card {
-            background: var(--light);
-            border-radius: 10px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .resource-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--secondary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 1.8rem;
-        }
-
-        /* Daily Tips */
-        .daily-tips {
-            background: var(--warning);
-            color: var(--dark);
-            padding: 3rem 0;
-        }
-
-        .tip-card {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            max-width: 800px;
-            margin: 0 auto;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .tip-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .tip-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--warning);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        /* New Features */
-        .community-section {
-            background: var(--primary-light);
-            color: white;
-            padding: 5rem 0;
-            text-align: center;
-        }
-
-        .community-stats {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin: 3rem 0;
-            flex-wrap: wrap;
-        }
-
-        .community-stat {
-            text-align: center;
-        }
-
-        .community-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .community-label {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-
-        .progress-tracker {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            max-width: 800px;
-            margin: 3rem auto 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            color: var(--dark);
-        }
-
-        .progress-title {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-
-        .progress-bar {
-            height: 20px;
-            background: var(--light);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--success);
-            border-radius: 10px;
-            width: 0%;
-            transition: width 1s ease;
-        }
-
-        .progress-text {
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 3rem;
-        }
-
-        .tool-card {
-            background: var(--light);
-            border-radius: 10px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .tool-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .tool-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--accent);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 1.8rem;
-        }
-
-        .testimonials-section {
-            padding: 5rem 0;
-            background: var(--light);
-        }
-
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 3rem;
-        }
-
-        .testimonial-card {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .testimonial-content {
-            font-style: italic;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .testimonial-content:before {
-            content: """;
-            font-size: 4rem;
-            color: var(--primary-light);
+        
+        .crane-arm {
+            width: 100px;
+            height: 8px;
+            background-color: #2c3e50;
             position: absolute;
-            top: -20px;
+            top: 20px;
+            left: -70px;
+            transform-origin: right center;
+            animation: crane-arm 8s infinite ease-in-out;
+        }
+        
+        .crane-hook {
+            width: 6px;
+            height: 40px;
+            background-color: #e74c3c;
+            position: absolute;
+            top: 4px;
             left: -10px;
-            opacity: 0.3;
+            animation: crane-hook 8s infinite ease-in-out;
         }
-
-        .testimonial-author {
+        
+        .building {
+            position: absolute;
+            bottom: 0;
+            width: 200px;
+            height: 120px;
+            background-color: #95a5a6;
+            border-radius: 5px 5px 0 0;
             display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .author-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-
-        /* Emergency Section */
-        .emergency-section {
-            background: var(--danger);
-            color: white;
-            padding: 4rem 0;
-            text-align: center;
-        }
-
-        .emergency-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .emergency-numbers {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin: 2rem 0;
             flex-wrap: wrap;
+            padding: 5px;
         }
-
-        .emergency-number {
-            text-align: center;
+        
+        .window {
+            width: 20px;
+            height: 30px;
+            background-color: #3498db;
+            margin: 5px;
+            border-radius: 3px;
         }
-
-        .emergency-number .number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 5px;
+        
+        .worker {
+            position: absolute;
+            bottom: 0;
+            width: 25px;
+            height: 40px;
+            background-color: #e67e22;
+            border-radius: 5px 5px 0 0;
+            animation: worker 6s infinite alternate;
         }
-
-        .emergency-number .label {
-            font-size: 0.9rem;
-            opacity: 0.9;
+        
+        .worker-helmet {
+            position: absolute;
+            top: -8px;
+            left: 5px;
+            width: 15px;
+            height: 10px;
+            background-color: #f1c40f;
+            border-radius: 50% 50% 0 0;
         }
-
-        /* Footer */
-        footer {
-            background: var(--dark);
-            color: white;
-            padding: 4rem 0 2rem;
+        
+        .cone {
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            height: 30px;
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+            clip-path: polygon(0% 100%, 100% 100%, 80% 0%, 20% 0%);
         }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 3rem;
+        
+        .message {
+            margin: 30px 0;
         }
-
-        .footer-column h3 {
+        
+        .message h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .message p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            line-height: 1.6;
             margin-bottom: 20px;
-            font-size: 1.2rem;
         }
-
-        .footer-links {
-            list-style: none;
+        
+        @keyframes crane-arm {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
         }
-
-        .footer-links li {
-            margin-bottom: 10px;
+        
+        @keyframes crane-hook {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(40px); }
         }
-
-        .footer-links a {
-            color: var(--gray);
-            text-decoration: none;
-            transition: color 0.3s ease;
+        
+        @keyframes worker {
+            0% { left: 10%; }
+            100% { left: 70%; }
         }
-
-        .footer-links a:hover {
-            color: white;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        .developer-credit {
-            margin-top: 10px;
-            font-size: 0.8rem;
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 20px;
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
             }
-
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .hero h1 {
-                font-size: 2.2rem;
-            }
-
-            .intro-logo {
-                font-size: 48px;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .community-stats {
-                gap: 20px;
-            }
-
-            .emergency-numbers {
-                gap: 20px;
+            
+            .message h2 {
+                font-size: 1.6rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Intro Screen -->
-    <div id="introScreen">
-        <div class="stars" id="stars"></div>
-        <div class="logo-container">
-            <div class="intro-logo">Jemway</div>
-            <div class="intro-subtitle">Science-Based Recovery from Pornography Addiction</div>
-            <button class="enter-btn" id="enterSite">Enter Site</button>
+    <div class="container">
+        <div class="construction-container">
+            <div class="construction-scene">
+                <div class="crane">
+                    <div class="crane-base"></div>
+                    <div class="crane-arm">
+                        <div class="crane-hook"></div>
+                    </div>
+                </div>
+                
+                <div class="building">
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                </div>
+                
+                <div class="worker">
+                    <div class="worker-helmet"></div>
+                </div>
+                
+                <div class="cone" style="left: 5%;"></div>
+                <div class="cone" style="right: 10%;"></div>
+            </div>
+        </div>
+        
+        <div class="message">
+            <h2>We're Under Construction</h2>
+            <p>Our website is currently undergoing scheduled maintenance and improvements. We're working hard to bring you an enhanced experience with new features and a fresh design.</p>
+            <p>Please check back in a few days. We appreciate your patience!</p>
         </div>
     </div>
-
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <nav class="navbar">
-                <div class="logo">
-                    <i class="fas fa-dove"></i>
-                    <span>Jemway</span>
-                </div>
-                <div class="nav-links">
-                    <a href="#dangers">The Science</a>
-                    <a href="#solutions">Recovery</a>
-                    <a href="#videos">Videos</a>
-                    <a href="#assessment">Self-Test</a>
-                    <a href="#emergency">Emergency Help</a>
-                    <div class="developer-badge">From Adzentura Developer</div>
-                </div>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1>Evidence-Based Recovery from Pornography Addiction</h1>
-            <p>Jemway provides scientifically-validated information and resources to understand and overcome compulsive sexual behaviors, based on neuroscience and clinical research.</p>
-            <div class="warning-notice">
-                <i class="fas fa-exclamation-triangle"></i> 
-                <strong>Important:</strong> This site contains factual information about sexual addiction. If you are in crisis or having thoughts of harming yourself or others, please seek immediate professional help.
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">64%</div>
-                    <div class="stat-label">of young men report compulsive pornography use (Journal of Adolescent Health, 2020)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">56%</div>
-                    <div class="stat-label">divorce rate when pornography use is a conflict issue (Journal of Sex & Marital Therapy, 2019)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">3.5x</div>
-                    <div class="stat-label">higher likelihood of depression with compulsive use (JAMA Psychiatry, 2019)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">71%</div>
-                    <div class="stat-label">recovery success with professional treatment (Sexual Addiction & Compulsivity, 2021)</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Emergency Section -->
-    <section class="emergency-section" id="emergency">
-        <div class="container">
-            <div class="emergency-content">
-                <h2><i class="fas fa-exclamation-circle"></i> Immediate Crisis Support</h2>
-                <p>If you're in crisis or having thoughts of harming yourself or others, these resources are available 24/7:</p>
-                <div class="emergency-numbers">
-                    <div class="emergency-number">
-                        <div class="number">988</div>
-                        <div class="label">Suicide & Crisis Lifeline</div>
-                    </div>
-                    <div class="emergency-number">
-                        <div class="number">1-800-662-HELP</div>
-                        <div class="label">SAMHSA Helpline</div>
-                    </div>
-                    <div class="emergency-number">
-                        <div class="number">1-800-273-8255</div>
-                        <div class="label">National Suicide Prevention</div>
-                    </div>
-                </div>
-                <p><strong>For immediate danger to yourself or others, call 911 or go to your nearest emergency room.</strong></p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Dangers Section -->
-    <section class="section" id="dangers">
-        <div class="container">
-            <div class="section-title">
-                <h2>Evidence-Based Risks of Compulsive Pornography Use</h2>
-                <p>Peer-reviewed research on how compulsive pornography consumption affects brain function and behavior</p>
-            </div>
-            <div class="dangers-grid">
-                <div class="danger-card">
-                    <div class="danger-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h3>Neurological Changes</h3>
-                    <p>MRI studies show reduced gray matter in prefrontal cortex regions responsible for decision-making and impulse control (JAMA Psychiatry, 2014).</p>
-                </div>
-                <div class="danger-card">
-                    <div class="danger-icon">
-                        <i class="fas fa-heart-broken"></i>
-                    </div>
-                    <h3>Relationship Impact</h3>
-                    <p>Research links compulsive use to decreased relationship satisfaction, intimacy issues, and increased likelihood of infidelity (Journal of Sex Research, 2017).</p>
-                </div>
-                <div class="danger-card">
-                    <div class="danger-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Addiction Mechanisms</h3>
-                    <p>Compulsive use follows established addiction patterns with tolerance, withdrawal, and loss of control despite negative consequences (Current Addiction Reports, 2016).</p>
-                </div>
-                <div class="danger-card">
-                    <div class="danger-icon">
-                        <i class="fas fa-user-secret"></i>
-                    </div>
-                    <h3>Escalation Patterns</h3>
-                    <p>Studies document users progressing to more extreme content over time, with associated desensitization effects (Sexual Addiction & Compulsivity, 2015).</p>
-                </div>
-                <div class="danger-card">
-                    <div class="danger-icon">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <h3>Academic/Work Impact</h3>
-                    <p>Research associates compulsive use with decreased academic performance, work productivity, and attention span (Computers in Human Behavior, 2018).</p>
-                </div>
-                <div class="danger-card">
-                    <div class="danger-icon">
-                        <i class="fas fa-ban"></i>
-                    </div>
-                    <h3>Mental Health</h3>
-                    <p>Strong correlations found with depression, anxiety, loneliness, and decreased life satisfaction (Journal of Affective Disorders, 2019).</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Solutions Section -->
-    <section class="section section-alt" id="solutions">
-        <div class="container">
-            <div class="section-title">
-                <h2>Evidence-Based Recovery Approaches</h2>
-                <p>Clinically validated methods for overcoming compulsive sexual behaviors</p>
-            </div>
-            <div class="solutions-grid">
-                <div class="solution-card">
-                    <div class="solution-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h3>Cognitive Behavioral Therapy (CBT)</h3>
-                    <p>Gold-standard treatment that identifies and modifies thought patterns driving compulsive behaviors. Proven effective in multiple clinical trials.</p>
-                </div>
-                <div class="solution-card">
-                    <div class="solution-icon">
-                        <i class="fas fa-hands-helping"></i>
-                    </div>
-                    <h3>Acceptance & Commitment Therapy (ACT)</h3>
-                    <p>Mindfulness-based approach that teaches acceptance of difficult feelings while committing to value-based actions. Shown effective for behavioral addictions.</p>
-                </div>
-                <div class="solution-card">
-                    <div class="solution-icon">
-                        <i class="fas fa-running"></i>
-                    </div>
-                    <h3>Behavioral Activation</h3>
-                    <p>Systematically replacing compulsive behaviors with healthy alternatives that provide natural dopamine regulation and life satisfaction.</p>
-                </div>
-                <div class="solution-card">
-                    <div class="solution-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h3>Psychoeducation</h3>
-                    <p>Learning the neuroscience of addiction reduces shame and increases motivation for change through understanding biological mechanisms.</p>
-                </div>
-                <div class="solution-card">
-                    <div class="solution-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>Support Groups</h3>
-                    <p>12-step and other mutual support groups provide accountability and reduce isolation. Research shows social support improves recovery outcomes.</p>
-                </div>
-                <div class="solution-card">
-                    <div class="solution-icon">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <h3>Relapse Prevention</h3>
-                    <p>Structured planning for high-risk situations using cognitive and behavioral strategies. Critical for long-term maintenance of behavioral change.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Video Section -->
-    <section class="videos-section" id="videos">
-        <div class="container">
-            <div class="section-title">
-                <h2>Educational Videos from Experts</h2>
-                <p>Evidence-based information from researchers and clinicians</p>
-            </div>
-            <div class="videos-grid">
-                <div class="video-card">
-                    <div class="video-container">
-                        <iframe src="https://www.youtube.com/embed/wSF82AwSDiU" title="Your Brain on Pornography" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    </div>
-                    <div class="video-content">
-                        <h3>Your Brain on Pornography</h3>
-                        <p>Neuroscientist explains how pornography affects brain development and function.</p>
-                    </div>
-                </div>
-                <div class="video-card">
-                    <div class="video-container">
-                        <iframe src="https://www.youtube.com/embed/2LgdbmWqY4A" title="Understanding Pornography Addiction" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    </div>
-                    <div class="video-content">
-                        <h3>The Science of Addiction</h3>
-                        <p>Clinical psychologist explains the addiction model for compulsive behaviors.</p>
-                    </div>
-                </div>
-                <div class="video-card">
-                    <div class="video-container">
-                        <iframe src="https://www.youtube.com/embed/4xCWK15bB0E" title="Recovery Strategies" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    </div>
-                    <div class="video-content">
-                        <h3>Evidence-Based Recovery</h3>
-                        <p>Therapist discusses proven methods for overcoming compulsive sexual behaviors.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Daily Tips -->
-    <section class="daily-tips">
-        <div class="container">
-            <div class="tip-card">
-                <div class="tip-header">
-                    <div class="tip-icon">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <h3>Evidence-Based Recovery Tip</h3>
-                </div>
-                <p><strong>Urge Surfing Technique:</strong> Research shows that sexual urges typically follow a predictable pattern, peaking within 5-15 minutes then subsiding. Instead of fighting the urge, practice observing it without judgment while engaging in a distracting activity. This mindfulness-based approach has been shown to significantly reduce compulsive behaviors in clinical studies.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Self-Assessment Section -->
-    <section class="section" id="assessment">
-        <div class="container">
-            <div class="section-title">
-                <h2>Clinical Self-Assessment</h2>
-                <p>Based on diagnostic criteria for compulsive sexual behavior disorder</p>
-            </div>
-            <div class="assessment-container">
-                <div class="question">
-                    <div class="question-text">1. Over the past 6 months, how often have you engaged in sexual behaviors for longer periods or more frequently than intended?</div>
-                    <div class="options">
-                        <div class="option" data-value="0">Never or rarely</div>
-                        <div class="option" data-value="1">Occasionally (monthly)</div>
-                        <div class="option" data-value="2">Frequently (weekly)</div>
-                        <div class="option" data-value="3">Very frequently (daily or almost daily)</div>
-                    </div>
-                </div>
-                <div class="question">
-                    <div class="question-text">2. How often have you made repeated unsuccessful efforts to control or significantly reduce these sexual behaviors?</div>
-                    <div class="options">
-                        <div class="option" data-value="0">Never tried to reduce</div>
-                        <div class="option" data-value="1">Tried once or twice without success</div>
-                        <div class="option" data-value="2">Multiple attempts with partial success</div>
-                        <div class="option" data-value="3">Many attempts with little to no success</div>
-                    </div>
-                </div>
-                <div class="question">
-                    <div class="question-text">3. How much time do you spend on sexual activities (including planning, engaging, and recovering)?</div>
-                    <div class="options">
-                        <div class="option" data-value="0">Less than 1 hour per week</div>
-                        <div class="option" data-value="1">1-5 hours per week</div>
-                        <div class="option" data-value="2">5-15 hours per week</div>
-                        <div class="option" data-value="3">More than 15 hours per week</div>
-                    </div>
-                </div>
-                <div class="question">
-                    <div class="question-text">4. How often do these sexual behaviors cause you to fail to fulfill major role obligations at work, school, or home?</div>
-                    <div class="options">
-                        <div class="option" data-value="0">Never</div>
-                        <div class="option" data-value="1">Rarely (a few times)</div>
-                        <div class="option" data-value="2">Sometimes (monthly)</div>
-                        <div class="option" data-value="3">Often (weekly or more)</div>
-                    </div>
-                </div>
-                <div class="question">
-                    <div class="question-text">5. How often do you continue these sexual behaviors despite persistent or recurrent social or interpersonal problems caused by them?</div>
-                    <div class="options">
-                        <div class="option" data-value="0">No interpersonal problems</div>
-                        <div class="option" data-value="1">Minor problems but continuing</div>
-                        <div class="option" data-value="2">Moderate problems but continuing</div>
-                        <div class="option" data-value="3">Serious problems but continuing</div>
-                    </div>
-                </div>
-                <div class="assessment-actions">
-                    <button class="btn btn-primary" id="submitAssessment">Get Results</button>
-                    <button class="btn btn-secondary" id="resetAssessment">Reset</button>
-                </div>
-                <div class="result" id="assessmentResult">
-                    <!-- Results will be displayed here -->
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Resources Section -->
-    <section class="section section-alt" id="resources">
-        <div class="container">
-            <div class="section-title">
-                <h2>Professional Resources & Support</h2>
-                <p>Evidence-based treatment options and support services</p>
-            </div>
-            <div class="resources-grid">
-                <div class="resource-card">
-                    <div class="resource-icon">
-                        <i class="fas fa-phone-alt"></i>
-                    </div>
-                    <h3>National Helplines</h3>
-                    <p><strong>Substance Abuse and Mental Health Services Administration (SAMHSA):</strong> 1-800-662-HELP (4357)</p>
-                    <p><strong>National Alliance on Mental Illness (NAMI):</strong> 1-800-950-NAMI (6264)</p>
-                    <p><strong>Crisis Text Line:</strong> Text HOME to 741741</p>
-                </div>
-                <div class="resource-card">
-                    <div class="resource-icon">
-                        <i class="fas fa-book-medical"></i>
-                    </div>
-                    <h3>Professional Organizations</h3>
-                    <p><strong>Society for the Advancement of Sexual Health (SASH):</strong> Certified therapists specializing in sexual addiction</p>
-                    <p><strong>American Association of Sexuality Educators, Counselors and Therapists (AASECT):</strong> Certified sexuality professionals</p>
-                    <p><strong>International Institute for Trauma and Addiction Professionals (IITAP):</strong> CSAT certified therapists</p>
-                </div>
-                <div class="resource-card">
-                    <div class="resource-icon">
-                        <i class="fas fa-user-md"></i>
-                    </div>
-                    <h3>Treatment Approaches</h3>
-                    <p><strong>Cognitive Behavioral Therapy (CBT):</strong> Evidence-based for compulsive behaviors</p>
-                    <p><strong>Acceptance and Commitment Therapy (ACT):</strong> Mindfulness-based approach</p>
-                    <p><strong>12-Step Programs:</strong> Free mutual support groups (SAA, SLAA)</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>Jemway</h3>
-                    <p>An evidence-based educational resource about compulsive sexual behaviors and recovery, created to provide accurate, scientifically-validated information.</p>
-                </div>
-                <div class="footer-column">
-                    <h3>Clinical Resources</h3>
-                    <ul class="footer-links">
-                        <li><a href="https://www.sash.net" target="_blank">Society for the Advancement of Sexual Health</a></li>
-                        <li><a href="https://www.aasect.org" target="_blank">AASECT Certified Professionals</a></li>
-                        <li><a href="https://www.iitap.com" target="_blank">IITAP CSAT Certification</a></li>
-                        <li><a href="https://www.saa-recovery.org" target="_blank">Sex Addicts Anonymous</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Research & Education</h3>
-                    <ul class="footer-links">
-                        <li><a href="https://www.ncbi.nlm.nih.gov/pubmed" target="_blank">PubMed Research Database</a></li>
-                        <li><a href="https://www.psychologytoday.com" target="_blank">Psychology Today Therapist Directory</a></li>
-                        <li><a href="https://www.nimh.nih.gov" target="_blank">National Institute of Mental Health</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Important Notice</h3>
-                    <p>This website provides educational information only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of qualified health providers with any questions about medical conditions.</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Jemway. Evidence-based educational resource.</p>
-                <div class="developer-credit">Created by Dylan Castro - Developer of Adzentura Mental Health Resources</div>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Intro Screen Animation
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            
-            // Create static stars
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.width = Math.random() * 3 + 'px';
-                star.style.height = star.style.width;
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.opacity = Math.random() * 0.7 + 0.3;
-                star.style.animationDelay = Math.random() * 5 + 's';
-                starsContainer.appendChild(star);
-            }
-            
-            // Create shooting stars
-            setInterval(() => {
-                createShootingStar();
-            }, 2000);
-        }
-
-        function createShootingStar() {
-            const shootingStar = document.createElement('div');
-            shootingStar.className = 'shooting-star';
-            shootingStar.style.left = Math.random() * 100 + '%';
-            shootingStar.style.top = Math.random() * 50 + '%';
-            document.getElementById('stars').appendChild(shootingStar);
-            
-            shootingStar.animate([
-                { opacity: 0, transform: 'translateX(0) translateY(0) rotate(-45deg)' },
-                { opacity: 1, transform: 'translateX(-200px) translateY(200px) rotate(-45deg)' },
-                { opacity: 0, transform: 'translateX(-400px) translateY(400px) rotate(-45deg)' }
-            ], {
-                duration: 1500,
-                easing: 'ease-out'
-            });
-            
-            setTimeout(() => {
-                shootingStar.remove();
-            }, 1500);
-        }
-
-        function enterSite() {
-            document.getElementById('introScreen').style.opacity = 0;
-            setTimeout(() => {
-                document.getElementById('introScreen').style.display = 'none';
-            }, 1000);
-        }
-
-        // Assessment Functionality
-        document.querySelectorAll('.option').forEach(option => {
-            option.addEventListener('click', function() {
-                // Remove selected class from siblings
-                this.parentNode.querySelectorAll('.option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                
-                // Add selected class to clicked option
-                this.classList.add('selected');
-            });
-        });
-
-        document.getElementById('submitAssessment').addEventListener('click', function() {
-            let totalScore = 0;
-            let answeredAll = true;
-            
-            document.querySelectorAll('.question').forEach(question => {
-                const selectedOption = question.querySelector('.option.selected');
-                if (selectedOption) {
-                    totalScore += parseInt(selectedOption.getAttribute('data-value'));
-                } else {
-                    answeredAll = false;
-                }
-            });
-            
-            if (!answeredAll) {
-                alert('Please answer all questions before submitting.');
-                return;
-            }
-            
-            let resultText = '';
-            let resultColor = '';
-            
-            if (totalScore <= 5) {
-                resultText = `
-                    <h3>Low Clinical Concern</h3>
-                    <p>Based on your responses, your sexual behaviors do not appear to meet clinical criteria for compulsive sexual behavior disorder. Your patterns seem to fall within typical ranges.</p>
-                    <p><strong>Recommendation:</strong> Continue practicing healthy boundaries and self-awareness. Consider learning about preventive strategies to maintain balance.</p>
-                `;
-                resultColor = '#48BB78';
-            } else if (totalScore <= 10) {
-                resultText = `
-                    <h3>Moderate Clinical Concern</h3>
-                    <p>Your responses suggest some patterns that may indicate problematic sexual behavior. Several items align with early warning signs of compulsive sexual behavior disorder.</p>
-                    <p><strong>Recommendation:</strong> Consider consulting with a mental health professional for proper assessment. Implement evidence-based strategies like those described on this site.</p>
-                `;
-                resultColor = '#F6AD55';
-            } else {
-                resultText = `
-                    <h3>High Clinical Concern</h3>
-                    <p>Your responses indicate patterns consistent with compulsive sexual behavior disorder as defined in clinical literature. Multiple criteria for diagnosis appear to be met.</p>
-                    <p><strong>Recommendation:</strong> We strongly recommend seeking professional assessment from a qualified mental health provider specializing in sexual addiction. Evidence-based treatments have high success rates when properly implemented.</p>
-                `;
-                resultColor = '#E53E3E';
-            }
-            
-            const resultElement = document.getElementById('assessmentResult');
-            resultElement.innerHTML = resultText;
-            resultElement.style.borderLeft = `4px solid ${resultColor}`;
-            resultElement.style.display = 'block';
-            
-            // Scroll to results
-            resultElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
-
-        document.getElementById('resetAssessment').addEventListener('click', function() {
-            document.querySelectorAll('.option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            document.getElementById('assessmentResult').style.display = 'none';
-        });
-
-        // Smooth scrolling for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Initialize the site
-        document.addEventListener('DOMContentLoaded', function() {
-            createStars();
-            document.getElementById('enterSite').addEventListener('click', enterSite);
-        });
-    </script>
 </body>
 </html>
