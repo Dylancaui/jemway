@@ -37,7 +37,6 @@
             z-index: 1;
         }
         
-        /* Auth Screens */
         .screen {
             position: absolute;
             top: 50%;
@@ -423,7 +422,7 @@
                     const intersects = raycaster.intersectObjects(dots);
                     if (intersects.length > 0) {
                         const m = intersects[0].object.userData;
-                        document.getElementById('viewUserInfo').innerHTML = `<img src="${m.user_avatar || ''}" style="width:32px;height:32px;border-radius:50%;" onerror="this.style.display='none'"><span>${m.user_name}</span>`;
+                        document.getElementById('viewUserInfo').innerHTML = `<img src="${m.user_avatar || ''}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'"><span>${m.user_name}</span>`;
                         document.getElementById('viewPhoto').innerHTML = `<img src="${m.photo_url}" style="max-width:100%;max-height:100%;">`;
                         document.getElementById('viewLocation').textContent = m.location_name || 'Unknown';
                         document.getElementById('viewCaption').textContent = m.caption || '';
@@ -450,35 +449,59 @@
             }
             
             async function loadDots() {
+                console.log("Loading dots...");
+                // Remove existing dots
                 dots.forEach(d => scene.remove(d));
                 dots = [];
                 
+                // Get all moments from Supabase
                 const { data: moments, error } = await supabase.from('moments').select('*').order('created_at', { ascending: false });
-                if (error || !moments) return;
                 
+                if (error) {
+                    console.error("Error loading moments:", error);
+                    showStatus("Error loading moments: " + error.message);
+                    return;
+                }
+                
+                console.log("Found", moments.length, "moments");
+                
+                if (!moments || moments.length === 0) {
+                    document.getElementById('dotCount').textContent = "0";
+                    return;
+                }
+                
+                // For each moment, get the user's profile and add a dot
                 for (const m of moments) {
+                    // Get profile for this user
                     const { data: profile } = await supabase.from('profiles').select('nickname, avatar_url').eq('id', m.user_id).single();
+                    
+                    // Convert lat/lng to 3D position
                     const phi = (90 - m.latitude) * Math.PI / 180;
                     const theta = m.longitude * Math.PI / 180;
                     const x = 1.01 * Math.sin(phi) * Math.cos(theta);
                     const y = 1.01 * Math.cos(phi);
                     const z = 1.01 * Math.sin(phi) * Math.sin(theta);
                     
+                    // Create dot
                     const dotGeo = new THREE.SphereGeometry(0.008, 16, 16);
                     const dotMat = new THREE.MeshStandardMaterial({ color: 0xff3366, emissive: 0xff3366, emissiveIntensity: 0.5 });
                     const dot = new THREE.Mesh(dotGeo, dotMat);
                     dot.position.set(x, y, z);
                     dot.userData = {
+                        id: m.id,
                         photo_url: m.photo_url,
                         caption: m.caption,
                         user_name: profile?.nickname || 'Anonymous',
                         user_avatar: profile?.avatar_url,
-                        location_name: m.location_name
+                        location_name: m.location_name,
+                        created_at: m.created_at
                     };
                     scene.add(dot);
                     dots.push(dot);
                 }
+                
                 document.getElementById('dotCount').textContent = moments.length;
+                console.log("Added", dots.length, "dots to globe");
             }
             
             // Auth Functions
@@ -599,6 +622,9 @@
                             document.getElementById('locationStatus').textContent = 'Using approximate location';
                         }
                     );
+                } else {
+                    currentLocation = { lat: 40.7128, lng: -74.0060 };
+                    document.getElementById('locationStatus').textContent = 'Using approximate location';
                 }
             }
             
@@ -610,14 +636,14 @@
                 const ext = pendingPhoto.name.split('.').pop();
                 const fileName = `${currentUser.id}-${Date.now()}.${ext}`;
                 const { error: uploadError } = await supabase.storage.from('photos').upload(fileName, pendingPhoto);
-                if (uploadError) { showStatus('Upload failed'); return; }
+                if (uploadError) { showStatus('Upload failed: ' + uploadError.message); return; }
                 
                 const photoUrl = supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
                 const caption = document.getElementById('photoCaption').value;
                 const offsetLat = (Math.random() - 0.5) * 0.5;
                 const offsetLng = (Math.random() - 0.5) * 0.5;
                 
-                const { error } = await supabase.from('moments').insert({
+                const { error: insertError, data } = await supabase.from('moments').insert({
                     user_id: currentUser.id,
                     photo_url: photoUrl,
                     caption: caption,
@@ -625,12 +651,22 @@
                     longitude: currentLocation.lng + offsetLng,
                     location_name: `${Math.abs(currentLocation.lat).toFixed(1)}° ${currentLocation.lat >= 0 ? 'N' : 'S'}, ${Math.abs(currentLocation.lng).toFixed(1)}° ${currentLocation.lng >= 0 ? 'E' : 'W'}`
                 });
-                if (error) { showStatus('Save failed'); return; }
+                
+                if (insertError) { 
+                    showStatus('Save failed: ' + insertError.message); 
+                    return; 
+                }
                 
                 showStatus('Shared to the globe!');
                 document.getElementById('shareModal').style.display = 'none';
-                loadDots();
+                
+                // Reload dots after a short delay
+                setTimeout(() => {
+                    loadDots();
+                }, 500);
+                
                 pendingPhoto = null;
+                currentLocation = null;
             }
             
             // Avatar preview
