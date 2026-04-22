@@ -12,12 +12,13 @@
         }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, sans-serif;
             background: #000000;
             overflow: hidden;
             color: #ffffff;
         }
         
+        /* Premium gradient background */
         .bg-gradient {
             position: fixed;
             width: 100%;
@@ -37,6 +38,7 @@
             z-index: 1;
         }
         
+        /* Clean Auth Screens */
         .screen {
             position: absolute;
             top: 50%;
@@ -44,10 +46,12 @@
             transform: translate(-50%, -50%);
             z-index: 100;
             width: 90%;
-            max-width: 440px;
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
+            max-width: 420px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 48px 40px;
+            border-radius: 24px;
         }
         
         .logo {
@@ -56,16 +60,16 @@
         }
         
         .logo h1 {
-            font-size: 32px;
-            font-weight: 400;
-            letter-spacing: 4px;
+            font-size: 28px;
+            font-weight: 500;
+            letter-spacing: 2px;
             color: #ffffff;
         }
         
         .logo p {
             color: #666666;
             font-size: 12px;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             margin-top: 8px;
         }
         
@@ -74,10 +78,11 @@
             padding: 14px 0;
             background: transparent;
             border: none;
-            border-bottom: 1px solid #2a2a2a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
-            font-size: 14px;
-            margin-bottom: 20px;
+            font-size: 15px;
+            margin-bottom: 24px;
+            transition: border-color 0.2s;
         }
         
         input:focus, textarea:focus {
@@ -95,51 +100,87 @@
             font-weight: 500;
             cursor: pointer;
             margin-top: 8px;
+            border-radius: 8px;
+            transition: opacity 0.2s;
+        }
+        
+        button:hover {
+            opacity: 0.9;
         }
         
         .btn-secondary {
-            background: transparent;
-            border: 1px solid #2a2a2a;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .btn-danger {
+            background: #dc2626;
             color: #ffffff;
         }
         
         .divider {
             text-align: center;
             margin: 24px 0;
-            color: #2a2a2a;
+            color: #333333;
             font-size: 11px;
+            letter-spacing: 1px;
         }
         
+        /* Avatar */
         .avatar-preview {
-            width: 100px;
-            height: 100px;
+            width: 96px;
+            height: 96px;
             border-radius: 50%;
             background: #1a1a1a;
-            margin: 0 auto 20px;
+            margin: 0 auto 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             cursor: pointer;
-            border: 1px solid #2a2a2a;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         
+        /* Main UI */
         .user-menu {
             position: absolute;
-            top: 24px;
-            right: 24px;
+            top: 20px;
+            right: 20px;
             z-index: 50;
             display: none;
             align-items: center;
             gap: 16px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            padding: 8px 16px 8px 12px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         
         .user-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #1a1a1a;
+            background: #2a2a2a;
             overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .user-name {
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .logout-btn {
+            font-size: 13px;
+            color: #888888;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+            margin: 0;
+            width: auto;
         }
         
         .upload-panel {
@@ -154,71 +195,82 @@
         .upload-btn {
             background: #ffffff;
             color: #000000;
-            padding: 12px 24px;
+            padding: 12px 28px;
             width: auto;
             margin: 0;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
         
         .stats-section {
             position: absolute;
             bottom: 24px;
-            right: 24px;
+            left: 24px;
             z-index: 50;
             display: none;
-            text-align: right;
         }
         
         .stats-number {
-            font-size: 20px;
+            font-size: 28px;
             font-weight: 300;
         }
         
         .stats-label {
             font-size: 10px;
             color: #666666;
+            letter-spacing: 1px;
         }
         
         .instruction {
             position: absolute;
             bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 24px;
             font-size: 10px;
             color: #444444;
+            letter-spacing: 1px;
             z-index: 50;
             display: none;
         }
         
+        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.96);
             z-index: 200;
             display: none;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
         
         .modal-content {
             background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            padding: 40px;
-            max-width: 500px;
-            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
         }
         
         .photo-preview-area {
             width: 100%;
-            height: 300px;
+            height: 280px;
             background: #111111;
             margin: 20px 0;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            border-radius: 16px;
+            overflow: hidden;
         }
         
         .status-message {
@@ -226,12 +278,108 @@
             bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 12px 24px;
+            border-radius: 40px;
             z-index: 300;
             display: none;
             font-size: 13px;
+            white-space: nowrap;
+        }
+        
+        /* Profile grid */
+        .profile-moments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .profile-moment-item {
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            aspect-ratio: 1;
+        }
+        
+        .profile-moment-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .delete-moment-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0;
+            padding: 0;
+            backdrop-filter: blur(4px);
+        }
+        
+        .comment-item {
+            background: #111111;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+        }
+        
+        .like-button {
+            background: transparent;
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            color: #ff3366;
+            padding: 8px 20px;
+            margin: 0;
+            width: auto;
+            border-radius: 40px;
+        }
+        
+        .like-button.liked {
+            background: #ff3366;
+            color: white;
+            border-color: #ff3366;
+        }
+        
+        .flex-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .expiry-badge {
+            font-size: 11px;
+            color: #ff6666;
+            background: rgba(255, 102, 102, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -252,6 +400,7 @@
         <button id="signupBtn">Create account</button>
         <div class="divider">ALREADY HAVE AN ACCOUNT?</div>
         <button id="showLoginBtn" class="btn-secondary">Sign in</button>
+        <button id="showResetPasswordBtn" class="btn-secondary" style="margin-top: 12px;">Forgot password?</button>
     </div>
     
     <!-- Login Screen -->
@@ -265,6 +414,18 @@
         <button id="loginBtn">Sign in</button>
         <div class="divider">NEW HERE?</div>
         <button id="showSignupBtn" class="btn-secondary">Create account</button>
+        <button id="showResetPasswordFromLoginBtn" class="btn-secondary" style="margin-top: 12px;">Forgot password?</button>
+    </div>
+    
+    <!-- Reset Password Screen -->
+    <div id="resetPasswordScreen" class="screen" style="display: none;">
+        <div class="logo">
+            <h1>JEMWAY</h1>
+            <p>RESET PASSWORD</p>
+        </div>
+        <input type="email" id="resetEmail" placeholder="Email address">
+        <button id="sendResetBtn">Send reset link</button>
+        <button id="backToLoginBtn" class="btn-secondary" style="margin-top: 12px;">Back to sign in</button>
     </div>
     
     <!-- Profile Setup Screen -->
@@ -274,7 +435,7 @@
             <p>COMPLETE YOUR PROFILE</p>
         </div>
         <div class="avatar-preview" id="avatarPreview">
-            <div id="avatarPlaceholder">UPLOAD</div>
+            <div id="avatarPlaceholder" style="font-size: 12px; color: #666;">UPLOAD</div>
             <img id="avatarImg" style="display: none; width:100%;height:100%;object-fit:cover;">
         </div>
         <input type="file" id="avatarFile" accept="image/*" style="display: none;">
@@ -283,11 +444,60 @@
         <button id="completeProfileBtn">Start Exploring</button>
     </div>
     
+    <!-- Profile View Screen -->
+    <div id="profileViewScreen" class="screen" style="display: none;">
+        <div class="logo">
+            <h1>JEMWAY</h1>
+            <p>MY PROFILE</p>
+        </div>
+        <div style="text-align: center;">
+            <div id="profileViewAvatar" style="width: 96px; height: 96px; border-radius: 50%; background: #1a1a1a; margin: 0 auto 20px; overflow: hidden;"></div>
+            <h2 id="profileViewName" style="font-size: 22px; font-weight: 500;"></h2>
+            <p id="profileViewBio" style="color: #888; margin: 12px 0; font-size: 14px;"></p>
+            <p id="profileViewStats" style="color: #666; font-size: 12px;"></p>
+        </div>
+        <div class="divider">MY MOMENTS</div>
+        <div id="profileMomentsGrid" class="profile-moments-grid"></div>
+        <button id="editProfileBtn" class="btn-secondary" style="margin-top: 24px;">Edit Profile</button>
+        <button id="closeProfileBtn" class="btn-secondary" style="margin-top: 12px;">Back to Globe</button>
+    </div>
+    
+    <!-- Edit Profile Screen -->
+    <div id="editProfileScreen" class="screen" style="display: none;">
+        <div class="logo">
+            <h1>JEMWAY</h1>
+            <p>EDIT PROFILE</p>
+        </div>
+        <div class="avatar-preview" id="editAvatarPreview">
+            <div id="editAvatarPlaceholder" style="font-size: 12px; color: #666;">UPLOAD NEW</div>
+            <img id="editAvatarImg" style="display: none; width:100%;height:100%;object-fit:cover;">
+        </div>
+        <input type="file" id="editAvatarFile" accept="image/*" style="display: none;">
+        <input type="text" id="editNickname" placeholder="Nickname">
+        <textarea id="editBio" placeholder="Bio" rows="3"></textarea>
+        <button id="saveProfileBtn">Save Changes</button>
+        <button id="changePasswordBtn" class="btn-secondary">Change Password</button>
+        <button id="cancelEditProfileBtn" class="btn-secondary">Cancel</button>
+    </div>
+    
+    <!-- Change Password Screen -->
+    <div id="changePasswordScreen" class="screen" style="display: none;">
+        <div class="logo">
+            <h1>JEMWAY</h1>
+            <p>CHANGE PASSWORD</p>
+        </div>
+        <input type="password" id="currentPassword" placeholder="Current password">
+        <input type="password" id="newPassword" placeholder="New password">
+        <input type="password" id="confirmPassword" placeholder="Confirm new password">
+        <button id="updatePasswordBtn">Update Password</button>
+        <button id="cancelChangePasswordBtn" class="btn-secondary">Cancel</button>
+    </div>
+    
     <!-- Main UI -->
     <div class="user-menu" id="userMenu">
-        <div class="user-avatar" id="userAvatar"><div style="width:100%;height:100%;background:#1a1a1a;"></div></div>
-        <span id="userName" style="font-size:13px;">Explorer</span>
-        <button id="logoutBtn" style="background:transparent;color:#666;width:auto;margin:0;padding:0;">Exit</button>
+        <div class="user-avatar" id="userAvatar"><div style="width:100%;height:100%;background:#2a2a2a;"></div></div>
+        <span class="user-name" id="userName">Explorer</span>
+        <button class="logout-btn" id="logoutBtn">Exit</button>
     </div>
     
     <div class="upload-panel" id="uploadPanel">
@@ -296,33 +506,47 @@
     
     <div class="stats-section" id="statsSection">
         <div class="stats-number" id="dotCount">0</div>
-        <div class="stats-label">MOMENTS SHARED</div>
+        <div class="stats-label">ACTIVE MOMENTS</div>
     </div>
     
-    <div class="instruction" id="instruction">DRAG TO ROTATE • SCROLL TO ZOOM • CLICK DOTS</div>
+    <div class="instruction" id="instruction">Drag • Right-click + drag • Scroll</div>
     <div class="status-message" id="statusMsg"></div>
     
     <!-- Share Modal -->
     <div class="modal-overlay" id="shareModal">
         <div class="modal-content">
             <div class="logo"><p>SHARE A MOMENT</p></div>
-            <div class="photo-preview-area" id="photoPreview">CLICK TO SELECT PHOTO</div>
+            <div class="photo-preview-area" id="photoPreview">Select photo</div>
             <input type="file" id="photoFile" accept="image/*" style="display: none;">
-            <textarea id="photoCaption" placeholder="Add a caption..."></textarea>
-            <div id="locationStatus" style="font-size:11px;color:#666;margin:10px 0;">Getting location...</div>
+            <textarea id="photoCaption" placeholder="Add a caption..." rows="3"></textarea>
+            <div id="locationStatus" style="font-size: 12px; color: #666; margin: 12px 0;"></div>
             <button id="submitPhotoBtn">Share to the globe</button>
-            <button id="closeShareBtn" class="btn-secondary" style="margin-top:10px;">Cancel</button>
+            <button id="closeShareBtn" class="btn-secondary" style="margin-top: 12px;">Cancel</button>
         </div>
     </div>
     
-    <!-- View Modal -->
+    <!-- View Moment Modal -->
     <div class="modal-overlay" id="viewModal">
         <div class="modal-content">
-            <div id="viewUserInfo" style="display:flex;align-items:center;gap:12px;margin-bottom:20px;"></div>
-            <div id="viewPhoto" style="width:100%;height:300px;background:#111;margin:20px 0;display:flex;align-items:center;justify-content:center;"></div>
-            <div id="viewLocation" style="font-size:11px;color:#666;"></div>
-            <div id="viewCaption" style="margin:16px 0;"></div>
-            <button id="closeViewBtn" class="btn-secondary">Close</button>
+            <div id="viewUserInfo" style="display:flex;align-items:center;gap:12px;margin-bottom:20px;cursor:pointer;"></div>
+            <div id="viewPhoto" style="width:100%;height:280px;background:#111;margin:20px 0;display:flex;align-items:center;justify-content:center;border-radius:16px;overflow:hidden;"></div>
+            <div id="viewCaption" style="margin:16px 0;font-size:15px;line-height:1.5;"></div>
+            <div id="viewExpiry" class="expiry-badge" style="margin-bottom:20px;"></div>
+            
+            <div class="flex-row" style="margin-bottom: 20px;">
+                <button id="likeBtn" class="like-button">❤️ 0</button>
+                <button id="viewCommentsBtn" class="btn-secondary" style="width: auto;">💬 0</button>
+                <button id="deleteMomentBtn" class="btn-danger" style="width: auto; display: none;">Delete</button>
+            </div>
+            
+            <div id="commentsSection" style="display: none;">
+                <div class="divider">COMMENTS</div>
+                <div id="commentsList" style="max-height: 240px; overflow-y: auto; margin-bottom: 16px;"></div>
+                <textarea id="newComment" placeholder="Write a comment..." rows="2" style="margin-bottom: 12px;"></textarea>
+                <button id="postCommentBtn" class="btn-secondary">Post Comment</button>
+            </div>
+            
+            <button id="closeViewBtn" class="btn-secondary" style="margin-top: 24px;">Close</button>
         </div>
     </div>
 
@@ -341,11 +565,15 @@
             let currentUser = null;
             let currentLocation = null;
             let pendingPhoto = null;
-            let targetZoom = 3.2;
-            let currentZoom = 3.2;
-            let globeRotationY = 0;
+            let currentMomentId = null;
+            
+            // Camera control
+            let cameraRadius = 3.2;
+            let cameraTheta = 0;
+            let cameraPhi = Math.PI / 2;
             let isDragging = false;
-            let dragStartX = 0;
+            let lastMouseX = 0, lastMouseY = 0;
+            let isRightClick = false;
             
             function showStatus(msg) {
                 const el = document.getElementById('statusMsg');
@@ -354,7 +582,26 @@
                 setTimeout(() => el.style.display = 'none', 3000);
             }
             
-            // 3D Globe
+            function calculateTimeRemaining(createdAt) {
+                const created = new Date(createdAt);
+                const expires = new Date(created.getTime() + (12 * 60 * 60 * 1000));
+                const now = new Date();
+                const diff = expires - now;
+                if (diff <= 0) return 'Expired';
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                return `${hours}h ${minutes}m remaining`;
+            }
+            
+            // 5-mile radius offset (approximately 0.072 degrees)
+            function addPrivacyOffset(lat, lng) {
+                const offsetKm = 8; // 5 miles = 8 km
+                const offsetDeg = offsetKm / 111; // ~0.072 degrees
+                const newLat = lat + (Math.random() - 0.5) * offsetDeg;
+                const newLng = lng + (Math.random() - 0.5) * offsetDeg;
+                return { lat: newLat, lng: newLng };
+            }
+            
             function initGlobe() {
                 const container = document.getElementById('globe-container');
                 const width = window.innerWidth;
@@ -362,52 +609,82 @@
                 
                 scene = new THREE.Scene();
                 scene.background = new THREE.Color(0x000000);
+                
                 camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 1000);
-                camera.position.set(0, 0, 3.2);
+                updateCameraPosition();
+                
                 renderer = new THREE.WebGLRenderer({ antialias: true });
                 renderer.setSize(width, height);
+                renderer.setPixelRatio(window.devicePixelRatio);
                 container.appendChild(renderer.domElement);
                 
-                const geometry = new THREE.SphereGeometry(1, 256, 256);
+                const geometry = new THREE.SphereGeometry(1, 512, 512);
                 const texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-                const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.5 });
+                const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.5, metalness: 0.1 });
                 globe = new THREE.Mesh(geometry, material);
                 scene.add(globe);
                 
-                const cloudsGeo = new THREE.SphereGeometry(1.003, 256, 256);
+                const cloudsGeo = new THREE.SphereGeometry(1.003, 512, 512);
                 const cloudsTex = new THREE.TextureLoader().load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png');
-                const clouds = new THREE.Mesh(cloudsGeo, new THREE.MeshPhongMaterial({ map: cloudsTex, transparent: true, opacity: 0.15 }));
+                const clouds = new THREE.Mesh(cloudsGeo, new THREE.MeshPhongMaterial({ map: cloudsTex, transparent: true, opacity: 0.1 }));
                 scene.add(clouds);
                 
-                const ambient = new THREE.AmbientLight(0x111111);
-                scene.add(ambient);
+                // Stars
+                const starGeometry = new THREE.BufferGeometry();
+                const starCount = 3000;
+                const starPositions = new Float32Array(starCount * 3);
+                for (let i = 0; i < starCount; i++) {
+                    starPositions[i*3] = (Math.random() - 0.5) * 2000;
+                    starPositions[i*3+1] = (Math.random() - 0.5) * 2000;
+                    starPositions[i*3+2] = (Math.random() - 0.5) * 500 - 200;
+                }
+                starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+                scene.add(new THREE.Points(starGeometry, new THREE.PointsMaterial({ color: 0xffffff, size: 0.3 })));
+                
+                // Lighting
+                scene.add(new THREE.AmbientLight(0x111111));
                 const light = new THREE.DirectionalLight(0xffffff, 1.2);
                 light.position.set(5, 3, 5);
                 scene.add(light);
+                scene.add(new THREE.PointLight(0x4466aa, 0.2));
                 
-                container.addEventListener('wheel', (e) => {
-                    if (!currentUser) return;
-                    e.preventDefault();
-                    targetZoom += e.deltaY > 0 ? 0.1 : -0.1;
-                    targetZoom = Math.max(1.5, Math.min(5, targetZoom));
-                });
-                
+                // Controls
                 container.addEventListener('mousedown', (e) => {
                     if (!currentUser) return;
+                    e.preventDefault();
                     isDragging = true;
-                    dragStartX = e.clientX;
-                    container.style.cursor = 'grabbing';
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+                    isRightClick = e.button === 2;
+                    container.style.cursor = isRightClick ? 'grab' : 'grabbing';
                 });
                 
                 window.addEventListener('mousemove', (e) => {
                     if (!isDragging || !currentUser) return;
-                    globeRotationY += (e.clientX - dragStartX) * 0.005;
-                    dragStartX = e.clientX;
+                    const deltaX = e.clientX - lastMouseX;
+                    const deltaY = e.clientY - lastMouseY;
+                    if (isRightClick) {
+                        cameraPhi += deltaY * 0.008;
+                        cameraPhi = Math.max(0.2, Math.min(Math.PI - 0.2, cameraPhi));
+                    } else {
+                        cameraTheta += deltaX * 0.008;
+                    }
+                    updateCameraPosition();
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
                 });
                 
                 window.addEventListener('mouseup', () => {
                     isDragging = false;
                     container.style.cursor = 'grab';
+                });
+                
+                container.addEventListener('wheel', (e) => {
+                    if (!currentUser) return;
+                    e.preventDefault();
+                    cameraRadius += e.deltaY * 0.005;
+                    cameraRadius = Math.max(1.8, Math.min(4.5, cameraRadius));
+                    updateCameraPosition();
                 });
                 container.style.cursor = 'grab';
                 
@@ -421,12 +698,7 @@
                     raycaster.setFromCamera(mouse, camera);
                     const intersects = raycaster.intersectObjects(dots);
                     if (intersects.length > 0) {
-                        const m = intersects[0].object.userData;
-                        document.getElementById('viewUserInfo').innerHTML = `<img src="${m.user_avatar || ''}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'"><span>${m.user_name}</span>`;
-                        document.getElementById('viewPhoto').innerHTML = `<img src="${m.photo_url}" style="max-width:100%;max-height:100%;">`;
-                        document.getElementById('viewLocation').textContent = m.location_name || 'Unknown';
-                        document.getElementById('viewCaption').textContent = m.caption || '';
-                        document.getElementById('viewModal').style.display = 'flex';
+                        await showMomentDetails(intersects[0].object.userData.id);
                     }
                 });
                 
@@ -436,72 +708,109 @@
                     renderer.setSize(window.innerWidth, window.innerHeight);
                 });
                 
+                function updateCameraPosition() {
+                    const x = cameraRadius * Math.sin(cameraPhi) * Math.cos(cameraTheta);
+                    const y = cameraRadius * Math.cos(cameraPhi);
+                    const z = cameraRadius * Math.sin(cameraPhi) * Math.sin(cameraTheta);
+                    camera.position.set(x, y, z);
+                    camera.lookAt(0, 0, 0);
+                }
+                
                 function animate() {
                     requestAnimationFrame(animate);
-                    currentZoom += (targetZoom - currentZoom) * 0.1;
-                    camera.position.z = currentZoom;
-                    if (!isDragging && currentUser) globeRotationY += 0.0005;
-                    globe.rotation.y = globeRotationY;
-                    clouds.rotation.y = globeRotationY + 0.001;
+                    if (!isDragging && currentUser) {
+                        cameraTheta += 0.0003;
+                        updateCameraPosition();
+                    }
                     renderer.render(scene, camera);
                 }
                 animate();
             }
             
+            async function showMomentDetails(momentId) {
+                currentMomentId = momentId;
+                
+                const { data: moment } = await supabase.from('moments').select('*').eq('id', momentId).single();
+                if (!moment) return;
+                
+                const { data: profile } = await supabase.from('profiles').select('*').eq('id', moment.user_id).single();
+                const { data: liked } = await supabase.from('likes').select('*').eq('moment_id', momentId).eq('user_id', currentUser.id).single();
+                
+                document.getElementById('viewUserInfo').innerHTML = `
+                    <img src="${profile?.avatar_url || ''}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">
+                    <div><strong>${profile?.nickname || 'Anonymous'}</strong></div>
+                `;
+                document.getElementById('viewPhoto').innerHTML = `<img src="${moment.photo_url}" style="max-width:100%;max-height:100%;object-fit:contain;">`;
+                document.getElementById('viewCaption').textContent = moment.caption || '';
+                document.getElementById('viewExpiry').textContent = calculateTimeRemaining(moment.created_at);
+                
+                const likeBtn = document.getElementById('likeBtn');
+                likeBtn.innerHTML = `❤️ ${moment.likes_count || 0}`;
+                if (liked) likeBtn.classList.add('liked');
+                else likeBtn.classList.remove('liked');
+                
+                document.getElementById('deleteMomentBtn').style.display = moment.user_id === currentUser.id ? 'block' : 'none';
+                await loadComments(momentId);
+                document.getElementById('viewModal').style.display = 'flex';
+            }
+            
+            async function loadComments(momentId) {
+                const { data: comments } = await supabase
+                    .from('comments')
+                    .select('*, profiles(nickname, avatar_url)')
+                    .eq('moment_id', momentId)
+                    .order('created_at', { ascending: false });
+                
+                const commentsList = document.getElementById('commentsList');
+                if (!comments || comments.length === 0) {
+                    commentsList.innerHTML = '<div style="color:#666;text-align:center;padding:20px;">No comments yet</div>';
+                } else {
+                    commentsList.innerHTML = comments.map(c => `
+                        <div class="comment-item">
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                                <img src="${c.profiles?.avatar_url || ''}" style="width:24px;height:24px;border-radius:50%;" onerror="this.style.display='none'">
+                                <strong style="font-size:12px;">${c.profiles?.nickname || 'Anonymous'}</strong>
+                                <span style="font-size:10px;color:#666;">${new Date(c.created_at).toLocaleString()}</span>
+                            </div>
+                            <p style="font-size:13px;">${c.content}</p>
+                        </div>
+                    `).join('');
+                }
+                document.getElementById('viewCommentsBtn').innerHTML = `💬 ${comments?.length || 0}`;
+            }
+            
             async function loadDots() {
-                console.log("Loading dots...");
-                // Remove existing dots
                 dots.forEach(d => scene.remove(d));
                 dots = [];
                 
-                // Get all moments from Supabase
-                const { data: moments, error } = await supabase.from('moments').select('*').order('created_at', { ascending: false });
+                const twelveHoursAgo = new Date();
+                twelveHoursAgo.setHours(twelveHoursAgo.getHours() - 12);
                 
-                if (error) {
-                    console.error("Error loading moments:", error);
-                    showStatus("Error loading moments: " + error.message);
-                    return;
-                }
+                const { data: moments } = await supabase
+                    .from('moments')
+                    .select('*')
+                    .gte('created_at', twelveHoursAgo.toISOString())
+                    .order('created_at', { ascending: false });
                 
-                console.log("Found", moments.length, "moments");
+                if (!moments) return;
                 
-                if (!moments || moments.length === 0) {
-                    document.getElementById('dotCount').textContent = "0";
-                    return;
-                }
-                
-                // For each moment, get the user's profile and add a dot
                 for (const m of moments) {
-                    // Get profile for this user
-                    const { data: profile } = await supabase.from('profiles').select('nickname, avatar_url').eq('id', m.user_id).single();
-                    
-                    // Convert lat/lng to 3D position
                     const phi = (90 - m.latitude) * Math.PI / 180;
                     const theta = m.longitude * Math.PI / 180;
                     const x = 1.01 * Math.sin(phi) * Math.cos(theta);
                     const y = 1.01 * Math.cos(phi);
                     const z = 1.01 * Math.sin(phi) * Math.sin(theta);
                     
-                    // Create dot
-                    const dotGeo = new THREE.SphereGeometry(0.008, 16, 16);
-                    const dotMat = new THREE.MeshStandardMaterial({ color: 0xff3366, emissive: 0xff3366, emissiveIntensity: 0.5 });
-                    const dot = new THREE.Mesh(dotGeo, dotMat);
+                    const dot = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.01, 16, 16),
+                        new THREE.MeshStandardMaterial({ color: 0xff3366, emissive: 0xff3366, emissiveIntensity: 0.6 })
+                    );
                     dot.position.set(x, y, z);
-                    dot.userData = {
-                        id: m.id,
-                        photo_url: m.photo_url,
-                        caption: m.caption,
-                        user_name: profile?.nickname || 'Anonymous',
-                        user_avatar: profile?.avatar_url,
-                        location_name: m.location_name,
-                        created_at: m.created_at
-                    };
+                    dot.userData = { id: m.id };
                     scene.add(dot);
                     dots.push(dot);
                 }
-                
                 document.getElementById('dotCount').textContent = moments.length;
-                console.log("Added", dots.length, "dots to globe");
             }
             
             // Auth Functions
@@ -510,11 +819,7 @@
                 const email = document.getElementById('signupEmail').value;
                 const phone = document.getElementById('signupPhone').value;
                 const password = document.getElementById('signupPassword').value;
-                
-                if (!name || !email || !phone || !password) {
-                    showStatus('Please fill all fields');
-                    return;
-                }
+                if (!name || !email || !phone || !password) { showStatus('Please fill all fields'); return; }
                 
                 showStatus('Creating account...');
                 const { data, error } = await supabase.auth.signUp({ email, password });
@@ -547,6 +852,34 @@
                 }
             }
             
+            async function sendResetPassword() {
+                const email = document.getElementById('resetEmail').value;
+                if (!email) { showStatus('Please enter your email'); return; }
+                showStatus('Sending reset link...');
+                const { error } = await supabase.auth.resetPasswordForEmail(email);
+                if (error) { showStatus(error.message); return; }
+                showStatus('Reset link sent! Check your email.');
+                setTimeout(() => {
+                    document.getElementById('resetPasswordScreen').style.display = 'none';
+                    document.getElementById('loginScreen').style.display = 'block';
+                }, 2000);
+            }
+            
+            async function changePassword() {
+                const current = document.getElementById('currentPassword').value;
+                const newPass = document.getElementById('newPassword').value;
+                const confirm = document.getElementById('confirmPassword').value;
+                if (!current || !newPass || !confirm) { showStatus('Please fill all fields'); return; }
+                if (newPass !== confirm) { showStatus('New passwords do not match'); return; }
+                
+                showStatus('Updating password...');
+                const { error } = await supabase.auth.updateUser({ password: newPass });
+                if (error) { showStatus(error.message); return; }
+                showStatus('Password updated!');
+                document.getElementById('changePasswordScreen').style.display = 'none';
+                document.getElementById('editProfileScreen').style.display = 'block';
+            }
+            
             async function completeProfile() {
                 const nickname = document.getElementById('profileNickname').value;
                 const bio = document.getElementById('profileBio').value;
@@ -557,27 +890,106 @@
                 if (file) {
                     const ext = file.name.split('.').pop();
                     const fileName = `${window.tempUser.userId}-${Date.now()}.${ext}`;
-                    const { error } = await supabase.storage.from('photos').upload(fileName, file);
-                    if (!error) avatarUrl = supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
+                    await supabase.storage.from('photos').upload(fileName, file);
+                    avatarUrl = supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
                 }
                 
-                const { error } = await supabase.from('profiles').insert({
+                await supabase.from('profiles').insert({
                     id: window.tempUser.userId,
                     nickname: nickname,
                     phone: window.tempUser.phone || '',
                     bio: bio,
                     avatar_url: avatarUrl
                 });
-                if (error) { showStatus(error.message); return; }
                 
                 currentUser = { id: window.tempUser.userId, profile: { nickname, bio, avatar_url: avatarUrl } };
                 showGlobe();
             }
             
+            async function updateProfile() {
+                const nickname = document.getElementById('editNickname').value;
+                const bio = document.getElementById('editBio').value;
+                if (!nickname) { showStatus('Please enter a nickname'); return; }
+                
+                let avatarUrl = currentUser.profile?.avatar_url;
+                const file = document.getElementById('editAvatarFile').files[0];
+                if (file) {
+                    const ext = file.name.split('.').pop();
+                    const fileName = `${currentUser.id}-${Date.now()}.${ext}`;
+                    await supabase.storage.from('photos').upload(fileName, file);
+                    avatarUrl = supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
+                }
+                
+                await supabase.from('profiles').update({ nickname, bio, avatar_url: avatarUrl }).eq('id', currentUser.id);
+                currentUser.profile = { nickname, bio, avatar_url: avatarUrl };
+                showStatus('Profile updated!');
+                document.getElementById('editProfileScreen').style.display = 'none';
+                showProfileView();
+            }
+            
+            async function showProfileView() {
+                document.getElementById('profileViewName').textContent = currentUser.profile?.nickname;
+                document.getElementById('profileViewBio').textContent = currentUser.profile?.bio || 'No bio yet';
+                if (currentUser.profile?.avatar_url) {
+                    document.getElementById('profileViewAvatar').innerHTML = `<img src="${currentUser.profile.avatar_url}" style="width:100%;height:100%;object-fit:cover;">`;
+                }
+                
+                const { data: moments } = await supabase.from('moments').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+                document.getElementById('profileViewStats').textContent = `${moments?.length || 0} moments shared`;
+                
+                const grid = document.getElementById('profileMomentsGrid');
+                if (!moments || moments.length === 0) {
+                    grid.innerHTML = '<div style="color:#666;text-align:center;grid-column:1/-1;padding:40px;">No moments shared yet</div>';
+                } else {
+                    grid.innerHTML = moments.map(m => `
+                        <div class="profile-moment-item" onclick="window.viewMomentFromProfile('${m.id}')">
+                            <img src="${m.photo_url}">
+                            <button class="delete-moment-btn" onclick="event.stopPropagation(); window.deleteMoment('${m.id}')">×</button>
+                        </div>
+                    `).join('');
+                }
+                
+                document.getElementById('profileViewScreen').style.display = 'block';
+                document.getElementById('globe-container').style.opacity = '0';
+                document.getElementById('userMenu').style.display = 'none';
+                document.getElementById('uploadPanel').style.display = 'none';
+                document.getElementById('statsSection').style.display = 'none';
+                document.getElementById('instruction').style.display = 'none';
+            }
+            
+            async function deleteMoment(momentId) {
+                if (!confirm('Delete this moment?')) return;
+                await supabase.from('moments').delete().eq('id', momentId);
+                showStatus('Moment deleted');
+                loadDots();
+                showProfileView();
+            }
+            
+            async function likeMoment() {
+                const { data: existing } = await supabase.from('likes').select('*').eq('moment_id', currentMomentId).eq('user_id', currentUser.id).single();
+                if (existing) {
+                    await supabase.from('likes').delete().eq('moment_id', currentMomentId).eq('user_id', currentUser.id);
+                } else {
+                    await supabase.from('likes').insert({ moment_id: currentMomentId, user_id: currentUser.id });
+                }
+                const { data: moment } = await supabase.from('moments').select('likes_count').eq('id', currentMomentId).single();
+                const likeBtn = document.getElementById('likeBtn');
+                likeBtn.innerHTML = `❤️ ${moment.likes_count || 0}`;
+                if (!existing) likeBtn.classList.add('liked');
+                else likeBtn.classList.remove('liked');
+            }
+            
+            async function postComment() {
+                const content = document.getElementById('newComment').value;
+                if (!content.trim()) { showStatus('Please enter a comment'); return; }
+                await supabase.from('comments').insert({ moment_id: currentMomentId, user_id: currentUser.id, content });
+                document.getElementById('newComment').value = '';
+                await loadComments(currentMomentId);
+                showStatus('Comment posted');
+            }
+            
             function showGlobe() {
-                document.getElementById('signupScreen').style.display = 'none';
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('profileScreen').style.display = 'none';
+                document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
                 document.getElementById('globe-container').style.opacity = '1';
                 document.getElementById('userMenu').style.display = 'flex';
                 document.getElementById('uploadPanel').style.display = 'block';
@@ -588,6 +1000,7 @@
                     document.getElementById('userAvatar').innerHTML = `<img src="${currentUser.profile.avatar_url}" style="width:100%;height:100%;object-fit:cover;">`;
                 }
                 loadDots();
+                setInterval(() => { if (currentUser) loadDots(); }, 60000);
             }
             
             async function logout() {
@@ -603,10 +1016,9 @@
                 showStatus('Signed out');
             }
             
-            // Photo sharing
             function openPhotoUpload() {
                 document.getElementById('shareModal').style.display = 'flex';
-                document.getElementById('photoPreview').innerHTML = 'CLICK TO SELECT PHOTO';
+                document.getElementById('photoPreview').innerHTML = 'Select photo';
                 document.getElementById('photoCaption').value = '';
                 document.getElementById('locationStatus').textContent = 'Getting location...';
                 pendingPhoto = null;
@@ -615,61 +1027,118 @@
                     navigator.geolocation.getCurrentPosition(
                         (pos) => {
                             currentLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                            document.getElementById('locationStatus').textContent = `Location: ${currentLocation.lat.toFixed(2)}°, ${currentLocation.lng.toFixed(2)}°`;
+                            document.getElementById('locationStatus').textContent = '📍 Location ready';
                         },
                         () => {
                             currentLocation = { lat: 40.7128, lng: -74.0060 };
-                            document.getElementById('locationStatus').textContent = 'Using approximate location';
+                            document.getElementById('locationStatus').textContent = '📍 Using approximate location';
                         }
                     );
-                } else {
-                    currentLocation = { lat: 40.7128, lng: -74.0060 };
-                    document.getElementById('locationStatus').textContent = 'Using approximate location';
                 }
             }
             
             async function submitPhoto() {
                 if (!pendingPhoto) { showStatus('Select a photo'); return; }
-                if (!currentLocation) { showStatus('Waiting for location'); return; }
+                if (!currentLocation) { showStatus('Waiting for location...'); return; }
                 
                 showStatus('Uploading...');
                 const ext = pendingPhoto.name.split('.').pop();
                 const fileName = `${currentUser.id}-${Date.now()}.${ext}`;
-                const { error: uploadError } = await supabase.storage.from('photos').upload(fileName, pendingPhoto);
-                if (uploadError) { showStatus('Upload failed: ' + uploadError.message); return; }
-                
+                await supabase.storage.from('photos').upload(fileName, pendingPhoto);
                 const photoUrl = supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
                 const caption = document.getElementById('photoCaption').value;
-                const offsetLat = (Math.random() - 0.5) * 0.5;
-                const offsetLng = (Math.random() - 0.5) * 0.5;
                 
-                const { error: insertError, data } = await supabase.from('moments').insert({
+                // 5-mile radius privacy offset
+                const offset = addPrivacyOffset(currentLocation.lat, currentLocation.lng);
+                
+                await supabase.from('moments').insert({
                     user_id: currentUser.id,
                     photo_url: photoUrl,
                     caption: caption,
-                    latitude: currentLocation.lat + offsetLat,
-                    longitude: currentLocation.lng + offsetLng,
-                    location_name: `${Math.abs(currentLocation.lat).toFixed(1)}° ${currentLocation.lat >= 0 ? 'N' : 'S'}, ${Math.abs(currentLocation.lng).toFixed(1)}° ${currentLocation.lng >= 0 ? 'E' : 'W'}`
+                    latitude: offset.lat,
+                    longitude: offset.lng,
+                    location_name: 'Somewhere on Earth'
                 });
-                
-                if (insertError) { 
-                    showStatus('Save failed: ' + insertError.message); 
-                    return; 
-                }
                 
                 showStatus('Shared to the globe!');
                 document.getElementById('shareModal').style.display = 'none';
-                
-                // Reload dots after a short delay
-                setTimeout(() => {
-                    loadDots();
-                }, 500);
-                
+                loadDots();
                 pendingPhoto = null;
-                currentLocation = null;
             }
             
-            // Avatar preview
+            // Event listeners
+            document.getElementById('signupBtn').onclick = handleSignup;
+            document.getElementById('loginBtn').onclick = handleLogin;
+            document.getElementById('sendResetBtn').onclick = sendResetPassword;
+            document.getElementById('updatePasswordBtn').onclick = changePassword;
+            document.getElementById('showLoginBtn').onclick = () => {
+                document.getElementById('signupScreen').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'block';
+            };
+            document.getElementById('showSignupBtn').onclick = () => {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('signupScreen').style.display = 'block';
+            };
+            document.getElementById('showResetPasswordBtn').onclick = () => {
+                document.getElementById('signupScreen').style.display = 'none';
+                document.getElementById('resetPasswordScreen').style.display = 'block';
+            };
+            document.getElementById('showResetPasswordFromLoginBtn').onclick = () => {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('resetPasswordScreen').style.display = 'block';
+            };
+            document.getElementById('backToLoginBtn').onclick = () => {
+                document.getElementById('resetPasswordScreen').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'block';
+            };
+            document.getElementById('completeProfileBtn').onclick = completeProfile;
+            document.getElementById('logoutBtn').onclick = logout;
+            document.getElementById('shareBtn').onclick = openPhotoUpload;
+            document.getElementById('submitPhotoBtn').onclick = submitPhoto;
+            document.getElementById('closeShareBtn').onclick = () => document.getElementById('shareModal').style.display = 'none';
+            document.getElementById('closeViewBtn').onclick = () => document.getElementById('viewModal').style.display = 'none';
+            document.getElementById('likeBtn').onclick = likeMoment;
+            document.getElementById('postCommentBtn').onclick = postComment;
+            document.getElementById('viewCommentsBtn').onclick = () => {
+                const section = document.getElementById('commentsSection');
+                section.style.display = section.style.display === 'none' ? 'block' : 'none';
+            };
+            document.getElementById('deleteMomentBtn').onclick = async () => {
+                if (confirm('Delete this moment?')) {
+                    await supabase.from('moments').delete().eq('id', currentMomentId);
+                    document.getElementById('viewModal').style.display = 'none';
+                    loadDots();
+                    showStatus('Moment deleted');
+                }
+            };
+            document.getElementById('userName').onclick = showProfileView;
+            document.getElementById('userAvatar').onclick = showProfileView;
+            document.getElementById('closeProfileBtn').onclick = showGlobe;
+            document.getElementById('editProfileBtn').onclick = () => {
+                document.getElementById('editNickname').value = currentUser.profile?.nickname || '';
+                document.getElementById('editBio').value = currentUser.profile?.bio || '';
+                if (currentUser.profile?.avatar_url) {
+                    document.getElementById('editAvatarImg').src = currentUser.profile.avatar_url;
+                    document.getElementById('editAvatarImg').style.display = 'block';
+                    document.getElementById('editAvatarPlaceholder').style.display = 'none';
+                }
+                document.getElementById('profileViewScreen').style.display = 'none';
+                document.getElementById('editProfileScreen').style.display = 'block';
+            };
+            document.getElementById('saveProfileBtn').onclick = updateProfile;
+            document.getElementById('cancelEditProfileBtn').onclick = () => {
+                document.getElementById('editProfileScreen').style.display = 'none';
+                showProfileView();
+            };
+            document.getElementById('changePasswordBtn').onclick = () => {
+                document.getElementById('editProfileScreen').style.display = 'none';
+                document.getElementById('changePasswordScreen').style.display = 'block';
+            };
+            document.getElementById('cancelChangePasswordBtn').onclick = () => {
+                document.getElementById('changePasswordScreen').style.display = 'none';
+                document.getElementById('editProfileScreen').style.display = 'block';
+            };
+            
             document.getElementById('avatarPreview').onclick = () => document.getElementById('avatarFile').click();
             document.getElementById('avatarFile').onchange = (e) => {
                 if (e.target.files[0]) {
@@ -683,37 +1152,42 @@
                 }
             };
             
+            document.getElementById('editAvatarPreview').onclick = () => document.getElementById('editAvatarFile').click();
+            document.getElementById('editAvatarFile').onchange = (e) => {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        document.getElementById('editAvatarImg').src = ev.target.result;
+                        document.getElementById('editAvatarImg').style.display = 'block';
+                        document.getElementById('editAvatarPlaceholder').style.display = 'none';
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            };
+            
             document.getElementById('photoPreview').onclick = () => document.getElementById('photoFile').click();
             document.getElementById('photoFile').onchange = (e) => {
                 if (e.target.files[0]) {
                     pendingPhoto = e.target.files[0];
                     const reader = new FileReader();
                     reader.onload = (ev) => {
-                        document.getElementById('photoPreview').innerHTML = `<img src="${ev.target.result}" style="max-width:100%;max-height:100%;">`;
+                        document.getElementById('photoPreview').innerHTML = `<img src="${ev.target.result}" style="max-width:100%;max-height:100%;object-fit:cover;">`;
                     };
                     reader.readAsDataURL(pendingPhoto);
                 }
             };
             
-            // Button listeners
-            document.getElementById('signupBtn').onclick = handleSignup;
-            document.getElementById('loginBtn').onclick = handleLogin;
-            document.getElementById('showLoginBtn').onclick = () => {
-                document.getElementById('signupScreen').style.display = 'none';
-                document.getElementById('loginScreen').style.display = 'block';
+            window.viewMomentFromProfile = async (momentId) => {
+                document.getElementById('profileViewScreen').style.display = 'none';
+                document.getElementById('globe-container').style.opacity = '1';
+                document.getElementById('userMenu').style.display = 'flex';
+                document.getElementById('uploadPanel').style.display = 'block';
+                document.getElementById('statsSection').style.display = 'block';
+                document.getElementById('instruction').style.display = 'block';
+                await showMomentDetails(momentId);
             };
-            document.getElementById('showSignupBtn').onclick = () => {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('signupScreen').style.display = 'block';
-            };
-            document.getElementById('completeProfileBtn').onclick = completeProfile;
-            document.getElementById('logoutBtn').onclick = logout;
-            document.getElementById('shareBtn').onclick = openPhotoUpload;
-            document.getElementById('submitPhotoBtn').onclick = submitPhoto;
-            document.getElementById('closeShareBtn').onclick = () => document.getElementById('shareModal').style.display = 'none';
-            document.getElementById('closeViewBtn').onclick = () => document.getElementById('viewModal').style.display = 'none';
+            window.deleteMoment = deleteMoment;
             
-            // Check session
             async function checkSession() {
                 const { data } = await supabase.auth.getSession();
                 if (data.session) {
@@ -726,7 +1200,6 @@
                 }
             }
             
-            // Start
             initGlobe();
             checkSession();
         })();
