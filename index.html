@@ -35,8 +35,7 @@
             z-index: -1;
         }
         
-        /* Auth & Profile Screens */
-        .auth-container, .profile-setup-container {
+        .auth-container, .profile-setup-container, .verify-container {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -46,7 +45,7 @@
             max-width: 440px;
         }
         
-        .auth-card, .profile-card {
+        .auth-card, .profile-card, .verify-card {
             background: #0a0a0a;
             border-radius: 0px;
             padding: 48px 40px;
@@ -135,7 +134,6 @@
             letter-spacing: 1px;
         }
         
-        /* Avatar upload */
         .avatar-upload {
             text-align: center;
             margin-bottom: 32px;
@@ -167,7 +165,6 @@
             letter-spacing: 1px;
         }
         
-        /* Globe container */
         #globe-container {
             position: fixed;
             top: 0;
@@ -177,14 +174,8 @@
             opacity: 0;
             transition: opacity 1s ease;
             z-index: 1;
-            cursor: grab;
         }
         
-        #globe-container:active {
-            cursor: grabbing;
-        }
-        
-        /* Main UI */
         .user-menu {
             position: absolute;
             top: 24px;
@@ -306,7 +297,6 @@
             white-space: nowrap;
         }
         
-        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -431,6 +421,9 @@
             </div>
             
             <div class="input-group">
+                <input type="text" id="signupName" placeholder="Full name">
+            </div>
+            <div class="input-group">
                 <input type="email" id="signupEmail" placeholder="Email address">
             </div>
             <div class="input-group">
@@ -439,11 +432,27 @@
             <div class="input-group">
                 <input type="password" id="signupPassword" placeholder="Create password">
             </div>
-            <button onclick="handleSignup()">Continue</button>
+            <button onclick="handleSignup()">Create account</button>
             
             <div class="divider">ALREADY HAVE AN ACCOUNT?</div>
             
             <button class="button-secondary" onclick="showLogin()">Sign in</button>
+        </div>
+    </div>
+    
+    <!-- Email Verification Screen -->
+    <div class="verify-container" id="verifyContainer" style="display: none;">
+        <div class="verify-card">
+            <div class="logo">
+                <h1>JEMWAY</h1>
+                <p>VERIFY YOUR EMAIL</p>
+            </div>
+            <p style="color: #666; font-size: 14px; text-align: center; margin-bottom: 32px;">
+                We sent a verification link to <span id="verifyEmail" style="color: white;"></span><br>
+                Click the link in your email to continue.
+            </p>
+            <button onclick="checkVerification()">I've verified my email</button>
+            <button class="button-secondary" onclick="showSignup()">Back to sign up</button>
         </div>
     </div>
     
@@ -520,7 +529,7 @@
     </div>
     
     <div class="instruction" id="instruction">
-        DRAG TO EXPLORE • CLICK DOTS TO SEE MOMENTS
+        DRAG TO ROTATE • SCROLL TO ZOOM • CLICK DOTS
     </div>
     
     <div class="status-message" id="statusMessage"></div>
@@ -534,7 +543,6 @@
             
             <div class="photo-preview-area" id="photoPreviewArea" onclick="document.getElementById('photoInput').click()">
                 <div style="color: #444; font-size: 12px;">CLICK TO SELECT PHOTO</div>
-                <img id="photoPreviewImg" style="display: none;">
             </div>
             <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="previewPhoto(this)">
             
@@ -577,12 +585,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Jemway - Supabase Backend Edition
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';  //https://ezwadxphikqxdzvqswnz.supabase.co/rest/v1/
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';  //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6d2FkeHBoaWtxeGR6dnFzd256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxOTg0ODMsImV4cCI6MjA4OTc3NDQ4M30.zURGJxNVZ5ln6hIwfyigNmoKN5tOGDYlOpkTLArmjbk
+        // ========== SUPABASE CONFIGURATION (YOUR CREDENTIALS) ==========
+        const SUPABASE_URL = 'https://ezwadxphikqxdzvqswnz.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6d2FkeHBoaWtxeGR6dnFzd256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxOTg0ODMsImV4cCI6MjA4OTc3NDQ4M30.zURGJxNVZ5ln6hIwfyigNmoKN5tOGDYlOpkTLArmjbk';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
+        // ========== GLOBAL VARIABLES ==========
         let scene, camera, renderer, globe, raycaster, mouse;
         let dots = [];
         let currentUser = null;
@@ -593,8 +602,24 @@
         let dragStartRotation = 0;
         let pendingPhotoFile = null;
         let currentLocation = null;
+        let targetZoom = 3.2;
+        let currentZoom = 3.2;
         
-        // Initialize 3D Globe
+        // ========== HELPER FUNCTIONS ==========
+        function showStatus(message, duration = 3000) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, duration);
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // ========== 3D GLOBE FUNCTIONS ==========
         function initGlobe() {
             const container = document.getElementById('globe-container');
             const width = window.innerWidth;
@@ -652,13 +677,14 @@
             raycaster = new THREE.Raycaster();
             mouse = new THREE.Vector2();
             
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
+            // Zoom with scroll wheel
+            container.addEventListener('wheel', (e) => {
+                if (!isLoggedIn) return;
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 0.1 : -0.1;
+                targetZoom += delta;
+                targetZoom = Math.max(1.5, Math.min(5, targetZoom));
             });
-            
-            container.addEventListener('click', onGlobeClick);
             
             // Drag to rotate
             container.addEventListener('mousedown', (e) => {
@@ -666,28 +692,41 @@
                 isDragging = true;
                 dragStartX = e.clientX;
                 dragStartRotation = globeRotationY;
-                document.body.style.cursor = 'grabbing';
+                container.style.cursor = 'grabbing';
             });
             
             window.addEventListener('mousemove', (e) => {
                 if (!isDragging || !isLoggedIn) return;
                 const delta = (e.clientX - dragStartX) * 0.005;
                 globeRotationY = dragStartRotation + delta;
-                globe.rotation.y = globeRotationY;
             });
             
             window.addEventListener('mouseup', () => {
                 isDragging = false;
-                document.body.style.cursor = '';
+                container.style.cursor = 'grab';
+            });
+            
+            container.style.cursor = 'grab';
+            container.addEventListener('click', onGlobeClick);
+            
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
             });
             
             function animate() {
                 requestAnimationFrame(animate);
+                
+                currentZoom += (targetZoom - currentZoom) * 0.1;
+                camera.position.z = currentZoom;
+                
                 if (!isDragging && isLoggedIn) {
                     globeRotationY += 0.0005;
-                    globe.rotation.y = globeRotationY;
-                    clouds.rotation.y = globeRotationY + 0.001;
                 }
+                globe.rotation.y = globeRotationY;
+                clouds.rotation.y = globeRotationY + 0.001;
+                
                 renderer.render(scene, camera);
             }
             animate();
@@ -696,54 +735,62 @@
         function addDotToGlobe(lat, lng, momentData) {
             const phi = (90 - lat) * Math.PI / 180;
             const theta = lng * Math.PI / 180;
-            const radius = 1.008;
+            const radius = 1.01;
             
             const x = radius * Math.sin(phi) * Math.cos(theta);
             const y = radius * Math.cos(phi);
             const z = radius * Math.sin(phi) * Math.sin(theta);
             
-            const geometry = new THREE.SphereGeometry(0.006, 8, 8);
+            const geometry = new THREE.SphereGeometry(0.008, 16, 16);
             const material = new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-                emissive: 0x333333,
-                emissiveIntensity: 0.3
+                color: 0xff3366,
+                emissive: 0xff3366,
+                emissiveIntensity: 0.5
             });
             const dot = new THREE.Mesh(geometry, material);
             dot.position.set(x, y, z);
             dot.userData = momentData;
             scene.add(dot);
             dots.push(dot);
+            
+            const haloGeo = new THREE.SphereGeometry(0.015, 8, 8);
+            const haloMat = new THREE.MeshBasicMaterial({
+                color: 0xff6699,
+                transparent: true,
+                opacity: 0.3
+            });
+            const halo = new THREE.Mesh(haloGeo, haloMat);
+            dot.add(halo);
         }
         
-        async function loadMomentsFromDatabase() {
+        async function refreshGlobeDots() {
+            dots.forEach(dot => scene.remove(dot));
+            dots = [];
+            
             const { data, error } = await supabase
                 .from('moments')
                 .select('*, profiles(nickname, avatar_url)')
                 .order('created_at', { ascending: false });
             
             if (error) {
-                showStatus('Error loading moments', 3000);
+                console.error('Error loading moments:', error);
                 return;
             }
             
-            // Clear existing dots
-            dots.forEach(dot => scene.remove(dot));
-            dots = [];
-            
-            // Add all moments to globe
-            data.forEach(moment => {
-                addDotToGlobe(moment.latitude, moment.longitude, {
-                    id: moment.id,
-                    photo_url: moment.photo_url,
-                    caption: moment.caption,
-                    user_name: moment.profiles?.nickname || 'Anonymous',
-                    user_avatar: moment.profiles?.avatar_url,
-                    location_name: moment.location_name,
-                    created_at: moment.created_at
+            if (data) {
+                data.forEach(moment => {
+                    addDotToGlobe(moment.latitude, moment.longitude, {
+                        id: moment.id,
+                        photo_url: moment.photo_url,
+                        caption: moment.caption,
+                        user_name: moment.profiles?.nickname || 'Anonymous',
+                        user_avatar: moment.profiles?.avatar_url,
+                        location_name: moment.location_name,
+                        created_at: moment.created_at
+                    });
                 });
-            });
-            
-            document.getElementById('dotCount').textContent = data.length;
+                document.getElementById('dotCount').textContent = data.length;
+            }
         }
         
         async function onGlobeClick(event) {
@@ -761,7 +808,7 @@
                 const moment = intersects[0].object.userData;
                 
                 document.getElementById('viewUserInfo').innerHTML = `
-                    <img src="${moment.user_avatar || ''}" onerror="this.src=''">
+                    <img src="${moment.user_avatar || ''}" onerror="this.style.display='none'">
                     <span style="color:white;">${moment.user_name}</span>
                 `;
                 document.getElementById('viewImageContainer').innerHTML = `<img src="${moment.photo_url}">`;
@@ -772,33 +819,29 @@
             }
         }
         
-        function showStatus(message, duration = 2000) {
-            const statusDiv = document.getElementById('statusMessage');
-            statusDiv.textContent = message;
-            statusDiv.style.display = 'block';
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, duration);
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        // Auth Functions
+        // ========== AUTH FUNCTIONS ==========
         async function handleSignup() {
+            const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
             const phone = document.getElementById('phoneNumber').value;
             const password = document.getElementById('signupPassword').value;
             
-            if (!email || !phone || !password) {
+            if (!name || !email || !phone || !password) {
                 showStatus('Please fill all fields');
                 return;
             }
             
+            showStatus('Creating account...');
+            
             const { data, error } = await supabase.auth.signUp({
                 email: email,
-                password: password
+                password: password,
+                options: {
+                    data: {
+                        full_name: name,
+                        phone: phone
+                    }
+                }
             });
             
             if (error) {
@@ -806,15 +849,38 @@
                 return;
             }
             
-            window.tempUser = { email, phone };
-            document.getElementById('signupContainer').style.display = 'none';
-            document.getElementById('profileSetupContainer').style.display = 'block';
-            showStatus('Account created! Complete your profile');
+            if (data.user) {
+                window.pendingUser = { name, email, phone, userId: data.user.id };
+                document.getElementById('verifyEmail').textContent = email;
+                document.getElementById('signupContainer').style.display = 'none';
+                document.getElementById('verifyContainer').style.display = 'block';
+                showStatus('Verification email sent! Check your inbox.');
+            }
+        }
+        
+        async function checkVerification() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (session && session.user.email === window.pendingUser?.email) {
+                window.pendingUser.userId = session.user.id;
+                document.getElementById('verifyContainer').style.display = 'none';
+                document.getElementById('profileSetupContainer').style.display = 'block';
+                showStatus('Email verified! Complete your profile.');
+            } else {
+                showStatus('Please check your email and click the verification link first.');
+            }
         }
         
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showStatus('Please enter email and password');
+                return;
+            }
+            
+            showStatus('Signing in...');
             
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
@@ -826,9 +892,11 @@
                 return;
             }
             
-            currentUser = data.user;
-            await loadUserProfile();
-            enterGlobe();
+            if (data.user) {
+                currentUser = data.user;
+                await loadUserProfile();
+                enterGlobe();
+            }
         }
         
         async function loadUserProfile() {
@@ -853,16 +921,17 @@
                 return;
             }
             
-            // Upload avatar if selected
+            showStatus('Saving profile...');
+            
             const avatarFile = document.getElementById('avatarInput').files[0];
             if (avatarFile) {
                 const fileExt = avatarFile.name.split('.').pop();
-                const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
-                const { data, error } = await supabase.storage
+                const fileName = `${window.pendingUser.userId}-${Date.now()}.${fileExt}`;
+                const { error: uploadError } = await supabase.storage
                     .from('photos')
                     .upload(fileName, avatarFile);
                 
-                if (!error) {
+                if (!uploadError) {
                     avatarUrl = supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
                 }
             }
@@ -870,10 +939,9 @@
             const { error } = await supabase
                 .from('profiles')
                 .insert({
-                    id: currentUser.id,
-                    email: currentUser.email,
+                    id: window.pendingUser.userId,
                     nickname: nickname,
-                    phone: window.tempUser?.phone,
+                    phone: window.pendingUser.phone,
                     bio: bio,
                     avatar_url: avatarUrl
                 });
@@ -883,7 +951,7 @@
                 return;
             }
             
-            await loadUserProfile();
+            currentUser = { id: window.pendingUser.userId, profile: { nickname, bio, avatar_url: avatarUrl } };
             enterGlobe();
         }
         
@@ -893,6 +961,7 @@
             document.getElementById('signupContainer').style.display = 'none';
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('profileSetupContainer').style.display = 'none';
+            document.getElementById('verifyContainer').style.display = 'none';
             
             document.getElementById('globe-container').style.opacity = '1';
             document.getElementById('userMenu').style.display = 'flex';
@@ -907,21 +976,22 @@
                 document.getElementById('userMenuAvatar').innerHTML = `<img src="${currentUser.profile.avatar_url}">`;
             }
             
-            await loadMomentsFromDatabase();
+            await refreshGlobeDots();
+            showStatus('Welcome to Jemway!');
         }
         
         async function showProfileModal() {
-            const { data } = await supabase
+            const { count, error } = await supabase
                 .from('moments')
-                .select('id', { count: 'exact' })
+                .select('id', { count: 'exact', head: true })
                 .eq('user_id', currentUser.id);
             
             document.getElementById('profileAvatar').innerHTML = currentUser.profile?.avatar_url 
                 ? `<img src="${currentUser.profile.avatar_url}">`
                 : '<div style="width:100%;height:100%;background:#1a1a1a;"></div>';
-            document.getElementById('profileName').textContent = currentUser.profile?.nickname;
+            document.getElementById('profileName').textContent = currentUser.profile?.nickname || 'Explorer';
             document.getElementById('profileBio').textContent = currentUser.profile?.bio || 'No bio yet';
-            document.getElementById('profileMoments').textContent = data?.length || 0;
+            document.getElementById('profileMoments').textContent = count || 0;
             document.getElementById('profileModal').style.display = 'flex';
         }
         
@@ -937,6 +1007,7 @@
             document.getElementById('instruction').style.display = 'none';
             document.getElementById('signupContainer').style.display = 'block';
             document.getElementById('loginContainer').style.display = 'none';
+            showStatus('Signed out');
         }
         
         function showLogin() {
@@ -949,15 +1020,15 @@
             document.getElementById('signupContainer').style.display = 'block';
         }
         
-        // Photo Upload with Location
+        // ========== PHOTO UPLOAD FUNCTIONS ==========
         function openPhotoUpload() {
             document.getElementById('photoModal').style.display = 'flex';
             document.getElementById('photoCaption').value = '';
             document.getElementById('photoPreviewArea').innerHTML = '<div style="color: #444; font-size: 12px;">CLICK TO SELECT PHOTO</div>';
             document.getElementById('locationPrompt').textContent = '📍 Requesting location permission...';
             pendingPhotoFile = null;
+            currentLocation = null;
             
-            // Request location with permission prompt
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -968,11 +1039,10 @@
                         document.getElementById('locationPrompt').textContent = `📍 Location captured: ${currentLocation.lat.toFixed(2)}°, ${currentLocation.lng.toFixed(2)}°`;
                     },
                     (error) => {
-                        console.log('Location error:', error);
                         document.getElementById('locationPrompt').textContent = '📍 Location access denied. Using approximate location.';
                         currentLocation = {
-                            lat: 20 + (Math.random() * 40),
-                            lng: -100 + (Math.random() * 200)
+                            lat: 40.7128,
+                            lng: -74.0060
                         };
                     }
                 );
@@ -1005,10 +1075,9 @@
             
             showStatus('Uploading...');
             
-            // Upload photo to Supabase Storage
             const fileExt = pendingPhotoFile.name.split('.').pop();
             const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
-            const { data: uploadData, error: uploadError } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from('photos')
                 .upload(fileName, pendingPhotoFile);
             
@@ -1020,7 +1089,7 @@
             const photoUrl = supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
             const caption = document.getElementById('photoCaption').value;
             
-            // Add radius offset for privacy (within ~50km)
+            // Add privacy offset (within ~50km)
             const offsetLat = (Math.random() - 0.5) * 0.5;
             const offsetLng = (Math.random() - 0.5) * 0.5;
             
@@ -1032,7 +1101,7 @@
                     caption: caption,
                     latitude: currentLocation.lat + offsetLat,
                     longitude: currentLocation.lng + offsetLng,
-                    location_name: `${currentLocation.lat.toFixed(1)}°, ${currentLocation.lng.toFixed(1)}°`
+                    location_name: `${Math.abs(currentLocation.lat).toFixed(1)}° ${currentLocation.lat >= 0 ? 'N' : 'S'}, ${Math.abs(currentLocation.lng).toFixed(1)}° ${currentLocation.lng >= 0 ? 'E' : 'W'}`
                 });
             
             if (error) {
@@ -1042,7 +1111,7 @@
             
             showStatus('Shared to the globe!');
             closeModal('photoModal');
-            await loadMomentsFromDatabase();
+            await refreshGlobeDots();
             pendingPhotoFile = null;
             currentLocation = null;
         }
@@ -1059,7 +1128,7 @@
             }
         }
         
-        // Check for existing session
+        // ========== CHECK EXISTING SESSION ==========
         async function checkSession() {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
@@ -1069,7 +1138,7 @@
             }
         }
         
-        // Initialize
+        // ========== INITIALIZE ==========
         initGlobe();
         checkSession();
     </script>
