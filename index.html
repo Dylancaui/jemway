@@ -26,16 +26,19 @@
             z-index: -2;
         }
         
-        .noise {
+        #globe-container {
             position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: -1;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 1;
         }
         
-        .auth-container, .profile-setup-container {
+        /* Auth Screens */
+        .screen {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -43,13 +46,9 @@
             z-index: 100;
             width: 90%;
             max-width: 440px;
-        }
-        
-        .auth-card, .profile-card {
             background: #0a0a0a;
-            border-radius: 0px;
-            padding: 48px 40px;
             border: 1px solid #1a1a1a;
+            padding: 48px 40px;
         }
         
         .logo {
@@ -69,11 +68,6 @@
             font-size: 12px;
             letter-spacing: 2px;
             margin-top: 8px;
-            font-weight: 300;
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
         }
         
         input, textarea {
@@ -84,21 +78,12 @@
             border-bottom: 1px solid #2a2a2a;
             color: white;
             font-size: 14px;
-            font-family: inherit;
-        }
-        
-        textarea {
-            min-height: 80px;
-            resize: vertical;
+            margin-bottom: 20px;
         }
         
         input:focus, textarea:focus {
             outline: none;
             border-bottom-color: #ffffff;
-        }
-        
-        input::placeholder, textarea::placeholder {
-            color: #444444;
         }
         
         button {
@@ -109,34 +94,21 @@
             color: #000000;
             font-size: 14px;
             font-weight: 500;
-            letter-spacing: 1px;
             cursor: pointer;
-            transition: opacity 0.2s;
             margin-top: 8px;
         }
         
-        button:hover {
-            opacity: 0.9;
-        }
-        
-        .button-secondary {
+        .btn-secondary {
             background: transparent;
             border: 1px solid #2a2a2a;
             color: #ffffff;
-            margin-top: 12px;
         }
         
         .divider {
             text-align: center;
-            margin: 32px 0;
+            margin: 24px 0;
             color: #2a2a2a;
             font-size: 11px;
-            letter-spacing: 1px;
-        }
-        
-        .avatar-upload {
-            text-align: center;
-            margin-bottom: 32px;
         }
         
         .avatar-preview {
@@ -144,36 +116,13 @@
             height: 100px;
             border-radius: 50%;
             background: #1a1a1a;
-            margin: 0 auto 16px;
+            margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             cursor: pointer;
             border: 1px solid #2a2a2a;
-        }
-        
-        .avatar-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .avatar-placeholder {
-            font-size: 11px;
-            color: #666666;
-            letter-spacing: 1px;
-        }
-        
-        #globe-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease;
-            z-index: 1;
         }
         
         .user-menu {
@@ -192,31 +141,6 @@
             border-radius: 50%;
             background: #1a1a1a;
             overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .user-name {
-            font-size: 13px;
-            color: #ffffff;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-        }
-        
-        .logout-btn {
-            font-size: 13px;
-            color: #666666;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        
-        .logout-btn:hover {
-            color: #ffffff;
         }
         
         .upload-panel {
@@ -226,40 +150,14 @@
             transform: translateX(-50%);
             z-index: 50;
             display: none;
-            gap: 12px;
         }
         
         .upload-btn {
             background: #ffffff;
             color: #000000;
             padding: 12px 24px;
-            border: none;
-            font-size: 12px;
-            letter-spacing: 1px;
-            cursor: pointer;
-            margin: 0;
             width: auto;
-        }
-        
-        .task-section {
-            position: absolute;
-            bottom: 24px;
-            left: 24px;
-            z-index: 50;
-            display: none;
-        }
-        
-        .task-label {
-            font-size: 10px;
-            color: #666666;
-            letter-spacing: 1px;
-            margin-bottom: 6px;
-        }
-        
-        .task-content {
-            font-size: 13px;
-            color: #ffffff;
-            letter-spacing: 0.5px;
+            margin: 0;
         }
         
         .stats-section {
@@ -274,14 +172,11 @@
         .stats-number {
             font-size: 20px;
             font-weight: 300;
-            color: #ffffff;
         }
         
         .stats-label {
             font-size: 10px;
             color: #666666;
-            letter-spacing: 1px;
-            margin-top: 4px;
         }
         
         .instruction {
@@ -291,10 +186,8 @@
             transform: translateX(-50%);
             font-size: 10px;
             color: #444444;
-            letter-spacing: 1px;
             z-index: 50;
             display: none;
-            white-space: nowrap;
         }
         
         .modal-overlay {
@@ -322,55 +215,11 @@
             width: 100%;
             height: 300px;
             background: #111111;
-            margin: 24px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .photo-preview-area img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        
-        .location-prompt {
-            font-size: 11px;
-            color: #666666;
-            letter-spacing: 1px;
-            margin: 16px 0;
-        }
-        
-        .view-modal-user {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .view-modal-user img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        }
-        
-        .view-modal-image {
-            width: 100%;
-            height: 300px;
-            background: #111111;
             margin: 20px 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-        }
-        
-        .view-modal-image img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+            cursor: pointer;
         }
         
         .status-message {
@@ -384,127 +233,66 @@
             z-index: 300;
             display: none;
             font-size: 13px;
-            white-space: nowrap;
-        }
-        
-        .profile-modal {
-            max-width: 400px;
-        }
-        
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            overflow: hidden;
-        }
-        
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
     </style>
 </head>
 <body>
     <div class="bg-gradient"></div>
-    <div class="noise"></div>
-    
     <div id="globe-container"></div>
     
     <!-- Sign Up Screen -->
-    <div class="auth-container" id="signupContainer">
-        <div class="auth-card">
-            <div class="logo">
-                <h1>JEMWAY</h1>
-                <p>JOIN THE GLOBAL PERSPECTIVE</p>
-            </div>
-            
-            <div class="input-group">
-                <input type="text" id="signupName" placeholder="Full name">
-            </div>
-            <div class="input-group">
-                <input type="email" id="signupEmail" placeholder="Email address">
-            </div>
-            <div class="input-group">
-                <input type="tel" id="phoneNumber" placeholder="Phone number">
-            </div>
-            <div class="input-group">
-                <input type="password" id="signupPassword" placeholder="Create password">
-            </div>
-            <button onclick="handleSignup()">Create account</button>
-            
-            <div class="divider">ALREADY HAVE AN ACCOUNT?</div>
-            
-            <button class="button-secondary" onclick="showLogin()">Sign in</button>
+    <div id="signupScreen" class="screen">
+        <div class="logo">
+            <h1>JEMWAY</h1>
+            <p>JOIN THE GLOBAL PERSPECTIVE</p>
         </div>
+        <input type="text" id="signupName" placeholder="Full name">
+        <input type="email" id="signupEmail" placeholder="Email address">
+        <input type="tel" id="signupPhone" placeholder="Phone number">
+        <input type="password" id="signupPassword" placeholder="Create password">
+        <button id="signupBtn">Create account</button>
+        <div class="divider">ALREADY HAVE AN ACCOUNT?</div>
+        <button id="showLoginBtn" class="btn-secondary">Sign in</button>
     </div>
     
     <!-- Login Screen -->
-    <div class="auth-container" id="loginContainer" style="display: none;">
-        <div class="auth-card">
-            <div class="logo">
-                <h1>JEMWAY</h1>
-                <p>SIGN IN</p>
-            </div>
-            
-            <div class="input-group">
-                <input type="email" id="loginEmail" placeholder="Email address">
-            </div>
-            <div class="input-group">
-                <input type="password" id="loginPassword" placeholder="Password">
-            </div>
-            <button onclick="handleLogin()">Sign in</button>
-            
-            <div class="divider">NEW HERE?</div>
-            
-            <button class="button-secondary" onclick="showSignup()">Create account</button>
+    <div id="loginScreen" class="screen" style="display: none;">
+        <div class="logo">
+            <h1>JEMWAY</h1>
+            <p>SIGN IN</p>
         </div>
+        <input type="email" id="loginEmail" placeholder="Email address">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button id="loginBtn">Sign in</button>
+        <div class="divider">NEW HERE?</div>
+        <button id="showSignupBtn" class="btn-secondary">Create account</button>
     </div>
     
     <!-- Profile Setup Screen -->
-    <div class="profile-setup-container" id="profileSetupContainer" style="display: none;">
-        <div class="profile-card">
-            <div class="logo">
-                <h1>JEMWAY</h1>
-                <p>COMPLETE YOUR PROFILE</p>
-            </div>
-            
-            <div class="avatar-upload">
-                <div class="avatar-preview" onclick="document.getElementById('avatarInput').click()">
-                    <div class="avatar-placeholder" id="avatarPlaceholder">UPLOAD PHOTO</div>
-                    <img id="avatarPreview" style="display: none;">
-                </div>
-                <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="previewAvatar(this)">
-            </div>
-            
-            <div class="input-group">
-                <input type="text" id="nickname" placeholder="Nickname">
-            </div>
-            <div class="input-group">
-                <textarea id="bio" placeholder="Bio - Tell the world who you are"></textarea>
-            </div>
-            
-            <button onclick="completeProfile()">Start Exploring</button>
+    <div id="profileScreen" class="screen" style="display: none;">
+        <div class="logo">
+            <h1>JEMWAY</h1>
+            <p>COMPLETE YOUR PROFILE</p>
         </div>
+        <div class="avatar-preview" id="avatarPreview">
+            <div id="avatarPlaceholder">UPLOAD</div>
+            <img id="avatarImg" style="display: none; width:100%;height:100%;object-fit:cover;">
+        </div>
+        <input type="file" id="avatarFile" accept="image/*" style="display: none;">
+        <input type="text" id="profileNickname" placeholder="Nickname">
+        <textarea id="profileBio" placeholder="Bio" rows="3"></textarea>
+        <button id="completeProfileBtn">Start Exploring</button>
     </div>
     
     <!-- Main UI -->
     <div class="user-menu" id="userMenu">
-        <div class="user-avatar" id="userMenuAvatar" onclick="showProfileModal()">
-            <div style="width:100%;height:100%;background:#1a1a1a;"></div>
-        </div>
-        <div class="user-name" id="userMenuName" onclick="showProfileModal()">Explorer</div>
-        <div class="logout-btn" onclick="logout()">Exit</div>
+        <div class="user-avatar" id="userAvatar"><div style="width:100%;height:100%;background:#1a1a1a;"></div></div>
+        <span id="userName" style="font-size:13px;">Explorer</span>
+        <button id="logoutBtn" style="background:transparent;color:#666;width:auto;margin:0;padding:0;">Exit</button>
     </div>
     
     <div class="upload-panel" id="uploadPanel">
-        <button class="upload-btn" onclick="openPhotoUpload()">Share a moment</button>
-    </div>
-    
-    <div class="task-section" id="taskSection">
-        <div class="task-label">WEEKLY TASK</div>
-        <div class="task-content" id="taskContent">Document a moment from your window</div>
+        <button class="upload-btn" id="shareBtn">Share a moment</button>
     </div>
     
     <div class="stats-section" id="statsSection">
@@ -512,557 +300,324 @@
         <div class="stats-label">MOMENTS SHARED</div>
     </div>
     
-    <div class="instruction" id="instruction">
-        DRAG TO ROTATE • SCROLL TO ZOOM • CLICK DOTS
-    </div>
+    <div class="instruction" id="instruction">DRAG TO ROTATE • SCROLL TO ZOOM • CLICK DOTS</div>
+    <div class="status-message" id="statusMsg"></div>
     
-    <div class="status-message" id="statusMessage"></div>
-    
-    <!-- Photo Upload Modal -->
-    <div class="modal-overlay" id="photoModal">
+    <!-- Share Modal -->
+    <div class="modal-overlay" id="shareModal">
         <div class="modal-content">
-            <div class="logo" style="margin-bottom: 24px;">
-                <p>SHARE A MOMENT</p>
-            </div>
-            
-            <div class="photo-preview-area" id="photoPreviewArea" onclick="document.getElementById('photoInput').click()">
-                <div style="color: #444; font-size: 12px;">CLICK TO SELECT PHOTO</div>
-            </div>
-            <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="previewPhoto(this)">
-            
-            <div class="input-group">
-                <textarea id="photoCaption" placeholder="Add a caption..."></textarea>
-            </div>
-            
-            <div class="location-prompt" id="locationPrompt">📍 Requesting location permission...</div>
-            
-            <button onclick="submitPhoto()">Share to the globe</button>
-            <button class="button-secondary" onclick="closeModal('photoModal')" style="margin-top: 12px;">Cancel</button>
+            <div class="logo"><p>SHARE A MOMENT</p></div>
+            <div class="photo-preview-area" id="photoPreview">CLICK TO SELECT PHOTO</div>
+            <input type="file" id="photoFile" accept="image/*" style="display: none;">
+            <textarea id="photoCaption" placeholder="Add a caption..."></textarea>
+            <div id="locationStatus" style="font-size:11px;color:#666;margin:10px 0;">Getting location...</div>
+            <button id="submitPhotoBtn">Share to the globe</button>
+            <button id="closeShareBtn" class="btn-secondary" style="margin-top:10px;">Cancel</button>
         </div>
     </div>
     
-    <!-- View Moment Modal -->
+    <!-- View Modal -->
     <div class="modal-overlay" id="viewModal">
         <div class="modal-content">
-            <div class="view-modal-user" id="viewUserInfo"></div>
-            <div class="view-modal-image" id="viewImageContainer"></div>
-            <div class="location-prompt" id="viewLocation" style="margin-top: 16px;"></div>
-            <div class="task-content" id="viewCaption" style="margin: 16px 0;"></div>
-            <div class="location-prompt" id="viewTime"></div>
-            <button class="button-secondary" onclick="closeModal('viewModal')" style="margin-top: 24px;">Close</button>
-        </div>
-    </div>
-    
-    <!-- Profile Modal -->
-    <div class="modal-overlay" id="profileModal">
-        <div class="modal-content profile-modal">
-            <div class="profile-avatar" id="profileAvatar"></div>
-            <div class="task-content" id="profileName" style="text-align: center; font-size: 18px; margin-bottom: 8px;"></div>
-            <div class="location-prompt" id="profileBio" style="text-align: center; margin-bottom: 16px;"></div>
-            <div class="divider" style="margin: 24px 0;"></div>
-            <div class="stats-number" id="profileMoments" style="text-align: center; font-size: 28px;"></div>
-            <div class="location-prompt" style="text-align: center;">MOMENTS SHARED</div>
-            <button class="button-secondary" onclick="closeModal('profileModal')" style="margin-top: 24px;">Close</button>
+            <div id="viewUserInfo" style="display:flex;align-items:center;gap:12px;margin-bottom:20px;"></div>
+            <div id="viewPhoto" style="width:100%;height:300px;background:#111;margin:20px 0;display:flex;align-items:center;justify-content:center;"></div>
+            <div id="viewLocation" style="font-size:11px;color:#666;"></div>
+            <div id="viewCaption" style="margin:16px 0;"></div>
+            <button id="closeViewBtn" class="btn-secondary">Close</button>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ========== SUPABASE CONFIGURATION ==========
-        // ⚠️ REPLACE THESE WITH YOUR ACTUAL SUPABASE CREDENTIALS ⚠️
-        const SUPABASE_URL = 'https://ezwadxphikqxdzvqswnz.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6d2FkeHBoaWtxeGR6dnFzd256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxOTg0ODMsImV4cCI6MjA4OTc3NDQ4M30.zURGJxNVZ5ln6hIwfyigNmoKN5tOGDYlOpkTLArmjbk';
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // ========== GLOBALS ==========
-        let scene, camera, renderer, globe, raycaster, mouse;
-        let dots = [];
-        let currentUser = null;
-        let isLoggedIn = false;
-        let globeRotationY = 0;
-        let isDragging = false;
-        let dragStartX = 0;
-        let dragStartRotation = 0;
-        let pendingPhotoFile = null;
-        let currentLocation = null;
-        
-        // Zoom variables
-        let targetZoom = 3.2;
-        let currentZoom = 3.2;
-        
-        // ========== HELPER FUNCTIONS ==========
-        function showStatus(message, duration = 3000) {
-            const statusDiv = document.getElementById('statusMessage');
-            statusDiv.textContent = message;
-            statusDiv.style.display = 'block';
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, duration);
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        // ========== 3D GLOBE FUNCTIONS ==========
-        function initGlobe() {
-            const container = document.getElementById('globe-container');
-            const width = window.innerWidth;
-            const height = window.innerHeight;
+        (function() {
+            // Supabase
+            const SUPABASE_URL = 'https://ezwadxphikqxdzvqswnz.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6d2FkeHBoaWtxeGR6dnFzd256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxOTg0ODMsImV4cCI6MjA4OTc3NDQ4M30.zURGJxNVZ5ln6hIwfyigNmoKN5tOGDYlOpkTLArmjbk';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x000000);
+            // Global vars
+            let scene, camera, renderer, globe;
+            let dots = [];
+            let currentUser = null;
+            let currentLocation = null;
+            let pendingPhoto = null;
+            let targetZoom = 3.2;
+            let currentZoom = 3.2;
+            let globeRotationY = 0;
+            let isDragging = false;
+            let dragStartX = 0;
             
-            camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-            camera.position.set(0, 0, 3.2);
-            
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-            renderer.setSize(width, height);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            container.appendChild(renderer.domElement);
-            
-            const geometry = new THREE.SphereGeometry(1, 256, 256);
-            const textureLoader = new THREE.TextureLoader();
-            const earthTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-            
-            const material = new THREE.MeshStandardMaterial({
-                map: earthTexture,
-                roughness: 0.5,
-                metalness: 0.1
-            });
-            
-            globe = new THREE.Mesh(geometry, material);
-            scene.add(globe);
-            
-            const cloudGeometry = new THREE.SphereGeometry(1.003, 256, 256);
-            const cloudTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png');
-            const cloudMaterial = new THREE.MeshPhongMaterial({
-                map: cloudTexture,
-                transparent: true,
-                opacity: 0.15
-            });
-            const clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
-            scene.add(clouds);
-            
-            const ambientLight = new THREE.AmbientLight(0x111111);
-            scene.add(ambientLight);
-            
-            const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
-            mainLight.position.set(5, 3, 5);
-            scene.add(mainLight);
-            
-            const fillLight = new THREE.PointLight(0x4466aa, 0.3);
-            fillLight.position.set(-2, 1, -3);
-            scene.add(fillLight);
-            
-            const backLight = new THREE.PointLight(0xaa8866, 0.2);
-            backLight.position.set(0, 1, -2);
-            scene.add(backLight);
-            
-            raycaster = new THREE.Raycaster();
-            mouse = new THREE.Vector2();
-            
-            container.addEventListener('wheel', (e) => {
-                if (!isLoggedIn) return;
-                e.preventDefault();
-                const delta = e.deltaY > 0 ? 0.1 : -0.1;
-                targetZoom += delta;
-                targetZoom = Math.max(1.5, Math.min(5, targetZoom));
-            });
-            
-            container.addEventListener('mousedown', (e) => {
-                if (!isLoggedIn) return;
-                isDragging = true;
-                dragStartX = e.clientX;
-                dragStartRotation = globeRotationY;
-                container.style.cursor = 'grabbing';
-            });
-            
-            window.addEventListener('mousemove', (e) => {
-                if (!isDragging || !isLoggedIn) return;
-                const delta = (e.clientX - dragStartX) * 0.005;
-                globeRotationY = dragStartRotation + delta;
-            });
-            
-            window.addEventListener('mouseup', () => {
-                isDragging = false;
-                container.style.cursor = 'grab';
-            });
-            
-            container.style.cursor = 'grab';
-            container.addEventListener('click', onGlobeClick);
-            
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-            
-            function animate() {
-                requestAnimationFrame(animate);
-                currentZoom += (targetZoom - currentZoom) * 0.1;
-                camera.position.z = currentZoom;
-                if (!isDragging && isLoggedIn) {
-                    globeRotationY += 0.0005;
-                }
-                globe.rotation.y = globeRotationY;
-                clouds.rotation.y = globeRotationY + 0.001;
-                renderer.render(scene, camera);
-            }
-            animate();
-        }
-        
-        function addDotToGlobe(lat, lng, momentData) {
-            const phi = (90 - lat) * Math.PI / 180;
-            const theta = lng * Math.PI / 180;
-            const radius = 1.01;
-            
-            const x = radius * Math.sin(phi) * Math.cos(theta);
-            const y = radius * Math.cos(phi);
-            const z = radius * Math.sin(phi) * Math.sin(theta);
-            
-            const geometry = new THREE.SphereGeometry(0.008, 16, 16);
-            const material = new THREE.MeshStandardMaterial({
-                color: 0xff3366,
-                emissive: 0xff3366,
-                emissiveIntensity: 0.5
-            });
-            const dot = new THREE.Mesh(geometry, material);
-            dot.position.set(x, y, z);
-            dot.userData = momentData;
-            scene.add(dot);
-            dots.push(dot);
-            
-            const haloGeo = new THREE.SphereGeometry(0.015, 8, 8);
-            const haloMat = new THREE.MeshBasicMaterial({
-                color: 0xff6699,
-                transparent: true,
-                opacity: 0.3
-            });
-            const halo = new THREE.Mesh(haloGeo, haloMat);
-            dot.add(halo);
-        }
-        
-        async function refreshGlobeDots() {
-            dots.forEach(dot => scene.remove(dot));
-            dots = [];
-            
-            // Load moments from Supabase
-            const { data: moments, error } = await supabase
-                .from('moments')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                console.error('Error loading moments:', error);
-                return;
+            function showStatus(msg) {
+                const el = document.getElementById('statusMsg');
+                el.textContent = msg;
+                el.style.display = 'block';
+                setTimeout(() => el.style.display = 'none', 3000);
             }
             
-            // Load profiles for each moment
-            for (const moment of moments) {
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('nickname, avatar_url')
-                    .eq('id', moment.user_id)
-                    .single();
+            // 3D Globe
+            function initGlobe() {
+                const container = document.getElementById('globe-container');
+                const width = window.innerWidth;
+                const height = window.innerHeight;
                 
-                addDotToGlobe(moment.latitude, moment.longitude, {
-                    id: moment.id,
-                    photo_url: moment.photo_url,
-                    caption: moment.caption,
-                    user_name: profile?.nickname || 'Anonymous',
-                    user_avatar: profile?.avatar_url,
-                    location_name: moment.location_name,
-                    created_at: moment.created_at,
-                    timeAgo: new Date(moment.created_at).toLocaleDateString()
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x000000);
+                camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 1000);
+                camera.position.set(0, 0, 3.2);
+                renderer = new THREE.WebGLRenderer({ antialias: true });
+                renderer.setSize(width, height);
+                container.appendChild(renderer.domElement);
+                
+                const geometry = new THREE.SphereGeometry(1, 256, 256);
+                const texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+                const material = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.5 });
+                globe = new THREE.Mesh(geometry, material);
+                scene.add(globe);
+                
+                const cloudsGeo = new THREE.SphereGeometry(1.003, 256, 256);
+                const cloudsTex = new THREE.TextureLoader().load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png');
+                const clouds = new THREE.Mesh(cloudsGeo, new THREE.MeshPhongMaterial({ map: cloudsTex, transparent: true, opacity: 0.15 }));
+                scene.add(clouds);
+                
+                const ambient = new THREE.AmbientLight(0x111111);
+                scene.add(ambient);
+                const light = new THREE.DirectionalLight(0xffffff, 1.2);
+                light.position.set(5, 3, 5);
+                scene.add(light);
+                
+                container.addEventListener('wheel', (e) => {
+                    if (!currentUser) return;
+                    e.preventDefault();
+                    targetZoom += e.deltaY > 0 ? 0.1 : -0.1;
+                    targetZoom = Math.max(1.5, Math.min(5, targetZoom));
                 });
-            }
-            
-            document.getElementById('dotCount').textContent = moments.length;
-        }
-        
-        async function onGlobeClick(event) {
-            if (!isLoggedIn) return;
-            
-            const container = document.getElementById('globe-container');
-            const rect = container.getBoundingClientRect();
-            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-            
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(dots);
-            
-            if (intersects.length > 0) {
-                const moment = intersects[0].object.userData;
                 
-                document.getElementById('viewUserInfo').innerHTML = `
-                    <img src="${moment.user_avatar || ''}" onerror="this.style.display='none'">
-                    <span style="color:white;">${moment.user_name}</span>
-                `;
-                document.getElementById('viewImageContainer').innerHTML = `<img src="${moment.photo_url}">`;
-                document.getElementById('viewLocation').textContent = moment.location_name || 'Unknown location';
-                document.getElementById('viewCaption').textContent = moment.caption || 'No caption';
-                document.getElementById('viewTime').textContent = moment.timeAgo || 'Shared recently';
-                document.getElementById('viewModal').style.display = 'flex';
+                container.addEventListener('mousedown', (e) => {
+                    if (!currentUser) return;
+                    isDragging = true;
+                    dragStartX = e.clientX;
+                    container.style.cursor = 'grabbing';
+                });
+                
+                window.addEventListener('mousemove', (e) => {
+                    if (!isDragging || !currentUser) return;
+                    globeRotationY += (e.clientX - dragStartX) * 0.005;
+                    dragStartX = e.clientX;
+                });
+                
+                window.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    container.style.cursor = 'grab';
+                });
+                container.style.cursor = 'grab';
+                
+                container.addEventListener('click', async (event) => {
+                    if (!currentUser) return;
+                    const rect = container.getBoundingClientRect();
+                    const mouse = new THREE.Vector2();
+                    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                    const raycaster = new THREE.Raycaster();
+                    raycaster.setFromCamera(mouse, camera);
+                    const intersects = raycaster.intersectObjects(dots);
+                    if (intersects.length > 0) {
+                        const m = intersects[0].object.userData;
+                        document.getElementById('viewUserInfo').innerHTML = `<img src="${m.user_avatar || ''}" style="width:32px;height:32px;border-radius:50%;" onerror="this.style.display='none'"><span>${m.user_name}</span>`;
+                        document.getElementById('viewPhoto').innerHTML = `<img src="${m.photo_url}" style="max-width:100%;max-height:100%;">`;
+                        document.getElementById('viewLocation').textContent = m.location_name || 'Unknown';
+                        document.getElementById('viewCaption').textContent = m.caption || '';
+                        document.getElementById('viewModal').style.display = 'flex';
+                    }
+                });
+                
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+                
+                function animate() {
+                    requestAnimationFrame(animate);
+                    currentZoom += (targetZoom - currentZoom) * 0.1;
+                    camera.position.z = currentZoom;
+                    if (!isDragging && currentUser) globeRotationY += 0.0005;
+                    globe.rotation.y = globeRotationY;
+                    clouds.rotation.y = globeRotationY + 0.001;
+                    renderer.render(scene, camera);
+                }
+                animate();
             }
-        }
-        
-        // ========== AUTH FUNCTIONS (SUPABASE) ==========
-        async function handleSignup() {
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const phone = document.getElementById('phoneNumber').value;
-            const password = document.getElementById('signupPassword').value;
             
-            if (!name || !email || !phone || !password) {
-                showStatus('Please fill all fields');
-                return;
+            async function loadDots() {
+                dots.forEach(d => scene.remove(d));
+                dots = [];
+                
+                const { data: moments, error } = await supabase.from('moments').select('*').order('created_at', { ascending: false });
+                if (error || !moments) return;
+                
+                for (const m of moments) {
+                    const { data: profile } = await supabase.from('profiles').select('nickname, avatar_url').eq('id', m.user_id).single();
+                    const phi = (90 - m.latitude) * Math.PI / 180;
+                    const theta = m.longitude * Math.PI / 180;
+                    const x = 1.01 * Math.sin(phi) * Math.cos(theta);
+                    const y = 1.01 * Math.cos(phi);
+                    const z = 1.01 * Math.sin(phi) * Math.sin(theta);
+                    
+                    const dotGeo = new THREE.SphereGeometry(0.008, 16, 16);
+                    const dotMat = new THREE.MeshStandardMaterial({ color: 0xff3366, emissive: 0xff3366, emissiveIntensity: 0.5 });
+                    const dot = new THREE.Mesh(dotGeo, dotMat);
+                    dot.position.set(x, y, z);
+                    dot.userData = {
+                        photo_url: m.photo_url,
+                        caption: m.caption,
+                        user_name: profile?.nickname || 'Anonymous',
+                        user_avatar: profile?.avatar_url,
+                        location_name: m.location_name
+                    };
+                    scene.add(dot);
+                    dots.push(dot);
+                }
+                document.getElementById('dotCount').textContent = moments.length;
             }
             
-            showStatus('Creating account...');
-            
-            const { data, error } = await supabase.auth.signUp({
-                email: email,
-                password: password
-            });
-            
-            if (error) {
-                showStatus(error.message);
-                return;
-            }
-            
-            if (data.user) {
+            // Auth Functions
+            async function handleSignup() {
+                const name = document.getElementById('signupName').value;
+                const email = document.getElementById('signupEmail').value;
+                const phone = document.getElementById('signupPhone').value;
+                const password = document.getElementById('signupPassword').value;
+                
+                if (!name || !email || !phone || !password) {
+                    showStatus('Please fill all fields');
+                    return;
+                }
+                
+                showStatus('Creating account...');
+                const { data, error } = await supabase.auth.signUp({ email, password });
+                if (error) { showStatus(error.message); return; }
+                
                 window.tempUser = { name, email, phone, userId: data.user.id };
-                document.getElementById('signupContainer').style.display = 'none';
-                document.getElementById('profileSetupContainer').style.display = 'block';
+                document.getElementById('signupScreen').style.display = 'none';
+                document.getElementById('profileScreen').style.display = 'block';
                 showStatus('Account created! Complete your profile.');
             }
-        }
-        
-        async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
             
-            if (!email || !password) {
-                showStatus('Please enter email and password');
-                return;
-            }
-            
-            showStatus('Signing in...');
-            
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
-            
-            if (error) {
-                showStatus(error.message);
-                return;
-            }
-            
-            if (data.user) {
+            async function handleLogin() {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                if (!email || !password) { showStatus('Please enter email and password'); return; }
+                
+                showStatus('Signing in...');
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) { showStatus(error.message); return; }
+                
                 currentUser = data.user;
-                
-                // Check if profile exists
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', currentUser.id)
-                    .single();
-                
+                const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
                 if (profile) {
                     currentUser.profile = profile;
-                    enterGlobe();
+                    showGlobe();
                 } else {
-                    window.tempUser = { userId: currentUser.id, email: currentUser.email };
-                    document.getElementById('loginContainer').style.display = 'none';
-                    document.getElementById('profileSetupContainer').style.display = 'block';
+                    window.tempUser = { userId: currentUser.id };
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('profileScreen').style.display = 'block';
                 }
             }
-        }
-        
-        async function completeProfile() {
-            const nickname = document.getElementById('nickname').value;
-            const bio = document.getElementById('bio').value;
-            let avatarUrl = null;
             
-            if (!nickname) {
-                showStatus('Please enter a nickname');
-                return;
-            }
-            
-            showStatus('Saving profile...');
-            
-            const avatarFile = document.getElementById('avatarInput').files[0];
-            if (avatarFile) {
-                const fileExt = avatarFile.name.split('.').pop();
-                const fileName = `${window.tempUser.userId}-${Date.now()}.${fileExt}`;
-                const { error: uploadError } = await supabase.storage
-                    .from('photos')
-                    .upload(fileName, avatarFile);
+            async function completeProfile() {
+                const nickname = document.getElementById('profileNickname').value;
+                const bio = document.getElementById('profileBio').value;
+                if (!nickname) { showStatus('Please enter a nickname'); return; }
                 
-                if (!uploadError) {
-                    avatarUrl = supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
+                let avatarUrl = null;
+                const file = document.getElementById('avatarFile').files[0];
+                if (file) {
+                    const ext = file.name.split('.').pop();
+                    const fileName = `${window.tempUser.userId}-${Date.now()}.${ext}`;
+                    const { error } = await supabase.storage.from('photos').upload(fileName, file);
+                    if (!error) avatarUrl = supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
                 }
-            }
-            
-            const { error } = await supabase
-                .from('profiles')
-                .insert({
+                
+                const { error } = await supabase.from('profiles').insert({
                     id: window.tempUser.userId,
                     nickname: nickname,
                     phone: window.tempUser.phone || '',
                     bio: bio,
                     avatar_url: avatarUrl
                 });
-            
-            if (error) {
-                showStatus(error.message);
-                return;
+                if (error) { showStatus(error.message); return; }
+                
+                currentUser = { id: window.tempUser.userId, profile: { nickname, bio, avatar_url: avatarUrl } };
+                showGlobe();
             }
             
-            currentUser = { id: window.tempUser.userId, profile: { nickname, bio, avatar_url: avatarUrl } };
-            enterGlobe();
-        }
-        
-        async function enterGlobe() {
-            isLoggedIn = true;
-            
-            document.getElementById('signupContainer').style.display = 'none';
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('profileSetupContainer').style.display = 'none';
-            
-            document.getElementById('globe-container').style.opacity = '1';
-            document.getElementById('userMenu').style.display = 'flex';
-            document.getElementById('uploadPanel').style.display = 'flex';
-            document.getElementById('taskSection').style.display = 'block';
-            document.getElementById('statsSection').style.display = 'block';
-            document.getElementById('instruction').style.display = 'block';
-            
-            document.getElementById('userMenuName').textContent = currentUser.profile?.nickname || 'Explorer';
-            
-            if (currentUser.profile?.avatar_url) {
-                document.getElementById('userMenuAvatar').innerHTML = `<img src="${currentUser.profile.avatar_url}">`;
+            function showGlobe() {
+                document.getElementById('signupScreen').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('profileScreen').style.display = 'none';
+                document.getElementById('globe-container').style.opacity = '1';
+                document.getElementById('userMenu').style.display = 'flex';
+                document.getElementById('uploadPanel').style.display = 'block';
+                document.getElementById('statsSection').style.display = 'block';
+                document.getElementById('instruction').style.display = 'block';
+                document.getElementById('userName').textContent = currentUser.profile?.nickname || 'Explorer';
+                if (currentUser.profile?.avatar_url) {
+                    document.getElementById('userAvatar').innerHTML = `<img src="${currentUser.profile.avatar_url}" style="width:100%;height:100%;object-fit:cover;">`;
+                }
+                loadDots();
             }
             
-            await refreshGlobeDots();
-            showStatus('Welcome to Jemway!');
-        }
-        
-        async function showProfileModal() {
-            const { count, error } = await supabase
-                .from('moments')
-                .select('id', { count: 'exact', head: true })
-                .eq('user_id', currentUser.id);
-            
-            document.getElementById('profileAvatar').innerHTML = currentUser.profile?.avatar_url 
-                ? `<img src="${currentUser.profile.avatar_url}">`
-                : '<div style="width:100%;height:100%;background:#1a1a1a;"></div>';
-            document.getElementById('profileName').textContent = currentUser.profile?.nickname || 'Explorer';
-            document.getElementById('profileBio').textContent = currentUser.profile?.bio || 'No bio yet';
-            document.getElementById('profileMoments').textContent = count || 0;
-            document.getElementById('profileModal').style.display = 'flex';
-        }
-        
-        async function logout() {
-            await supabase.auth.signOut();
-            isLoggedIn = false;
-            currentUser = null;
-            document.getElementById('globe-container').style.opacity = '0';
-            document.getElementById('userMenu').style.display = 'none';
-            document.getElementById('uploadPanel').style.display = 'none';
-            document.getElementById('taskSection').style.display = 'none';
-            document.getElementById('statsSection').style.display = 'none';
-            document.getElementById('instruction').style.display = 'none';
-            document.getElementById('signupContainer').style.display = 'block';
-            document.getElementById('loginContainer').style.display = 'none';
-            showStatus('Signed out');
-        }
-        
-        function showLogin() {
-            document.getElementById('signupContainer').style.display = 'none';
-            document.getElementById('loginContainer').style.display = 'block';
-        }
-        
-        function showSignup() {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('signupContainer').style.display = 'block';
-        }
-        
-        // ========== PHOTO UPLOAD FUNCTIONS ==========
-        function openPhotoUpload() {
-            document.getElementById('photoModal').style.display = 'flex';
-            document.getElementById('photoCaption').value = '';
-            document.getElementById('photoPreviewArea').innerHTML = '<div style="color: #444; font-size: 12px;">CLICK TO SELECT PHOTO</div>';
-            document.getElementById('locationPrompt').textContent = '📍 Requesting location permission...';
-            pendingPhotoFile = null;
-            currentLocation = null;
-            
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        currentLocation = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };
-                        document.getElementById('locationPrompt').textContent = `📍 Location captured: ${currentLocation.lat.toFixed(2)}°, ${currentLocation.lng.toFixed(2)}°`;
-                    },
-                    (error) => {
-                        document.getElementById('locationPrompt').textContent = '📍 Location access denied. Using demo location.';
-                        currentLocation = { lat: 40.7128, lng: -74.0060 };
-                    }
-                );
-            } else {
-                document.getElementById('locationPrompt').textContent = '📍 Geolocation not supported';
-            }
-        }
-        
-        function previewPhoto(input) {
-            if (input.files && input.files[0]) {
-                pendingPhotoFile = input.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('photoPreviewArea').innerHTML = `<img src="${e.target.result}">`;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-        
-        async function submitPhoto() {
-            if (!pendingPhotoFile) {
-                showStatus('Please select a photo');
-                return;
+            async function logout() {
+                await supabase.auth.signOut();
+                currentUser = null;
+                document.getElementById('globe-container').style.opacity = '0';
+                document.getElementById('userMenu').style.display = 'none';
+                document.getElementById('uploadPanel').style.display = 'none';
+                document.getElementById('statsSection').style.display = 'none';
+                document.getElementById('instruction').style.display = 'none';
+                document.getElementById('signupScreen').style.display = 'block';
+                document.getElementById('loginScreen').style.display = 'none';
+                showStatus('Signed out');
             }
             
-            if (!currentLocation) {
-                showStatus('Waiting for location...');
-                return;
+            // Photo sharing
+            function openPhotoUpload() {
+                document.getElementById('shareModal').style.display = 'flex';
+                document.getElementById('photoPreview').innerHTML = 'CLICK TO SELECT PHOTO';
+                document.getElementById('photoCaption').value = '';
+                document.getElementById('locationStatus').textContent = 'Getting location...';
+                pendingPhoto = null;
+                
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            currentLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                            document.getElementById('locationStatus').textContent = `Location: ${currentLocation.lat.toFixed(2)}°, ${currentLocation.lng.toFixed(2)}°`;
+                        },
+                        () => {
+                            currentLocation = { lat: 40.7128, lng: -74.0060 };
+                            document.getElementById('locationStatus').textContent = 'Using approximate location';
+                        }
+                    );
+                }
             }
             
-            showStatus('Uploading...');
-            
-            const fileExt = pendingPhotoFile.name.split('.').pop();
-            const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
-            const { error: uploadError } = await supabase.storage
-                .from('photos')
-                .upload(fileName, pendingPhotoFile);
-            
-            if (uploadError) {
-                showStatus('Upload failed: ' + uploadError.message);
-                return;
-            }
-            
-            const photoUrl = supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
-            const caption = document.getElementById('photoCaption').value;
-            
-            const offsetLat = (Math.random() - 0.5) * 0.5;
-            const offsetLng = (Math.random() - 0.5) * 0.5;
-            
-            const { error } = await supabase
-                .from('moments')
-                .insert({
+            async function submitPhoto() {
+                if (!pendingPhoto) { showStatus('Select a photo'); return; }
+                if (!currentLocation) { showStatus('Waiting for location'); return; }
+                
+                showStatus('Uploading...');
+                const ext = pendingPhoto.name.split('.').pop();
+                const fileName = `${currentUser.id}-${Date.now()}.${ext}`;
+                const { error: uploadError } = await supabase.storage.from('photos').upload(fileName, pendingPhoto);
+                if (uploadError) { showStatus('Upload failed'); return; }
+                
+                const photoUrl = supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
+                const caption = document.getElementById('photoCaption').value;
+                const offsetLat = (Math.random() - 0.5) * 0.5;
+                const offsetLng = (Math.random() - 0.5) * 0.5;
+                
+                const { error } = await supabase.from('moments').insert({
                     user_id: currentUser.id,
                     photo_url: photoUrl,
                     caption: caption,
@@ -1070,52 +625,75 @@
                     longitude: currentLocation.lng + offsetLng,
                     location_name: `${Math.abs(currentLocation.lat).toFixed(1)}° ${currentLocation.lat >= 0 ? 'N' : 'S'}, ${Math.abs(currentLocation.lng).toFixed(1)}° ${currentLocation.lng >= 0 ? 'E' : 'W'}`
                 });
-            
-            if (error) {
-                showStatus('Failed to save: ' + error.message);
-                return;
-            }
-            
-            showStatus('Shared to the globe!');
-            closeModal('photoModal');
-            await refreshGlobeDots();
-            pendingPhotoFile = null;
-            currentLocation = null;
-        }
-        
-        function previewAvatar(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('avatarPreview').src = e.target.result;
-                    document.getElementById('avatarPreview').style.display = 'block';
-                    document.getElementById('avatarPlaceholder').style.display = 'none';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-        
-        // ========== CHECK EXISTING SESSION ==========
-        async function checkSession() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', currentUser.id)
-                    .single();
+                if (error) { showStatus('Save failed'); return; }
                 
-                if (profile) {
-                    currentUser.profile = profile;
-                    enterGlobe();
+                showStatus('Shared to the globe!');
+                document.getElementById('shareModal').style.display = 'none';
+                loadDots();
+                pendingPhoto = null;
+            }
+            
+            // Avatar preview
+            document.getElementById('avatarPreview').onclick = () => document.getElementById('avatarFile').click();
+            document.getElementById('avatarFile').onchange = (e) => {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        document.getElementById('avatarImg').src = ev.target.result;
+                        document.getElementById('avatarImg').style.display = 'block';
+                        document.getElementById('avatarPlaceholder').style.display = 'none';
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            };
+            
+            document.getElementById('photoPreview').onclick = () => document.getElementById('photoFile').click();
+            document.getElementById('photoFile').onchange = (e) => {
+                if (e.target.files[0]) {
+                    pendingPhoto = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        document.getElementById('photoPreview').innerHTML = `<img src="${ev.target.result}" style="max-width:100%;max-height:100%;">`;
+                    };
+                    reader.readAsDataURL(pendingPhoto);
+                }
+            };
+            
+            // Button listeners
+            document.getElementById('signupBtn').onclick = handleSignup;
+            document.getElementById('loginBtn').onclick = handleLogin;
+            document.getElementById('showLoginBtn').onclick = () => {
+                document.getElementById('signupScreen').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'block';
+            };
+            document.getElementById('showSignupBtn').onclick = () => {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('signupScreen').style.display = 'block';
+            };
+            document.getElementById('completeProfileBtn').onclick = completeProfile;
+            document.getElementById('logoutBtn').onclick = logout;
+            document.getElementById('shareBtn').onclick = openPhotoUpload;
+            document.getElementById('submitPhotoBtn').onclick = submitPhoto;
+            document.getElementById('closeShareBtn').onclick = () => document.getElementById('shareModal').style.display = 'none';
+            document.getElementById('closeViewBtn').onclick = () => document.getElementById('viewModal').style.display = 'none';
+            
+            // Check session
+            async function checkSession() {
+                const { data } = await supabase.auth.getSession();
+                if (data.session) {
+                    currentUser = data.session.user;
+                    const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+                    if (profile) {
+                        currentUser.profile = profile;
+                        showGlobe();
+                    }
                 }
             }
-        }
-        
-        // ========== INITIALIZE ==========
-        initGlobe();
-        checkSession();
+            
+            // Start
+            initGlobe();
+            checkSession();
+        })();
     </script>
 </body>
 </html>
