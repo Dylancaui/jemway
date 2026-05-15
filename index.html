@@ -6,6 +6,7 @@
 <title>Jemway Solutions — Post-Hospital Home Care</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--mint:#e8f5f0;--teal:#1a7a5e;--teal-light:#2aad85;--teal-dark:#0f4d3c;--cream:#faf8f4;--warm:#f5efe6;--text:#1c2826;--muted:#5a6e68;--card:#ffffff;--border:#d4e3de;--radius:16px;--shadow:0 2px 24px rgba(26,122,94,.09)}
@@ -180,6 +181,7 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:3rem 2rem 2rem}
 .footer-bottom a:hover{color:rgba(255,255,255,.65)}
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--teal);color:#fff;padding:.86rem 1.4rem;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);transform:translateY(120px);opacity:0;transition:all .4s;z-index:999;font-size:.85rem;display:flex;align-items:center;gap:.6rem}
 .toast.show{transform:translateY(0);opacity:1}
+.toast.error{background:#c62828}
 .tck-sm{width:17px;height:17px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .tck-sm svg{width:9px;height:9px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 .lp-back{position:absolute;top:1.75rem;left:2rem;display:flex;align-items:center;gap:.45rem;font-size:.78rem;color:rgba(255,255,255,.35);cursor:pointer;transition:color .2s;z-index:10}
@@ -194,6 +196,7 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:3rem 2rem 2rem}
 .lp-input:focus{border-color:rgba(42,173,133,.5)}
 .lp-btn{background:var(--teal);color:#fff;border:none;border-radius:50px;padding:.7rem 1.45rem;font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:500;cursor:pointer;transition:background .2s;white-space:nowrap}
 .lp-btn:hover{background:var(--teal-dark)}
+.loading{opacity:0.6;cursor:wait;pointer-events:none}
 @media(max-width:900px){.hero-inner,.portal-grid,.ref-grid,.footer-top{grid-template-columns:1fr}.steps,.services-grid,.mission-grid{grid-template-columns:1fr 1fr}.hero h1{font-size:2.4rem}.info-card{max-width:100%}.cd-box{width:72px;height:72px}.cd-num{font-size:1.9rem}}
 @media(max-width:600px){.steps,.services-grid,.mission-grid,.fg2{grid-template-columns:1fr}.nav-links{display:none}.cd-box{width:60px;height:60px}.cd-num{font-size:1.5rem}}
 </style>
@@ -331,16 +334,16 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:3rem 2rem 2rem}
           <li><div class="sc">4</div><div><h4>Progress updates to your team</h4><p>We keep referring providers informed and flag any clinical concerns that arise during care.</p></div></li>
         </ul>
       </div>
-      <div class="ref-form">
+      <div class="ref-form" id="referralForm">
         <h3>Patient Referral Form</h3>
         <p>For discharge coordinators and healthcare providers</p>
-        <div class="fg2"><div class="fg"><label>Patient First Name</label><input type="text" placeholder="Jane"/></div><div class="fg"><label>Patient Last Name</label><input type="text" placeholder="Doe"/></div></div>
-        <div class="fg2"><div class="fg"><label>Date of Discharge</label><input type="date"/></div><div class="fg"><label>Patient Phone</label><input type="tel" placeholder="(555) 000-0000"/></div></div>
-        <div class="fg"><label>Primary Diagnosis</label><input type="text" placeholder="e.g. Post-surgical recovery, cardiac event..."/></div>
-        <div class="fg"><label>Primary Care Need</label><select><option>Transportation &amp; Appointment Escort</option><option>Meal Preparation &amp; Housekeeping</option><option>Personal Hygiene Assistance</option><option>Medication Reminders</option><option>Companionship &amp; Wellness Checks</option><option>Multiple services required</option></select></div>
-        <div class="fg"><label>Referring Provider &amp; Facility</label><input type="text" placeholder="Name, title, and facility name"/></div>
-        <div class="fg"><label>Clinical Notes</label><textarea placeholder="Mobility restrictions, dietary needs, family contact, special circumstances..."></textarea></div>
-        <button class="ref-submit" onclick="submitForm()">Submit Referral</button>
+        <div class="fg2"><div class="fg"><label>Patient First Name *</label><input type="text" id="refFirstName" placeholder="Jane"/></div><div class="fg"><label>Patient Last Name *</label><input type="text" id="refLastName" placeholder="Doe"/></div></div>
+        <div class="fg2"><div class="fg"><label>Date of Discharge</label><input type="date" id="refDischargeDate"/></div><div class="fg"><label>Patient Phone</label><input type="tel" id="refPhone" placeholder="(555) 000-0000"/></div></div>
+        <div class="fg"><label>Primary Diagnosis</label><input type="text" id="refDiagnosis" placeholder="e.g. Post-surgical recovery, cardiac event..."/></div>
+        <div class="fg"><label>Primary Care Need</label><select id="refCareNeed"><option>Transportation &amp; Appointment Escort</option><option>Meal Preparation &amp; Housekeeping</option><option>Personal Hygiene Assistance</option><option>Medication Reminders</option><option>Companionship &amp; Wellness Checks</option><option>Multiple services required</option></select></div>
+        <div class="fg"><label>Referring Provider &amp; Facility</label><input type="text" id="refProviderName" placeholder="Name, title, and facility name"/></div>
+        <div class="fg"><label>Clinical Notes</label><textarea id="refClinicalNotes" placeholder="Mobility restrictions, dietary needs, family contact, special circumstances..."></textarea></div>
+        <button class="ref-submit" id="submitReferralBtn" onclick="submitReferral()">Submit Referral</button>
       </div>
     </div>
   </div>
@@ -394,7 +397,7 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:3rem 2rem 2rem}
       </div>
       <div style="display:flex;gap:.72rem;max-width:420px;margin:0 auto 2.5rem;flex-wrap:wrap;">
         <input class="lp-input" id="notify-email" type="email" placeholder="Your email address"/>
-        <button class="lp-btn" onclick="notifyMe()">Notify Me at Launch</button>
+        <button class="lp-btn" id="notifyBtn" onclick="submitLaunchSignup()">Notify Me at Launch</button>
       </div>
       <div style="display:flex;justify-content:center;gap:2.2rem;border-top:1px solid rgba(255,255,255,.07);padding-top:2rem;flex-wrap:wrap;">
         <div style="display:flex;align-items:center;gap:.5rem;font-size:.76rem;color:rgba(255,255,255,.3)"><span style="width:4px;height:4px;border-radius:50%;background:#2aad85;display:inline-block"></span>Post-Hospital Care</div>
@@ -409,7 +412,20 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:3rem 2rem 2rem}
 </div>
 
 <div class="toast" id="toast"><div class="tck-sm"><svg viewBox="0 0 10 10"><polyline points="2,5 4,8 8,2"/></svg></div><span id="toast-msg">Done.</span></div>
+
 <script>
+// ============================================
+// SUPABASE CONFIGURATION - REPLACE THESE VALUES
+// ============================================
+const SUPABASE_URL = https://qlwbnvqgteoyjafabxxx.supabase.co/rest/v1/;
+const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsd2JudnFndGVveWphZmFieHh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzAwMjgsImV4cCI6MjA5NDQ0NjAyOH0.sLC7BlX89NFoQ-bGeMrXGenxacJgUfRBZv1sfR0KlkM;
+
+// Initialize Supabase
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================
+// LOADER ANIMATION
+// ============================================
 (function(){
   var loader=document.getElementById('loader'),bar=document.getElementById('ldBar'),m=document.getElementById('ldMark'),w=document.getElementById('ldWord'),s=document.getElementById('ldSub'),c=document.getElementById('ldCredit'),ch=document.getElementById('ldChip');
   setTimeout(function(){m.classList.add('show')},100);
@@ -422,6 +438,10 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:3rem 2rem 2rem}
   steps.forEach(function(st){setTimeout(function(){bar.style.transition='width '+st.d+'ms cubic-bezier(.25,.1,.25,1)';bar.style.width=st.w+'%';},t);t+=st.d+45;});
   setTimeout(function(){loader.classList.add('out')},t+480);
 })();
+
+// ============================================
+// PAGE NAVIGATION
+// ============================================
 function showPage(name){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
   document.getElementById(name+'-page').classList.add('active');
@@ -429,20 +449,218 @@ function showPage(name){
   window.scrollTo(0,0);
   if(name==='launch')startCountdown();
 }
-function faq(el){var item=el.closest('.faq-item'),open=item.classList.contains('open');document.querySelectorAll('.faq-item').forEach(function(i){i.classList.remove('open')});if(!open)item.classList.add('open');}
-function submitForm(){showToast('Referral submitted. We will be in touch within 24 hours.');}
-function notifyMe(){var v=document.getElementById('notify-email').value.trim();if(!v||!v.includes('@')){showToast('Please enter a valid email address.');return;}document.getElementById('notify-email').value='';showToast('You are on the list. We will notify you at launch.');}
-function showToast(msg){var t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},4500);}
-var cdStarted=false;
-function startCountdown(){
-  if(cdStarted)return;cdStarted=true;
-  var target=new Date('2027-12-01T00:00:00');
-  function tick(){var now=new Date(),diff=target-now;if(diff<=0){['cd-d','cd-h','cd-m','cd-s'].forEach(function(id){document.getElementById(id).textContent='00'});return;}
-  var d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),mi=Math.floor((diff%3600000)/60000),se=Math.floor((diff%60000)/1000);
-  function p(n){return n<10?'0'+n:String(n)}
-  document.getElementById('cd-d').textContent=p(d);document.getElementById('cd-h').textContent=p(h);document.getElementById('cd-m').textContent=p(mi);document.getElementById('cd-s').textContent=p(se);}
-  tick();setInterval(tick,1000);
+
+function faq(el){
+  var item=el.closest('.faq-item');
+  var open=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(i){i.classList.remove('open')});
+  if(!open)item.classList.add('open');
 }
+
+// ============================================
+// TOAST NOTIFICATION
+// ============================================
+function showToast(msg, isError){
+  var t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.remove('error');
+  if(isError) t.classList.add('error');
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show')},4500);
+}
+
+// ============================================
+// SET BUTTON LOADING STATE
+// ============================================
+function setButtonLoading(btn, loading){
+  if(loading){
+    btn.classList.add('loading');
+    btn.textContent = 'Submitting...';
+    btn.disabled = true;
+  } else {
+    btn.classList.remove('loading');
+    btn.textContent = btn.getAttribute('data-original-text') || 'Submit Referral';
+    btn.disabled = false;
+  }
+}
+
+// ============================================
+// SUBMIT PATIENT REFERRAL TO SUPABASE
+// ============================================
+async function submitReferral(){
+  const btn = document.getElementById('submitReferralBtn');
+  if(!btn) return;
+  
+  // Store original text if not already stored
+  if(!btn.getAttribute('data-original-text')){
+    btn.setAttribute('data-original-text', btn.textContent);
+  }
+  
+  // Get form values
+  const firstName = document.getElementById('refFirstName')?.value.trim() || '';
+  const lastName = document.getElementById('refLastName')?.value.trim() || '';
+  const dischargeDate = document.getElementById('refDischargeDate')?.value || '';
+  const phone = document.getElementById('refPhone')?.value || '';
+  const diagnosis = document.getElementById('refDiagnosis')?.value || '';
+  const careNeed = document.getElementById('refCareNeed')?.value || '';
+  const providerName = document.getElementById('refProviderName')?.value || '';
+  const clinicalNotes = document.getElementById('refClinicalNotes')?.value || '';
+  
+  // Validate required fields
+  if(!firstName || !lastName){
+    showToast('Please fill in patient first and last name', true);
+    return;
+  }
+  
+  setButtonLoading(btn, true);
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from('client_referrals')
+      .insert([{
+        patient_first_name: firstName,
+        patient_last_name: lastName,
+        patient_phone: phone,
+        discharge_date: dischargeDate,
+        diagnosis: diagnosis,
+        care_need: careNeed,
+        provider_name: providerName,
+        clinical_notes: clinicalNotes,
+        status: 'new'
+      }]);
+    
+    if(error) throw error;
+    
+    // Clear form on success
+    if(document.getElementById('refFirstName')) document.getElementById('refFirstName').value = '';
+    if(document.getElementById('refLastName')) document.getElementById('refLastName').value = '';
+    if(document.getElementById('refDischargeDate')) document.getElementById('refDischargeDate').value = '';
+    if(document.getElementById('refPhone')) document.getElementById('refPhone').value = '';
+    if(document.getElementById('refDiagnosis')) document.getElementById('refDiagnosis').value = '';
+    if(document.getElementById('refCareNeed')) document.getElementById('refCareNeed').selectedIndex = 0;
+    if(document.getElementById('refProviderName')) document.getElementById('refProviderName').value = '';
+    if(document.getElementById('refClinicalNotes')) document.getElementById('refClinicalNotes').value = '';
+    
+    showToast('Referral submitted successfully. We will be in touch within 24 hours.');
+    
+  } catch(error) {
+    console.error('Supabase error:', error);
+    showToast('Error submitting referral. Please try again.', true);
+  } finally {
+    setButtonLoading(btn, false);
+  }
+}
+
+// ============================================
+// SUBMIT LAUNCH SIGNUP TO SUPABASE
+// ============================================
+async function submitLaunchSignup(){
+  const btn = document.getElementById('notifyBtn');
+  const emailInput = document.getElementById('notify-email');
+  const email = emailInput?.value.trim() || '';
+  
+  if(!email || !email.includes('@')){
+    showToast('Please enter a valid email address.', true);
+    return;
+  }
+  
+  if(!btn) return;
+  
+  // Store original text
+  if(!btn.getAttribute('data-original-text')){
+    btn.setAttribute('data-original-text', btn.textContent);
+  }
+  
+  setButtonLoading(btn, true);
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from('launch_signups')
+      .insert([{ email: email }]);
+    
+    if(error){
+      // Check if it's a duplicate email error
+      if(error.code === '23505'){
+        showToast('This email is already on our launch list!');
+      } else {
+        throw error;
+      }
+    } else {
+      emailInput.value = '';
+      showToast('You are on the list. We will notify you at launch.');
+    }
+  } catch(error) {
+    console.error('Supabase error:', error);
+    showToast('Error saving email. Please try again.', true);
+  } finally {
+    setButtonLoading(btn, false);
+  }
+}
+
+// ============================================
+// COUNTDOWN TIMER
+// ============================================
+let cdStarted = false;
+function startCountdown(){
+  if(cdStarted) return;
+  cdStarted = true;
+  var target = new Date('2027-12-01T00:00:00');
+  function tick(){
+    var now = new Date(), diff = target - now;
+    if(diff <= 0){
+      ['cd-d','cd-h','cd-m','cd-s'].forEach(function(id){
+        var el = document.getElementById(id);
+        if(el) el.textContent = '00';
+      });
+      return;
+    }
+    var d = Math.floor(diff/86400000);
+    var h = Math.floor((diff%86400000)/3600000);
+    var mi = Math.floor((diff%3600000)/60000);
+    var se = Math.floor((diff%60000)/1000);
+    function p(n){ return n<10 ? '0'+n : String(n); }
+    var cdD = document.getElementById('cd-d');
+    var cdH = document.getElementById('cd-h');
+    var cdM = document.getElementById('cd-m');
+    var cdS = document.getElementById('cd-s');
+    if(cdD) cdD.textContent = p(d);
+    if(cdH) cdH.textContent = p(h);
+    if(cdM) cdM.textContent = p(mi);
+    if(cdS) cdS.textContent = p(se);
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ============================================
+// CHECK SUPABASE CONNECTION ON LOAD
+// ============================================
+async function checkSupabaseConnection(){
+  try {
+    // Just test if we can reach Supabase
+    const { error } = await supabaseClient.from('launch_signups').select('count', { count: 'exact', head: true });
+    if(error && error.message){
+      console.warn('Supabase connection test:', error.message);
+    } else {
+      console.log('Supabase connected successfully');
+    }
+  } catch(e) {
+    console.warn('Supabase connection issue:', e);
+  }
+}
+
+// Run connection check when page loads
+document.addEventListener('DOMContentLoaded', function(){
+  checkSupabaseConnection();
+  
+  // Add Enter key support for forms
+  const emailInput = document.getElementById('notify-email');
+  if(emailInput){
+    emailInput.addEventListener('keypress', function(e){
+      if(e.key === 'Enter') submitLaunchSignup();
+    });
+  }
+});
 </script>
 </body>
 </html>
