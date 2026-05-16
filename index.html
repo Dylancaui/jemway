@@ -424,6 +424,45 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================
+// RESEND EMAIL CONFIGURATION
+// ============================================
+// !!! IMPORTANT: Replace this with your actual Resend API key from resend.com !!!
+const RESEND_API_KEY = 're_RPGBRZNq_36jGRHxe5cy1UsMcz5KbezWx'; // <-- PUT YOUR REAL RESEND API KEY HERE
+
+// Function to send email using Resend
+async function sendEmailWithResend(emailData) {
+    try {
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                from: 'Jemway Solutions <onboarding@resend.dev>',
+                to: [emailData.to],
+                subject: emailData.subject,
+                html: emailData.html,
+                reply_to: 'intake@jemway.care'
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            console.log('Email sent successfully:', result);
+            return true;
+        } else {
+            console.error('Email error:', result);
+            return false;
+        }
+    } catch (error) {
+        console.error('Network error:', error);
+        return false;
+    }
+}
+
+// ============================================
 // LOADER ANIMATION
 // ============================================
 (function(){
@@ -485,7 +524,7 @@ function setButtonLoading(btn, loading){
 }
 
 // ============================================
-// SUBMIT PATIENT REFERRAL TO SUPABASE
+// SUBMIT PATIENT REFERRAL TO SUPABASE + EMAIL
 // ============================================
 async function submitReferral(){
   const btn = document.getElementById('submitReferralBtn');
@@ -512,6 +551,7 @@ async function submitReferral(){
   setButtonLoading(btn, true);
   
   try {
+    // Save to Supabase
     const { data, error } = await supabaseClient
       .from('client_referrals')
       .insert([{
@@ -528,6 +568,71 @@ async function submitReferral(){
     
     if(error) throw error;
     
+    // Generate reference number
+    const refNumber = 'JEM-' + new Date().getFullYear() + '-' + Math.floor(Math.random() * 10000);
+    
+    // Send confirmation email to provider (if email is provided in providerName field)
+    if(providerName && providerName.includes('@')){
+      await sendEmailWithResend({
+        to: providerName,
+        subject: `✓ Referral Received - ${firstName} ${lastName}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #1a7a5e; padding: 20px; text-align: center; color: white;">
+              <h1>Jemway Solutions</h1>
+              <p>Post-Hospital Home Care</p>
+            </div>
+            <div style="padding: 20px;">
+              <h2>✓ Referral Received</h2>
+              <p>Thank you for referring <strong>${firstName} ${lastName}</strong> to Jemway Solutions.</p>
+              <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p><strong>REFERENCE #:</strong> ${refNumber}</p>
+                <p><strong>PATIENT:</strong> ${firstName} ${lastName}</p>
+                <p><strong>PHONE:</strong> ${phone || 'Not provided'}</p>
+                <p><strong>DIAGNOSIS:</strong> ${diagnosis || 'Not provided'}</p>
+                <p><strong>CARE NEED:</strong> ${careNeed}</p>
+              </div>
+              <h3>What Happens Next:</h3>
+              <ul>
+                <li>✓ Intake call within 24 hours</li>
+                <li>✓ Caregiver match within 48 hours</li>
+                <li>✓ Care begins within 72 hours</li>
+              </ul>
+              <p>Questions? Call us at <strong>(352) 600-1234</strong></p>
+              <hr>
+              <p style="font-size: 12px; color: #666;">Jemway Solutions | Spring Hill, FL | (352) 600-1234</p>
+            </div>
+          </div>
+        `
+      });
+    }
+    
+    // Send internal notification to your intake team
+    await sendEmailWithResend({
+      to: 'intake@jemway.care',
+      subject: `🚨 NEW REFERRAL - ${firstName} ${lastName}`,
+      html: `
+        <div style="font-family: monospace; padding: 20px;">
+          <h2 style="color: #1a7a5e;">🚨 New Patient Referral</h2>
+          <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+          <p><strong>Patient:</strong> ${firstName} ${lastName}</p>
+          <p><strong>Phone:</strong> ${phone}</p>
+          <p><strong>Diagnosis:</strong> ${diagnosis}</p>
+          <p><strong>Care Need:</strong> ${careNeed}</p>
+          <p><strong>Provider:</strong> ${providerName}</p>
+          <p><strong>Clinical Notes:</strong> ${clinicalNotes || 'None'}</p>
+          <hr>
+          <p><strong>ACTION REQUIRED:</strong></p>
+          <ul>
+            <li>□ Call patient within 4 hours</li>
+            <li>□ Schedule assessment</li>
+            <li>□ Assign intake coordinator</li>
+          </ul>
+        </div>
+      `
+    });
+    
+    // Clear form
     document.getElementById('refFirstName').value = '';
     document.getElementById('refLastName').value = '';
     document.getElementById('refDischargeDate').value = '';
@@ -537,7 +642,7 @@ async function submitReferral(){
     document.getElementById('refProviderName').value = '';
     document.getElementById('refClinicalNotes').value = '';
     
-    showToast('Referral submitted successfully. We will be in touch within 24 hours.');
+    showToast('Referral submitted! Confirmation email sent.');
     
   } catch(error) {
     console.error('Supabase error:', error);
@@ -548,7 +653,7 @@ async function submitReferral(){
 }
 
 // ============================================
-// SUBMIT LAUNCH SIGNUP TO SUPABASE
+// SUBMIT LAUNCH SIGNUP TO SUPABASE + EMAIL
 // ============================================
 async function submitLaunchSignup(){
   const btn = document.getElementById('notifyBtn');
@@ -580,8 +685,36 @@ async function submitLaunchSignup(){
         throw error;
       }
     } else {
+      // Send welcome email
+      await sendEmailWithResend({
+        to: email,
+        subject: "You're on the list! 🎉 Jemway Solutions Launch",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto;">
+            <div style="background-color: #1a7a5e; padding: 20px; text-align: center; color: white;">
+              <h1>Jemway Solutions</h1>
+            </div>
+            <div style="padding: 20px;">
+              <h2>Thanks for signing up! 🎉</h2>
+              <p>You'll be the first to know when Jemway Solutions launches in December 2027.</p>
+              <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0;"><strong>What you'll receive:</strong></p>
+                <ul>
+                  <li>Launch date announcement</li>
+                  <li>Early access opportunities</li>
+                  <li>Caregiver hiring updates</li>
+                </ul>
+              </div>
+              <p>Share with someone who needs post-hospital care:</p>
+              <hr>
+              <p style="font-size: 12px; color: #666;">Jemway Solutions | Spring Hill, FL | (352) 600-1234</p>
+            </div>
+          </div>
+        `
+      });
+      
       emailInput.value = '';
-      showToast('You are on the list. We will notify you at launch.');
+      showToast('You are on the list! Check your email for confirmation.');
     }
   } catch(error) {
     console.error('Supabase error:', error);
