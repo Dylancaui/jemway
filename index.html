@@ -341,7 +341,10 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:3rem 2rem 2rem}
         <div class="fg2"><div class="fg"><label>Date of Discharge</label><input type="date" id="refDischargeDate"/></div><div class="fg"><label>Patient Phone</label><input type="tel" id="refPhone" placeholder="(555) 000-0000"/></div></div>
         <div class="fg"><label>Primary Diagnosis</label><input type="text" id="refDiagnosis" placeholder="e.g. Post-surgical recovery, cardiac event..."/></div>
         <div class="fg"><label>Primary Care Need</label><select id="refCareNeed"><option>Transportation &amp; Appointment Escort</option><option>Meal Preparation &amp; Housekeeping</option><option>Personal Hygiene Assistance</option><option>Medication Reminders</option><option>Companionship &amp; Wellness Checks</option><option>Multiple services required</option></select></div>
-        <div class="fg"><label>Referring Provider &amp; Facility</label><input type="text" id="refProviderName" placeholder="Name, title, and facility name"/></div>
+        
+        <!-- NEW PROVIDER FIELDS -->
+        <div class="fg2"><div class="fg"><label>Provider/Coordinator Name *</label><input type="text" id="refProviderName" placeholder="e.g., Sarah Johnson, RN"/></div><div class="fg"><label>Provider Email *</label><input type="email" id="refProviderEmail" placeholder="sarah@hospital.org"/></div></div>
+        <div class="fg"><label>Hospital/Facility Name *</label><input type="text" id="refFacility" placeholder="e.g., Tampa General Hospital"/></div>
         <div class="fg"><label>Clinical Notes</label><textarea id="refClinicalNotes" placeholder="Mobility restrictions, dietary needs, family contact, special circumstances..."></textarea></div>
         <button class="ref-submit" id="submitReferralBtn" onclick="submitReferral()">Submit Referral</button>
       </div>
@@ -426,8 +429,8 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ============================================
 // RESEND EMAIL CONFIGURATION
 // ============================================
-// !!! IMPORTANT: Replace this with your actual Resend API key from resend.com !!!
-const RESEND_API_KEY = 're_RPGBRZNq_36jGRHxe5cy1UsMcz5KbezWx'; // <-- PUT YOUR REAL RESEND API KEY HERE
+// !!! REPLACE WITH YOUR ACTUAL RESEND API KEY !!!
+const RESEND_API_KEY = 're_RPGBRZNq_36jGRHxe5cy1UsMcz5KbezWx';
 
 // Function to send email using Resend
 async function sendEmailWithResend(emailData) {
@@ -443,7 +446,7 @@ async function sendEmailWithResend(emailData) {
                 to: [emailData.to],
                 subject: emailData.subject,
                 html: emailData.html,
-                reply_to: 'intake@jemway.care'
+                reply_to: 'adzenturabusiness@gmail.com'
             })
         });
         
@@ -540,11 +543,24 @@ async function submitReferral(){
   const phone = document.getElementById('refPhone')?.value || '';
   const diagnosis = document.getElementById('refDiagnosis')?.value || '';
   const careNeed = document.getElementById('refCareNeed')?.value || '';
-  const providerName = document.getElementById('refProviderName')?.value || '';
+  const providerName = document.getElementById('refProviderName')?.value.trim() || '';
+  const providerEmail = document.getElementById('refProviderEmail')?.value.trim() || '';
+  const facility = document.getElementById('refFacility')?.value.trim() || '';
   const clinicalNotes = document.getElementById('refClinicalNotes')?.value || '';
   
+  // Validate required fields
   if(!firstName || !lastName){
     showToast('Please fill in patient first and last name', true);
+    return;
+  }
+  
+  if(!providerName || !providerEmail || !facility){
+    showToast('Please fill in all provider information (Name, Email, Facility)', true);
+    return;
+  }
+  
+  if(!providerEmail.includes('@')){
+    showToast('Please enter a valid provider email address', true);
     return;
   }
   
@@ -562,6 +578,8 @@ async function submitReferral(){
         diagnosis: diagnosis,
         care_need: careNeed,
         provider_name: providerName,
+        provider_email: providerEmail,
+        facility_name: facility,
         clinical_notes: clinicalNotes,
         status: 'new'
       }]);
@@ -570,65 +588,121 @@ async function submitReferral(){
     
     // Generate reference number
     const refNumber = 'JEM-' + new Date().getFullYear() + '-' + Math.floor(Math.random() * 10000);
+    const submitDate = new Date().toLocaleString();
     
-    // Send confirmation email to provider (if email is provided in providerName field)
-    if(providerName && providerName.includes('@')){
-      await sendEmailWithResend({
-        to: providerName,
-        subject: `✓ Referral Received - ${firstName} ${lastName}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background-color: #1a7a5e; padding: 20px; text-align: center; color: white;">
-              <h1>Jemway Solutions</h1>
-              <p>Post-Hospital Home Care</p>
+    // ============================================
+    // EMAIL 1: Confirmation to Provider (Referrer)
+    // ============================================
+    await sendEmailWithResend({
+      to: providerEmail,
+      subject: `✓ Referral Confirmation: ${firstName} ${lastName} - Jemway Solutions`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"></head>
+        <body style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9fafb; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #1a7a5e 0%, #2aad85 100%); padding: 30px 20px; text-align: center; border-radius: 20px 20px 0 0;">
+            <h1 style="color: white; margin: 0; font-family: Georgia, serif;">Jemway Solutions</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0;">Post-Hospital Home Care</p>
+          </div>
+          
+          <div style="background: white; padding: 30px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <h2 style="color: #1a7a5e; margin-top: 0;">✓ Referral Received</h2>
+            <p>Dear <strong>${providerName}</strong>,</p>
+            <p>Thank you for referring <strong>${firstName} ${lastName}</strong> to Jemway Solutions. We have received your referral and will begin processing immediately.</p>
+            
+            <div style="background: #e8f5f0; padding: 20px; border-radius: 12px; margin: 25px 0; border-left: 4px solid #1a7a5e;">
+              <p style="margin: 0 0 10px;"><strong style="color: #1a7a5e;">📋 REFERENCE NUMBER:</strong> ${refNumber}</p>
+              <p style="margin: 0 0 10px;"><strong style="color: #1a7a5e;">🏥 FACILITY:</strong> ${facility}</p>
+              <p style="margin: 0 0 10px;"><strong style="color: #1a7a5e;">👤 PATIENT:</strong> ${firstName} ${lastName}</p>
+              <p style="margin: 0 0 10px;"><strong style="color: #1a7a5e;">📞 PHONE:</strong> ${phone || 'Not provided'}</p>
+              <p style="margin: 0 0 10px;"><strong style="color: #1a7a5e;">🩺 DIAGNOSIS:</strong> ${diagnosis || 'Not provided'}</p>
+              <p style="margin: 0;"><strong style="color: #1a7a5e;">📋 CARE NEED:</strong> ${careNeed}</p>
             </div>
-            <div style="padding: 20px;">
-              <h2>✓ Referral Received</h2>
-              <p>Thank you for referring <strong>${firstName} ${lastName}</strong> to Jemway Solutions.</p>
-              <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                <p><strong>REFERENCE #:</strong> ${refNumber}</p>
-                <p><strong>PATIENT:</strong> ${firstName} ${lastName}</p>
-                <p><strong>PHONE:</strong> ${phone || 'Not provided'}</p>
-                <p><strong>DIAGNOSIS:</strong> ${diagnosis || 'Not provided'}</p>
-                <p><strong>CARE NEED:</strong> ${careNeed}</p>
-              </div>
-              <h3>What Happens Next:</h3>
-              <ul>
-                <li>✓ Intake call within 24 hours</li>
-                <li>✓ Caregiver match within 48 hours</li>
-                <li>✓ Care begins within 72 hours</li>
-              </ul>
-              <p>Questions? Call us at <strong>(352) 600-1234</strong></p>
-              <hr>
-              <p style="font-size: 12px; color: #666;">Jemway Solutions | Spring Hill, FL | (352) 600-1234</p>
+            
+            <h3 style="color: #1a7a5e;">⏰ What Happens Next:</h3>
+            <table style="width: 100%; margin: 15px 0;">
+              <tr><td style="padding: 8px 0;">✓</td><td>Intake call within <strong>24 hours</strong></td></tr>
+              <tr><td style="padding: 8px 0;">✓</td><td>Caregiver match within <strong>48 hours</strong></td></tr>
+              <tr><td style="padding: 8px 0;">✓</td><td>Care begins within <strong>72 hours</strong></td></tr>
+            </table>
+            
+            <hr style="margin: 25px 0; border: none; border-top: 1px solid #e2e8f0;">
+            
+            <p style="font-size: 14px; color: #64748b; margin: 0;">Questions? Call us at <strong style="color: #1a7a5e;">(352) 600-1234</strong> or reply to this email.</p>
+            <p style="font-size: 12px; color: #94a3b8; margin-top: 20px;">Jemway Solutions | Spring Hill, FL | © 2027</p>
+          </div>
+        </body>
+        </html>
+      `
+    });
+    
+    // ============================================
+    // EMAIL 2: Internal Notification to Your Team
+    // ============================================
+    await sendEmailWithResend({
+      to: 'intake@jemway.care',  // CHANGE THIS TO YOUR EMAIL
+      subject: `🚨 NEW REFERRAL #${refNumber} - ${firstName} ${lastName} - ACTION REQUIRED`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"></head>
+        <body style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 700px; margin: 0 auto; padding: 20px;">
+          <div style="background: #c62828; padding: 20px; text-align: center; border-radius: 12px 12px 0 0; color: white;">
+            <h1 style="margin: 0;">🚨 NEW PATIENT REFERRAL</h1>
+            <p style="margin: 5px 0 0;">Action Required Within 4 Hours</p>
+          </div>
+          
+          <div style="background: white; padding: 25px; border: 1px solid #e2e8f0; border-radius: 0 0 12px 12px;">
+            <p><strong>📅 Submitted:</strong> ${submitDate}</p>
+            <p><strong>🔢 Reference:</strong> ${refNumber}</p>
+            
+            <hr style="margin: 20px 0;">
+            
+            <h3 style="color: #1a7a5e;">PATIENT INFORMATION</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr><td style="padding: 8px 0;"><strong>Name:</strong></td><td>${firstName} ${lastName}</td></tr>
+              <tr><td style="padding: 8px 0;"><strong>Phone:</strong></td><td>${phone || 'Not provided'}</td></tr>
+              <tr><td style="padding: 8px 0;"><strong>Discharge Date:</strong></td><td>${dischargeDate || 'Not specified'}</td></tr>
+              <tr><td style="padding: 8px 0;"><strong>Diagnosis:</strong></td><td>${diagnosis || 'Not provided'}</td></tr>
+              <tr><td style="padding: 8px 0;"><strong>Care Need:</strong></td><td>${careNeed}</td></tr>
+            </table>
+            
+            <hr style="margin: 20px 0;">
+            
+            <h3 style="color: #1a7a5e;">PROVIDER INFORMATION</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr><td style="padding: 8px 0;"><strong>Name:</strong></td><td>${providerName}</td></tr>
+              <tr><td style="padding: 8px 0;"><strong>Email:</strong></td><td>${providerEmail}</td></tr>
+              <tr><td style="padding: 8px 0;"><strong>Facility:</strong></td><td>${facility}</td></tr>
+            </table>
+            
+            <hr style="margin: 20px 0;">
+            
+            <h3 style="color: #1a7a5e;">📝 CLINICAL NOTES</h3>
+            <div style="background: #f9fafb; padding: 15px; border-radius: 8px;">
+              ${clinicalNotes || 'No clinical notes provided.'}
+            </div>
+            
+            <hr style="margin: 20px 0;">
+            
+            <h3 style="color: #c62828;">✅ ACTION REQUIRED:</h3>
+            <table style="width: 100%;">
+              <tr><td>□</td><td>Call patient/family within <strong>4 hours</strong></td></tr>
+              <tr><td>□</td><td>Complete needs assessment</td></tr>
+              <tr><td>□</td><td>Assign intake coordinator</td></tr>
+              <tr><td>□</td><td>Schedule caregiver match</td></tr>
+              <tr><td>□</td><td>Send confirmation to provider</td></tr>
+            </table>
+            
+            <div style="background: #e8f5f0; padding: 15px; border-radius: 8px; margin-top: 20px;">
+              <strong>🔗 Quick Links:</strong><br>
+              <a href="${SUPABASE_URL}/project/default/editor/client_referrals">View in Supabase</a><br>
+              <a href="tel:+13526001234">Call Patient: ${phone || 'N/A'}</a>
             </div>
           </div>
-        `
-      });
-    }
-    
-    // Send internal notification to your intake team
-    await sendEmailWithResend({
-      to: 'intake@jemway.care',
-      subject: `🚨 NEW REFERRAL - ${firstName} ${lastName}`,
-      html: `
-        <div style="font-family: monospace; padding: 20px;">
-          <h2 style="color: #1a7a5e;">🚨 New Patient Referral</h2>
-          <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
-          <p><strong>Patient:</strong> ${firstName} ${lastName}</p>
-          <p><strong>Phone:</strong> ${phone}</p>
-          <p><strong>Diagnosis:</strong> ${diagnosis}</p>
-          <p><strong>Care Need:</strong> ${careNeed}</p>
-          <p><strong>Provider:</strong> ${providerName}</p>
-          <p><strong>Clinical Notes:</strong> ${clinicalNotes || 'None'}</p>
-          <hr>
-          <p><strong>ACTION REQUIRED:</strong></p>
-          <ul>
-            <li>□ Call patient within 4 hours</li>
-            <li>□ Schedule assessment</li>
-            <li>□ Assign intake coordinator</li>
-          </ul>
-        </div>
+        </body>
+        </html>
       `
     });
     
@@ -640,12 +714,14 @@ async function submitReferral(){
     document.getElementById('refDiagnosis').value = '';
     document.getElementById('refCareNeed').selectedIndex = 0;
     document.getElementById('refProviderName').value = '';
+    document.getElementById('refProviderEmail').value = '';
+    document.getElementById('refFacility').value = '';
     document.getElementById('refClinicalNotes').value = '';
     
-    showToast('Referral submitted! Confirmation email sent.');
+    showToast('Referral submitted! Confirmation email sent to provider.');
     
   } catch(error) {
-    console.error('Supabase error:', error);
+    console.error('Error:', error);
     showToast('Error submitting referral. Please try again.', true);
   } finally {
     setButtonLoading(btn, false);
@@ -653,7 +729,7 @@ async function submitReferral(){
 }
 
 // ============================================
-// SUBMIT LAUNCH SIGNUP TO SUPABASE + EMAIL
+// SUBMIT LAUNCH SIGNUP TO SUPABASE + WELCOME EMAIL
 // ============================================
 async function submitLaunchSignup(){
   const btn = document.getElementById('notifyBtn');
@@ -685,39 +761,55 @@ async function submitLaunchSignup(){
         throw error;
       }
     } else {
-      // Send welcome email
+      // ============================================
+      // SEND WELCOME EMAIL TO LAUNCH SIGNUP
+      // ============================================
       await sendEmailWithResend({
         to: email,
-        subject: "You're on the list! 🎉 Jemway Solutions Launch",
+        subject: "🎉 Welcome to Jemway Solutions! You're on the launch list",
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto;">
-            <div style="background-color: #1a7a5e; padding: 20px; text-align: center; color: white;">
-              <h1>Jemway Solutions</h1>
+          <!DOCTYPE html>
+          <html>
+          <head><meta charset="UTF-8"></head>
+          <body style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 550px; margin: 0 auto; background: #f9fafb; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #1a7a5e 0%, #2aad85 100%); padding: 30px 20px; text-align: center; border-radius: 20px 20px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 32px;">Jemway Solutions</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0;">Post-Hospital Home Care</p>
             </div>
-            <div style="padding: 20px;">
-              <h2>Thanks for signing up! 🎉</h2>
-              <p>You'll be the first to know when Jemway Solutions launches in December 2027.</p>
-              <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                <p style="margin: 0;"><strong>What you'll receive:</strong></p>
-                <ul>
-                  <li>Launch date announcement</li>
-                  <li>Early access opportunities</li>
-                  <li>Caregiver hiring updates</li>
+            
+            <div style="background: white; padding: 30px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+              <h2 style="color: #1a7a5e; margin-top: 0;">Thanks for signing up! 🎉</h2>
+              <p>Hello,</p>
+              <p>You're officially on the list for <strong>Jemway Solutions</strong> launch updates.</p>
+              
+              <div style="background: #e8f5f0; padding: 20px; border-radius: 12px; margin: 25px 0;">
+                <p style="margin: 0 0 10px;"><strong>✨ What you'll receive:</strong></p>
+                <ul style="margin: 0; padding-left: 20px;">
+                  <li>📅 Launch date announcement (December 2027)</li>
+                  <li>🚀 Early access opportunities</li>
+                  <li>👋 Caregiver hiring updates</li>
+                  <li>🏥 Provider partnership info</li>
                 </ul>
               </div>
-              <p>Share with someone who needs post-hospital care:</p>
-              <hr>
-              <p style="font-size: 12px; color: #666;">Jemway Solutions | Spring Hill, FL | (352) 600-1234</p>
+              
+              <p><strong>In the meantime:</strong></p>
+              <p>Know a hospital discharge coordinator who could use our services? <a href="#" style="color: #1a7a5e;">Share our referral page</a> with them!</p>
+              
+              <hr style="margin: 25px 0; border: none; border-top: 1px solid #e2e8f0;">
+              
+              <p style="font-size: 14px; color: #64748b; margin: 0;">Questions? <a href="mailto:intake@jemway.care" style="color: #1a7a5e;">Email our team</a></p>
+              <p style="font-size: 12px; color: #94a3b8; margin-top: 20px;">Jemway Solutions | Spring Hill, FL | (352) 600-1234</p>
             </div>
-          </div>
+          </body>
+          </html>
         `
       });
       
       emailInput.value = '';
-      showToast('You are on the list! Check your email for confirmation.');
+      showToast('Welcome email sent! Check your inbox.');
     }
   } catch(error) {
-    console.error('Supabase error:', error);
+    console.error('Error:', error);
     showToast('Error saving email. Please try again.', true);
   } finally {
     setButtonLoading(btn, false);
