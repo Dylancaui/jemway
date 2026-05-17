@@ -423,40 +423,43 @@ footer{background:var(--text);color:rgba(255,255,255,.5);padding:3rem 2rem 2rem}
 const SUPABASE_URL = 'https://qlwbnvqgteoyjafabxxx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsd2JudnFndGVveWphZmFieHh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NzAwMjgsImV4cCI6MjA5NDQ0NjAyOH0.sLC7BlX89NFoQ-bGeMrXGenxacJgUfRBZv1sfR0KlkM';
 
-// Initialize Supabase
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================
-// FORMSPREE EMAIL CONFIGURATION
-// !!! REPLACE WITH YOUR FORMSPREE ID FROM formspree.io !!!
+// RESEND EMAIL - WORKING WITH jemway.com
 // ============================================
-const FORMSPREE_ID = 'https://formspree.io/f/mdajonon';  // <-- GET THIS FROM formspree.io
+const RESEND_API_KEY = 're_RPGBRZNq_36jGRHxe5cy1UsMcz5KbezWx';
 
-async function sendEmailWithFormspree(emailData) {
+async function sendEmailWithResend(emailData) {
     try {
-        const response = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        const response = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Authorization': `Bearer ${RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                email: emailData.to,
+                from: 'Jemway Solutions <hello@jemway.com>',
+                to: [emailData.to],
                 subject: emailData.subject,
-                message: emailData.html.replace(/<[^>]*>/g, ''), // Convert HTML to plain text
-                _replyto: 'adzenturabusiness@gmail.com'
+                html: emailData.html,
+                reply_to: 'intake@jemway.com'
             })
         });
         
+        const result = await response.json();
+        
         if (response.ok) {
-            console.log('Email sent via Formspree');
+            console.log('Email sent successfully:', result);
             return true;
         } else {
-            console.error('Formspree error:', await response.json());
+            console.error('Email error:', result);
+            showToast(`Email error: ${result.message}`, true);
             return false;
         }
-    } catch(error) {
+    } catch (error) {
         console.error('Network error:', error);
+        showToast('Network error. Check console.', true);
         return false;
     }
 }
@@ -556,7 +559,6 @@ async function submitReferral(){
   setButtonLoading(btn, true);
   
   try {
-    // Save to Supabase
     const { data, error } = await supabaseClient
       .from('client_referrals')
       .insert([{
@@ -576,22 +578,73 @@ async function submitReferral(){
     if(error) throw error;
     
     const refNumber = 'JEM-' + new Date().getFullYear() + '-' + Math.floor(Math.random() * 10000);
+    const submitDate = new Date().toLocaleString();
     
-    // Send confirmation email
-    await sendEmailWithFormspree({
+    // Send confirmation email to provider
+    await sendEmailWithResend({
       to: providerEmail,
-      subject: `Referral Confirmation: ${firstName} ${lastName} - Jemway Solutions`,
+      subject: `✓ Referral Confirmation: ${firstName} ${lastName} - Jemway Solutions`,
       html: `
-        JEMWAY SOLUTIONS - REFERRAL CONFIRMATION
-        
-        Reference: ${refNumber}
-        Patient: ${firstName} ${lastName}
-        Facility: ${facility}
-        Care Need: ${careNeed}
-        
-        Next steps: Our intake team will contact the patient within 24 hours.
-        
-        Questions? Call (352) 600-1234
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #1a7a5e; padding: 20px; text-align: center; color: white;">
+            <h1>Jemway Solutions</h1>
+            <p>Post-Hospital Home Care</p>
+          </div>
+          <div style="padding: 20px;">
+            <h2>✓ Referral Received</h2>
+            <p>Dear ${providerName},</p>
+            <p>Thank you for referring <strong>${firstName} ${lastName}</strong> to Jemway Solutions.</p>
+            <div style="background: #e8f5f0; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <p><strong>Reference:</strong> ${refNumber}</p>
+              <p><strong>Patient:</strong> ${firstName} ${lastName}</p>
+              <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+              <p><strong>Diagnosis:</strong> ${diagnosis || 'Not provided'}</p>
+              <p><strong>Care Need:</strong> ${careNeed}</p>
+              <p><strong>Facility:</strong> ${facility}</p>
+            </div>
+            <h3>Next Steps:</h3>
+            <ul>
+              <li>Intake call within 24 hours</li>
+              <li>Caregiver match within 48 hours</li>
+              <li>Care begins within 72 hours</li>
+            </ul>
+            <p>Questions? Call (352) 600-1234 or reply to this email.</p>
+          </div>
+        </div>
+      `
+    });
+    
+    // Send internal notification to you
+    await sendEmailWithResend({
+      to: 'adzenturabusiness@gmail.com',
+      subject: `🚨 NEW REFERRAL - ${firstName} ${lastName} - ACTION REQUIRED`,
+      html: `
+        <div style="font-family: monospace; padding: 20px;">
+          <h2>🚨 NEW PATIENT REFERRAL</h2>
+          <p><strong>Time:</strong> ${submitDate}</p>
+          <p><strong>Reference:</strong> ${refNumber}</p>
+          <hr>
+          <h3>Patient Info:</h3>
+          <p>Name: ${firstName} ${lastName}</p>
+          <p>Phone: ${phone}</p>
+          <p>Diagnosis: ${diagnosis}</p>
+          <p>Care Need: ${careNeed}</p>
+          <hr>
+          <h3>Provider Info:</h3>
+          <p>Name: ${providerName}</p>
+          <p>Email: ${providerEmail}</p>
+          <p>Facility: ${facility}</p>
+          <hr>
+          <h3>Clinical Notes:</h3>
+          <p>${clinicalNotes || 'None'}</p>
+          <hr>
+          <h3>ACTION REQUIRED:</h3>
+          <ul>
+            <li>□ Call patient within 4 hours</li>
+            <li>□ Schedule assessment</li>
+            <li>□ Assign intake coordinator</li>
+          </ul>
+        </div>
       `
     });
     
@@ -650,22 +703,30 @@ async function submitLaunchSignup(){
         throw error;
       }
     } else {
-      await sendEmailWithFormspree({
+      await sendEmailWithResend({
         to: email,
-        subject: "Welcome to Jemway Solutions! You're on the launch list",
+        subject: "🎉 Welcome to Jemway Solutions! You're on the launch list",
         html: `
-          Welcome to Jemway Solutions!
-          
-          You're officially on the list for launch updates.
-          
-          What you'll receive:
-          - Launch date announcement (December 2027)
-          - Early access opportunities
-          - Caregiver hiring updates
-          
-          Questions? Email us at intake@jemway.care
-          
-          - The Jemway Team
+          <div style="font-family: Arial, sans-serif; max-width: 550px; margin: 0 auto;">
+            <div style="background: #1a7a5e; padding: 20px; text-align: center; color: white;">
+              <h1>Jemway Solutions</h1>
+            </div>
+            <div style="padding: 20px;">
+              <h2>Thanks for signing up! 🎉</h2>
+              <p>You're officially on the list for Jemway Solutions launch updates.</p>
+              <div style="background: #e8f5f0; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p><strong>What you'll receive:</strong></p>
+                <ul>
+                  <li>Launch date announcement (December 2027)</li>
+                  <li>Early access opportunities</li>
+                  <li>Caregiver hiring updates</li>
+                </ul>
+              </div>
+              <p>Questions? Email intake@jemway.com</p>
+              <hr>
+              <p style="font-size: 12px;">Jemway Solutions | (352) 600-1234</p>
+            </div>
+          </div>
         `
       });
       
